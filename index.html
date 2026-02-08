@@ -2,54 +2,86 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Leap & Learn Editor</title>
+<title>Leap & Learn Editor - Pro</title>
 <style>
-  :root { --primary: #7cf9ff; --dark: #0a1730; --panel: #142342; --text: #eaf6ff; }
-  body { margin:0; display:flex; height:100vh; background: #050b1a; color: var(--text); font-family: sans-serif; overflow:hidden; }
+  :root { --primary: #7cf9ff; --dark: #0a1730; --panel: #142342; --text: #eaf6ff; --accent: #4dff88; }
+  body { margin:0; display:flex; height:100vh; background: #050b1a; color: var(--text); font-family: 'Segoe UI', sans-serif; overflow:hidden; }
   
   /* SIDEBAR */
-  #EDITOR { width: 400px; background: var(--dark); border-right: 1px solid #333; display:flex; flex-direction:column; z-index:10; }
+  #EDITOR { width: 420px; background: var(--dark); border-right: 1px solid #333; display:flex; flex-direction:column; z-index:10; box-shadow: 4px 0 15px rgba(0,0,0,0.3); }
   #EDITOR_HEADER { padding:15px; background:var(--panel); border-bottom:1px solid #333; display:flex; align-items:center; justify-content:space-between; }
-  #EDITOR_HEADER h2 { margin:0; font-size:18px; color:var(--primary); }
+  #EDITOR_HEADER h2 { margin:0; font-size:18px; color:var(--primary); display:flex; align-items:center; gap:10px; }
   
   #TABS { display:flex; background:#000; }
-  .tab { flex:1; padding:10px; text-align:center; cursor:pointer; background:#111; color:#777; border-bottom:2px solid transparent; font-size:12px; font-weight:bold; }
-  .tab.active { background:var(--panel); color:var(--primary); border-bottom:2px solid var(--primary); }
+  .tab { flex:1; padding:12px; text-align:center; cursor:pointer; background:#111; color:#777; border-bottom:3px solid transparent; font-size:12px; font-weight:bold; letter-spacing: 1px; transition:0.2s; }
+  .tab:hover { color:#fff; background:#1a1a1a; }
+  .tab.active { background:var(--panel); color:var(--primary); border-bottom:3px solid var(--primary); }
   
-  #CONTROLS { flex:1; overflow-y:auto; padding:15px; }
+  #CONTROLS { flex:1; overflow-y:auto; padding:20px; }
   
   /* FORM ELEMENTS */
-  .group { margin-bottom:20px; border-bottom:1px solid #222; padding-bottom:15px; }
-  .group h3 { margin:0 0 10px; font-size:14px; color:#aaa; text-transform:uppercase; }
-  label { display:block; font-size:12px; margin-bottom:4px; margin-top:10px; color:#ccc; }
+  .group { margin-bottom:25px; border-bottom:1px solid #222; padding-bottom:20px; }
+  .group h3 { margin:0 0 15px; font-size:13px; color:var(--primary); text-transform:uppercase; letter-spacing:1px; opacity:0.8; }
+  
+  label { display:block; font-size:12px; margin-bottom:6px; margin-top:12px; color:#ccc; font-weight:500; }
   input[type="text"], input[type="number"], select, textarea { 
-    width:100%; box-sizing:border-box; padding:8px; background:#000; border:1px solid #444; color:#fff; border-radius:4px; 
+    width:100%; box-sizing:border-box; padding:10px; background:#080f20; border:1px solid #333; color:#fff; border-radius:6px; font-size:13px; font-family: inherit; transition:0.2s;
   }
-  input[type="color"] { width:100%; height:30px; border:none; background:none; cursor:pointer; }
+  input:focus, textarea:focus, select:focus { border-color:var(--primary); outline:none; }
+  input[type="color"] { width:100%; height:35px; border:none; background:none; cursor:pointer; padding:0; }
   
   .row { display:flex; gap:10px; }
   .col { flex:1; }
 
-  /* LEVEL EDITOR */
-  .level-item { background:rgba(255,255,255,0.05); border:1px solid #333; margin-bottom:10px; border-radius:4px; overflow:hidden; }
-  .level-header { padding:10px; background:#222; cursor:pointer; font-weight:bold; display:flex; justify-content:space-between; }
-  .level-content { padding:10px; display:none; }
+  /* LEVEL EDITOR (BULK) */
+  .level-item { background:rgba(255,255,255,0.03); border:1px solid #333; margin-bottom:15px; border-radius:8px; overflow:hidden; transition:0.2s; }
+  .level-item:hover { border-color:#555; }
+  
+  .level-header { 
+    padding:12px 15px; background:rgba(255,255,255,0.05); cursor:pointer; 
+    font-weight:bold; display:flex; align-items:center; justify-content:space-between; user-select:none;
+  }
+  .level-header:hover { background:rgba(255,255,255,0.08); }
+  .level-content { padding:15px; display:none; border-top:1px solid #333; }
   .level-content.show { display:block; }
+
+  .bulk-container { display:flex; gap:10px; height:200px; }
+  .bulk-col { flex:1; display:flex; flex-direction:column; }
+  .bulk-col label { color:var(--accent); font-size:11px; margin-bottom:4px; }
+  .bulk-area { 
+    flex:1; resize:none; font-family: 'Consolas', 'Courier New', monospace; font-size:12px; line-height:1.4; 
+    white-space:pre; overflow-x:auto; background:#050a15; border:1px solid #444; color:#aaddff;
+  }
+  .hint { font-size:10px; color:#666; margin-top:4px; font-style:italic; }
+
+  /* ICONS & BUTTONS */
+  .btn { width:100%; padding:12px; cursor:pointer; background:var(--primary); color:#000; font-weight:bold; border:none; border-radius:6px; margin-top:10px; transition:0.2s; }
+  .btn:hover { filter:brightness(1.1); transform:translateY(-1px); }
+  .btn.danger { background:transparent; color:#ff3b3b; width:auto; padding:5px; margin:0; }
+  .btn.danger:hover { color:#ff6b6b; transform:scale(1.1); }
   
-  .q-item { background:rgba(0,0,0,0.3); padding:8px; margin-bottom:8px; border-left:2px solid var(--primary); }
-  .btn { width:100%; padding:10px; cursor:pointer; background:var(--primary); color:#000; font-weight:bold; border:none; border-radius:4px; margin-top:5px; }
-  .btn:hover { opacity:0.9; }
-  .btn.danger { background:#ff3b3b; color:#fff; margin-top:5px; }
-  .btn.small { width:auto; padding:4px 8px; font-size:10px; }
-  
-  /* PREVIEW */
+  .icon-trash { width:20px; height:20px; fill:currentColor; }
+
+  /* PREVIEW AREA */
   #PREVIEW_AREA { flex:1; background:#000; position:relative; display:flex; flex-direction:column; }
-  #PREVIEW_BAR { height:40px; background:#111; display:flex; align-items:center; justify-content:center; color:#555; font-size:12px; border-bottom:1px solid #333; }
-  iframe { border:none; width:100%; flex:1; background:#fff; }
+  #PREVIEW_BAR { 
+    height:50px; background:#111; display:flex; align-items:center; justify-content:center; gap:20px; 
+    border-bottom:1px solid #333; padding:0 15px;
+  }
+  #PREVIEW_BAR span { font-size:12px; color:#555; font-weight:bold; text-transform:uppercase; }
   
-  /* COPY OVERLAY */
-  #COPY_MODAL { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:100; display:none; align-items:center; justify-content:center; flex-direction:column; }
-  #COPY_MODAL textarea { width:600px; height:300px; margin-bottom:10px; }
+  .view-btn { 
+    background:#222; color:#ccc; border:1px solid #444; padding:6px 15px; border-radius:20px; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:6px; transition:0.2s;
+  }
+  .view-btn:hover { background:#333; color:#fff; }
+  .view-btn.active { background:var(--primary); color:#000; border-color:var(--primary); font-weight:bold; }
+
+  iframe { border:none; width:100%; flex:1; background:#0a1730; }
+  
+  /* COPY MODAL */
+  #COPY_MODAL { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:100; display:none; align-items:center; justify-content:center; flex-direction:column; backdrop-filter:blur(5px); }
+  #COPY_MODAL h2 { color:#fff; margin-bottom:15px; }
+  #COPY_MODAL textarea { width:600px; height:300px; margin-bottom:15px; border:2px solid var(--accent); }
 </style>
 </head>
 <body>
@@ -71,9 +103,40 @@
     <!-- VISUALS TAB -->
     <div id="tab-visuals">
       <div class="group">
-        <h3>Локация и Персонажи</h3>
-        <label>Фон (Локация)</label>
-        <select id="bgSelect" onchange="updatePreview()">
+        <h3>🎨 Глобальный Стиль</h3>
+        <label>Основной цвет (Неон/Рамки)</label>
+        <input type="color" id="colNeon" value="#7cf9ff" oninput="updatePreview()">
+      </div>
+
+      <div class="group">
+        <h3>🏠 Экран Правил (Старт)</h3>
+        <label>Цвет фона (затемнение)</label>
+        <input type="color" id="colStartBg" value="#081022" oninput="updatePreview()">
+        
+        <label>Цвет текста правил</label>
+        <input type="color" id="colStartText" value="#eaf6ff" oninput="updatePreview()">
+
+        <div class="row">
+          <div class="col">
+             <label>Размер шрифта</label>
+             <input type="number" id="fsStart" value="14" oninput="updatePreview()">
+          </div>
+          <div class="col">
+             <label>Шрифт</label>
+             <select id="fontStart" onchange="updatePreview()">
+               <option value="Arial, sans-serif">Arial</option>
+               <option value="'Courier New', monospace">Courier</option>
+               <option value="'Times New Roman', serif">Times</option>
+               <option value="'Verdana', sans-serif">Verdana</option>
+             </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h3>🎮 Экран Игры</h3>
+        <label>Локация (Фон)</label>
+        <select id="bgSelect" onchange="toggleCustom('bgSelect','bgCustom'); updatePreview()">
           <option value="river">Река</option>
           <option value="lava">Лава</option>
           <option value="swamp">Болото</option>
@@ -82,7 +145,7 @@
         <input type="text" id="bgCustom" placeholder="https://..." style="display:none; margin-top:5px;" oninput="updatePreview()">
 
         <label>Персонаж</label>
-        <select id="charSelect" onchange="updatePreview()">
+        <select id="charSelect" onchange="toggleCustom('charSelect','charCustom'); updatePreview()">
           <option value="frog">Лягушка</option>
           <option value="chameleon">Хамелеон</option>
           <option value="lizard">Ящерица</option>
@@ -91,102 +154,90 @@
         <input type="text" id="charCustom" placeholder="https://..." style="display:none; margin-top:5px;" oninput="updatePreview()">
 
         <label>Платформа</label>
-        <select id="platSelect" onchange="updatePreview()">
+        <select id="platSelect" onchange="toggleCustom('platSelect','platCustom'); updatePreview()">
           <option value="lily">Лилия (Кувшинка)</option>
           <option value="stone">Камень</option>
           <option value="mound">Болотная кочка</option>
           <option value="custom">Своя ссылка...</option>
         </select>
         <input type="text" id="platCustom" placeholder="https://..." style="display:none; margin-top:5px;" oninput="updatePreview()">
-      </div>
-
-      <div class="group">
-        <h3>Цвета и Текст</h3>
-        <label>Основной неоновый цвет</label>
-        <input type="color" id="colNeon" value="#7cf9ff" oninput="updatePreview()">
         
-        <label>Цвет фона (Экраны)</label>
-        <input type="color" id="colBg" value="#0a1730" oninput="updatePreview()">
-
-        <label>Цвет шрифта вопроса</label>
+        <label>Цвет текста вопроса</label>
         <div class="row">
-            <input type="color" id="colFont" value="#0b1630" oninput="updatePreview()">
-            <select id="shadowMode" onchange="updatePreview()">
-                <option value="on">С тенью (для светлого)</option>
-                <option value="off">Без тени (для темного)</option>
-            </select>
+           <div class="col"><input type="color" id="colQText" value="#0b1630" oninput="updatePreview()"></div>
+           <div class="col"><input type="number" id="fsQ" value="40" placeholder="px" oninput="updatePreview()"></div>
         </div>
-
-        <label>Размер шрифта вопроса (px)</label>
-        <input type="number" id="fontSize" value="40" oninput="updatePreview()">
       </div>
     </div>
 
     <!-- GAMEPLAY TAB -->
     <div id="tab-gameplay" style="display:none">
       <div class="group">
-        <h3>Сложность (Таймер)</h3>
+        <h3>⏱️ Таймер (Сложность)</h3>
         <div class="row">
-          <div class="col"><label>Этап 1 (сек)</label><input type="number" id="time1" value="10"></div>
-          <div class="col"><label>Этап 2</label><input type="number" id="time2" value="7"></div>
-          <div class="col"><label>Этап 3</label><input type="number" id="time3" value="5"></div>
+          <div class="col"><label>Старт (сек)</label><input type="number" id="time1" value="10" oninput="updatePreview()"></div>
+          <div class="col"><label>Середина</label><input type="number" id="time2" value="7" oninput="updatePreview()"></div>
+          <div class="col"><label>Финал</label><input type="number" id="time3" value="5" oninput="updatePreview()"></div>
         </div>
-        <small style="color:#777">Таймер уменьшается после 3 и 6 правильных ответов.</small>
+        <div class="hint">Время уменьшается после 3 и 6 правильных ответов подряд.</div>
       </div>
 
       <div class="group">
-        <h3>Аудио (Ссылки mp3)</h3>
+        <h3>🔊 Аудио (Ссылки mp3)</h3>
         <label>Правильный ответ</label>
-        <input type="text" id="audWin" placeholder="Оставьте пустым для стандартного">
-        <label>Ошибка</label>
-        <input type="text" id="audFail" placeholder="Оставьте пустым для стандартного">
+        <input type="text" id="audWin" placeholder="Стандартный звук">
+        <label>Ошибка (Плюх в воду)</label>
+        <input type="text" id="audFail" placeholder="Стандартный звук">
         <label>Победа (Финал)</label>
-        <input type="text" id="audFinalWin" placeholder="Оставьте пустым для стандартного">
+        <input type="text" id="audFinalWin" placeholder="Стандартный звук">
         <label>Проигрыш (Финал)</label>
-        <input type="text" id="audFinalLose" placeholder="Оставьте пустым для стандартного">
+        <input type="text" id="audFinalLose" placeholder="Стандартный звук">
       </div>
 
       <div class="group">
-        <h3>Тексты финала</h3>
+        <h3>🏆 Тексты Финала</h3>
         <label>Заголовок Победы</label>
-        <input type="text" id="txtWin" value="CONGRATULATIONS!">
+        <input type="text" id="txtWin" value="CONGRATULATIONS!" oninput="updatePreview()">
         <label>Подзаголовок Победы</label>
-        <input type="text" id="subWin" value="LEVEL COMPLETE">
+        <input type="text" id="subWin" value="LEVEL COMPLETE" oninput="updatePreview()">
         
         <label>Заголовок Поражения</label>
-        <input type="text" id="txtLose" value="YOU LOST!">
+        <input type="text" id="txtLose" value="YOU LOST!" oninput="updatePreview()">
         <label>Подзаголовок Поражения</label>
-        <input type="text" id="subLose" value="TRY AGAIN">
+        <input type="text" id="subLose" value="TRY AGAIN" oninput="updatePreview()">
       </div>
     </div>
 
     <!-- LEVELS TAB -->
     <div id="tab-levels" style="display:none">
       <div id="levelsContainer"></div>
-      <button class="btn" onclick="addLevel()">+ ДОБАВИТЬ УРОВЕНЬ</button>
+      <button class="btn" style="background:#333; color:#fff; border:1px dashed #555" onclick="addLevel()">+ ДОБАВИТЬ УРОВЕНЬ</button>
     </div>
 
     <br><br>
-    <button class="btn" style="background:#4dff88; padding:15px;" onclick="generateCode()">📋 КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
+    <button class="btn" style="background:var(--accent); padding:16px; font-size:14px;" onclick="generateCode()">📋 КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
   </div>
 </div>
 
 <!-- PREVIEW AREA -->
 <div id="PREVIEW_AREA">
-  <div id="PREVIEW_BAR">Предпросмотр (Интерактивный)</div>
+  <div id="PREVIEW_BAR">
+    <span>Режим предпросмотра:</span>
+    <div class="view-btn active" id="btnViewRules" onclick="toggleView('rules')">👁️ Экран правил</div>
+    <div class="view-btn" id="btnViewGame" onclick="toggleView('game')">🎮 Экран игры</div>
+  </div>
   <iframe id="previewFrame"></iframe>
 </div>
 
 <!-- COPY MODAL -->
 <div id="COPY_MODAL">
-  <h2 style="color:#fff">Скопируйте этот код:</h2>
-  <textarea id="finalCode"></textarea>
+  <h2>Готово! Скопируйте код:</h2>
+  <textarea id="finalCode" onclick="this.select()"></textarea>
   <button class="btn" style="width:200px" onclick="document.getElementById('COPY_MODAL').style.display='none'">ЗАКРЫТЬ</button>
 </div>
 
-<!-- TEMPLATE SCRIPT -->
 <script>
-// --- ASSETS DATABASE ---
+// --- ASSETS ---
 const ASSETS = {
   bg: {
     river: "https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png",
@@ -205,16 +256,17 @@ const ASSETS = {
   }
 };
 
-// --- DEFAULT STATE ---
+// --- STATE ---
+// We store raw text for bulk editing
 let levelsData = [
   {
     name: "Уровень 1",
-    questions: [
-      { text: "2 + 2 = ?", answers: ["3", "4", "5"], correct: 1 },
-      { text: "Столица Франции?", answers: ["Лондон", "Берлин", "Париж"], correct: 2 }
-    ]
+    qText: "2 + 2 = ?\nCapital of France?\nRed + Blue = ?",
+    aText: "4 | 5 | 22\nParis | London | Berlin\nPurple | Green | Orange"
   }
 ];
+
+let currentView = 'rules';
 
 // --- EDITOR LOGIC ---
 function setTab(name) {
@@ -222,129 +274,152 @@ function setTab(name) {
   event.target.classList.add('active');
   document.querySelectorAll('#CONTROLS > div').forEach(d=>d.style.display='none');
   document.getElementById('tab-'+name).style.display='block';
-  if(name === 'gameplay') updatePreview(); 
 }
 
 function toggleCustom(selectId, inputId) {
   const val = document.getElementById(selectId).value;
   document.getElementById(inputId).style.display = (val === 'custom') ? 'block' : 'none';
 }
-document.getElementById('bgSelect').addEventListener('change', ()=>toggleCustom('bgSelect','bgCustom'));
-document.getElementById('charSelect').addEventListener('change', ()=>toggleCustom('charSelect','charCustom'));
-document.getElementById('platSelect').addEventListener('change', ()=>toggleCustom('platSelect','platCustom'));
 
-// LEVEL EDITOR RENDER
+// --- LEVEL RENDERER ---
 function renderLevels() {
   const c = document.getElementById('levelsContainer');
   c.innerHTML = '';
-  levelsData.forEach((lvl, lIdx) => {
+  
+  levelsData.forEach((lvl, idx) => {
     const div = document.createElement('div');
     div.className = 'level-item';
+    
+    // Count questions by lines
+    const qCount = lvl.qText.split('\n').filter(l=>l.trim()).length;
+    
     div.innerHTML = `
-      <div class="level-header" onclick="this.nextElementSibling.classList.toggle('show')">
-        ${lvl.name} (${lvl.questions.length} вопр.) <span>▼</span>
+      <div class="level-header" onclick="toggleLevel(this)">
+        <span>${lvl.name} <small style="opacity:0.6; margin-left:10px">(${qCount} вопр.)</small></span>
+        <div style="display:flex; align-items:center; gap:10px">
+           <button class="btn danger" onclick="event.stopPropagation(); removeLevel(${idx})" title="Удалить">
+             <svg class="icon-trash" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+           </button>
+           <span style="font-size:10px">▼</span>
+        </div>
       </div>
       <div class="level-content">
         <label>Название уровня</label>
-        <input type="text" value="${lvl.name}" oninput="levelsData[${lIdx}].name=this.value; updatePreview()">
-        <br><br>
-        <div id="qList_${lIdx}"></div>
-        <button class="btn small" onclick="addQuestion(${lIdx})">+ Вопрос</button>
-        <button class="btn small danger" onclick="removeLevel(${lIdx})">Удалить уровень</button>
+        <input type="text" value="${lvl.name}" oninput="levelsData[${idx}].name=this.value; updateHeader(this, ${idx})">
+        
+        <div class="bulk-container">
+          <div class="bulk-col">
+             <label>ВОПРОСЫ (по одному в строке)</label>
+             <textarea class="bulk-area" placeholder="Вопрос 1..." oninput="levelsData[${idx}].qText=this.value; updatePreviewDelayed()">${lvl.qText}</textarea>
+          </div>
+          <div class="bulk-col">
+             <label>ОТВЕТЫ (Верный | Неверный | Неверный)</label>
+             <textarea class="bulk-area" placeholder="Верный | Ошибка | Ошибка" oninput="levelsData[${idx}].aText=this.value; updatePreviewDelayed()">${lvl.aText}</textarea>
+          </div>
+        </div>
+        <div class="hint">В игре ответы перемешаются автоматически. Здесь пишите правильный первым.</div>
       </div>
     `;
     c.appendChild(div);
-    
-    const qList = div.querySelector(`#qList_${lIdx}`);
-    lvl.questions.forEach((q, qIdx) => {
-      const qDiv = document.createElement('div');
-      qDiv.className = 'q-item';
-      qDiv.innerHTML = `
-        <label>Вопрос:</label>
-        <input type="text" value="${q.text}" onchange="updateQ(${lIdx},${qIdx},'text',this.value)">
-        <label>Варианты ответов (отметьте правильный):</label>
-        ${q.answers.map((ans, aIdx) => `
-          <div class="row" style="margin-bottom:2px">
-            <input type="radio" name="corr_${lIdx}_${qIdx}" ${aIdx===q.correct?'checked':''} onchange="updateQ(${lIdx},${qIdx},'correct',${aIdx})">
-            <input type="text" value="${ans}" onchange="updateQ(${lIdx},${qIdx},'ans_${aIdx}',this.value)">
-          </div>
-        `).join('')}
-        <button class="btn small danger" onclick="removeQ(${lIdx},${qIdx})">x</button>
-      `;
-      qList.appendChild(qDiv);
-    });
   });
 }
 
-function addLevel() {
-  levelsData.push({ name: "Новый уровень", questions: [] });
-  renderLevels();
-  updatePreview();
+function toggleLevel(header) {
+  const content = header.nextElementSibling;
+  content.classList.toggle('show');
 }
+
+function updateHeader(input, idx) {
+  // Just updates the header text immediately
+  const count = levelsData[idx].qText.split('\n').filter(l=>l.trim()).length;
+  input.closest('.level-content').previousElementSibling.querySelector('span').innerHTML = `${input.value} <small style="opacity:0.6; margin-left:10px">(${count} вопр.)</small>`;
+}
+
+function addLevel() {
+  levelsData.push({
+    name: "Новый уровень " + (levelsData.length + 1),
+    qText: "",
+    aText: ""
+  });
+  renderLevels();
+  // Open the new level
+  setTimeout(() => {
+    const items = document.querySelectorAll('.level-content');
+    if(items.length) items[items.length-1].classList.add('show');
+  }, 50);
+}
+
 function removeLevel(idx) {
-  if(confirm('Удалить уровень?')) {
-    levelsData.splice(idx,1);
+  if(confirm("Удалить этот уровень?")) {
+    levelsData.splice(idx, 1);
     renderLevels();
     updatePreview();
   }
 }
-function addQuestion(lIdx) {
-  levelsData[lIdx].questions.push({ text: "Вопрос...", answers: ["А","Б","В"], correct: 0 });
-  renderLevels();
-  updatePreview();
-}
-function removeQ(lIdx, qIdx) {
-  levelsData[lIdx].questions.splice(qIdx,1);
-  renderLevels();
-  updatePreview();
-}
-function updateQ(lIdx, qIdx, field, val) {
-  if(field === 'text') levelsData[lIdx].questions[qIdx].text = val;
-  if(field === 'correct') levelsData[lIdx].questions[qIdx].correct = parseInt(val);
-  if(field.startsWith('ans_')) {
-    const aIdx = parseInt(field.split('_')[1]);
-    levelsData[lIdx].questions[qIdx].answers[aIdx] = val;
-  }
-  updatePreview(); // Опционально, можно не обновлять при каждом нажатии клавиши
+
+// --- PARSING & GENERATION ---
+function parseLevels() {
+  return levelsData.map(lvl => {
+    const qLines = lvl.qText.split('\n').filter(l => l.trim() !== '');
+    const aLines = lvl.aText.split('\n').filter(l => l.trim() !== '');
+    
+    const questions = qLines.map((qText, i) => {
+      const rawAns = aLines[i] ? aLines[i].split('|') : ["True", "False"];
+      // Trim answers
+      const answers = rawAns.map(a => a.trim());
+      // In Bulk mode, we assume index 0 is correct. Game engine randomizes later.
+      return { text: qText.trim(), answers: answers, correct: 0 };
+    });
+    
+    return { name: lvl.name, questions: questions };
+  });
 }
 
-// --- GENERATE GAME HTML ---
 function getGameHTML() {
-  // 1. Gather Settings
   const getVal = (id) => document.getElementById(id).value;
   
+  // Visuals
   const bgType = getVal('bgSelect');
-  const bgUrl = bgType === 'custom' ? getVal('bgCustom') : ASSETS.bg[bgType];
-  
+  const bgUrl = bgType==='custom' ? getVal('bgCustom') : ASSETS.bg[bgType];
   const charType = getVal('charSelect');
-  const charUrl = charType === 'custom' ? getVal('charCustom') : ASSETS.char[charType];
-  
+  const charUrl = charType==='custom' ? getVal('charCustom') : ASSETS.char[charType];
   const platType = getVal('platSelect');
-  const platUrl = platType === 'custom' ? getVal('platCustom') : ASSETS.plat[platType];
-
+  const platUrl = platType==='custom' ? getVal('platCustom') : ASSETS.plat[platType];
+  
   const colNeon = getVal('colNeon');
-  const colBg = getVal('colBg');
-  const colFont = getVal('colFont');
-  const fontSize = getVal('fontSize');
-  const shadowMode = getVal('shadowMode');
-  const fontShadow = shadowMode === 'on' ? `text-shadow:0 2px 0 rgba(0,0,0,.35)` : `text-shadow:none`;
+  
+  // Start Screen Vars
+  const colStartBg = getVal('colStartBg'); // e.g. #0a1730 or rgba...
+  const colStartText = getVal('colStartText');
+  const fsStart = getVal('fsStart');
+  const fontStart = getVal('fontStart');
 
-  const times = { t1: parseInt(getVal('time1')), t2: parseInt(getVal('time2')), t3: parseInt(getVal('time3')) };
+  // Game Vars
+  const colQText = getVal('colQText');
+  const fsQ = getVal('fsQ');
+
+  const times = { 
+    t1: parseInt(getVal('time1')), 
+    t2: parseInt(getVal('time2')), 
+    t3: parseInt(getVal('time3')) 
+  };
   
   const audioCfg = {
-    win: getVal('audWin'),
-    fail: getVal('audFail'),
-    finalWin: getVal('audFinalWin'),
-    finalLose: getVal('audFinalLose')
+    win: getVal('audWin'), fail: getVal('audFail'),
+    finalWin: getVal('audFinalWin'), finalLose: getVal('audFinalLose')
   };
 
-  const texts = {
+  const textCfg = {
     winH: getVal('txtWin'), winS: getVal('subWin'),
     loseH: getVal('txtLose'), loseS: getVal('subLose')
   };
+  
+  const parsedLevels = parseLevels();
 
-  // 2. Base Template (Based on provided code, minified slightly)
-  // Мы вставляем конфиг в начало JS, а стили в CSS переменные
+  // Create opacity from hex for start bg if needed, but simple hex is fine
+  // We'll convert hex to rgba for the overlay if user picked a solid color
+  // Actually CSS handles colors fine.
+  
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -353,234 +428,317 @@ function getGameHTML() {
 <title>Leap & Learn</title>
 <style>
 :root{
-  --neon-main: ${colNeon};
-  --bg-color: ${colBg};
+  --neon: ${colNeon};
   --bg-img: url("${bgUrl}");
   --char-img: url("${charUrl}");
   --plat-img: url("${platUrl}");
-  --font-col: ${colFont};
-  --font-size: ${fontSize}px;
-  --danger:#ff3b3b;
-  --win:#ffe44d;
+  
+  /* Start Screen */
+  --start-bg: ${colStartBg};
+  --start-text: ${colStartText};
+  --start-font: ${fontStart};
+  --start-fs: ${fsStart}px;
+
+  /* Game */
+  --q-col: ${colQText};
+  --q-fs: ${fsQ}px;
 }
-html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;background:var(--bg-color)}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#000}
 #GAME{position:relative;width:100%;height:100%}
-#GAME.shake{animation:shake .25s}
-@keyframes shake{0%{transform:translate(0)}25%{transform:translate(-4px,3px)}50%{transform:translate(4px,-3px)}75%{transform:translate(-3px,2px)}100%{transform:translate(0)}}
 #BG{position:absolute;inset:0;z-index:0;background:var(--bg-img) center/cover no-repeat}
-#SCORE{position:absolute;top:30px;left:30px;font-size:20px;font-weight:900;z-index:20;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
-#TIMER{position:absolute;top:26px;left:120px;height:38px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 14px;background:rgba(255,255,255,.95);border:2px solid var(--neon-main);box-shadow:0 0 18px var(--neon-main);z-index:20;font-weight:900;color:#053149}
-#CLOCK_ICON{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
-#TIMER.danger{border-color:var(--danger);color:var(--danger);box-shadow:0 0 25px var(--danger);animation:timerPulse .8s infinite}
-@keyframes timerPulse{50%{transform:scale(1.07)}}
-#LIVES{position:absolute;top:30px;right:30px;font-size:26px;z-index:20}
-#QUESTION{position:absolute;top:18px;width:100%;display:flex;justify-content:center;z-index:20}
-#QUESTION_TXT{font-size:var(--font-size);font-weight:900;color:var(--font-col);padding:10px 18px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(124,249,255,.40);box-shadow:0 0 18px rgba(124,249,255,.25);${fontShadow}}
-#COMBO{position:absolute;top:165px;left:50%;transform:translateX(-50%);z-index:20;padding:10px 16px;border-radius:18px;background:rgba(255,255,255,.88);border:2px solid var(--neon-main);box-shadow:0 0 18px var(--neon-main);font-weight:900;color:#043149;display:none;gap:10px;align-items:center}
-#COMBO.show{display:inline-flex}
-#COMBO_BOLT{width:18px;height:18px;border-radius:6px;background:rgba(124,249,255,.25);display:inline-block}
-#COMBO.pulse{animation:comboPulse .55s ease}
-@keyframes comboPulse{0%{transform:translateX(-50%) translateY(10px) scale(.92);opacity:0}40%{transform:translateX(-50%) translateY(0px) scale(1.14);opacity:1}100%{transform:translateX(-50%) translateY(0px) scale(1);opacity:1}}
-.btn{padding:12px 34px;border-radius:16px;font-weight:900;background:#fff;border:2px solid var(--neon-main);box-shadow:0 0 15px var(--neon-main);cursor:pointer;color:#043149}
-.btn:active{transform:translateY(1px)}
-.btn.dark{background:rgba(255,255,255,.10);color:#eaf6ff;border:2px solid var(--neon-main)}
-#START.hide{display:none}
-#START_SCREEN{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(8,16,34,.92)}
-#START_CARD{width:min(760px, calc(100vw - 40px));border-radius:26px;background:linear-gradient(180deg, var(--bg-color), rgba(5,10,25,.92));border:2px solid var(--neon-main);box-shadow:0 0 30px var(--neon-main);padding:18px;position:relative;overflow:hidden;color:#eaf6ff}
-#START_TOP{position:relative;display:flex;align-items:center;gap:14px;padding:6px}
-#START_ICON{width:64px;height:64px;flex:0 0 auto;background:var(--char-img) no-repeat center/contain}
-#START_TITLE{font-weight:900;font-size:34px;color:#eaf6ff;text-shadow:0 0 18px var(--neon-main);margin:0}
-.panel{background:rgba(255,255,255,.08);border:1px solid var(--neon-main);border-radius:18px;padding:12px;margin-top:10px}
-#END{position:absolute;inset:0;z-index:50;background:rgba(8,16,34,.92);display:none;align-items:center;justify-content:center;flex-direction:column}
+
+/* UI */
+#TIMER{position:absolute;top:20px;left:20px;padding:8px 16px;background:#fff;border-radius:20px;border:2px solid var(--neon);box-shadow:0 0 15px var(--neon);font-weight:900;z-index:20;font-size:18px}
+#TIMER.danger{color:red;border-color:red;box-shadow:0 0 20px red;animation:pulse .5s infinite}
+#SCORE{position:absolute;top:24px;right:20px;font-size:22px;color:#fff;font-weight:900;z-index:20;text-shadow:0 2px 0 #000}
+#LIVES{position:absolute;top:60px;right:20px;font-size:20px;z-index:20}
+
+#QUESTION{position:absolute;top:80px;width:100%;display:flex;justify-content:center;z-index:20;pointer-events:none}
+#QUESTION_TXT{
+  background:rgba(255,255,255,0.9); padding:15px 25px; border-radius:15px; 
+  border:2px solid var(--neon); box-shadow:0 0 20px var(--neon);
+  color:var(--q-col); font-size:var(--q-fs); font-weight:bold; text-align:center;
+}
+
+/* START SCREEN */
+#START_SCREEN{
+  position:absolute;inset:0;z-index:50;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.4); /* Dim slightly to show BG behind if desired */
+}
+/* The main card */
+#START_CARD{
+  width:min(700px, 90%);
+  background:var(--start-bg);
+  color:var(--start-text);
+  font-family:var(--start-font);
+  border:2px solid var(--neon);
+  box-shadow:0 0 30px var(--neon), inset 0 0 20px rgba(0,0,0,0.5);
+  border-radius:20px;
+  padding:30px;
+  position:relative;
+  text-align:left;
+}
+#START_CARD h1{ margin:0 0 10px; font-size:2.5em; text-shadow:0 0 10px var(--neon); }
+.rules-box{ font-size:var(--start-fs); line-height:1.5; margin-bottom:20px; opacity:0.9; }
+.rules-box ul{ padding-left:20px; }
+
+/* END SCREEN */
+#END{position:absolute;inset:0;z-index:50;background:rgba(0,0,0,0.9);display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff}
 #END.show{display:flex}
-#END_TEXT{font-size:58px;font-weight:900;margin:0 0 10px;text-align:center}
-.win{color:var(--win);text-shadow:0 0 12px var(--win)}
-.lose{color:var(--danger);text-shadow:0 0 12px var(--danger)}
-#LEVEL_BANNER{margin:0 0 10px;padding:14px 18px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid var(--win);color:#fff7cf;font-weight:900;text-transform:uppercase;text-align:center}
-#LEVEL_NAME{margin:0 0 10px;color:#bfe9ff;font-weight:900}
-#SCORECARD{width:min(620px, calc(100vw - 40px));background:rgba(255,255,255,.10);border:2px solid var(--neon-main);border-radius:22px;padding:18px;margin:6px 0 16px;color:#eaf6ff}
-#SCOREGRID{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.row{display:flex;justify-content:space-between;background:rgba(255,255,255,.08);padding:12px;border-radius:16px}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
-#FROG_WRAP{position:absolute;left:calc(160px - 17mm + 15mm - 11mm);top:calc(50% + 13mm - 11mm);width:110px;height:110px;z-index:15;pointer-events:none;animation:float 3.5s ease-in-out infinite}
-#FROG{width:110px;height:110px;background:var(--char-img) no-repeat center/contain;position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);transition:transform .6s ease,opacity .6s ease}
-#FROG.jump{transform:translate(-50%,-95%) scale(1.05)}
-#FROG.sink{transform:translate(-50%,-10%) scale(.6);opacity:0}
+.end-title{font-size:50px;font-weight:900;margin:0;text-shadow:0 0 20px var(--neon)}
+.end-sub{font-size:20px;opacity:0.8;margin-bottom:30px;text-transform:uppercase;letter-spacing:2px;color:var(--neon)}
+
+/* GAME OBJECTS */
+#FROG{width:100px;height:100px;background:var(--char-img) center/contain no-repeat;position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);z-index:15;transition:transform .4s, opacity .4s}
+#FROG.jump{animation:jump .4s ease-in-out}
+#FROG.sink{transform:translate(-50%,10%) scale(0);opacity:0}
+@keyframes jump{0%{transform:translate(-50%,-65%)}50%{transform:translate(-50%,-120%) scale(1.1)}100%{transform:translate(-50%,-65%)}}
+
 #PLATFORMS{position:absolute;inset:0;z-index:10}
-.platform{position:absolute;width:150px;height:150px;transition:transform .5s,opacity .6s}
-.lily{width:150px;height:150px;background:var(--plat-img) no-repeat center/contain;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65);animation:float 3.5s ease-in-out infinite;cursor:pointer}
-.platform.fade{opacity:0}
-.platform.wrong .lily{filter:drop-shadow(0 0 18px red)}
-#FX{position:absolute;inset:0;pointer-events:none;z-index:200}
+.plat{position:absolute;width:140px;height:140px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .3s}
+.plat:hover{transform:scale(1.05)}
+.lily{width:100%;height:100%;background:var(--plat-img) center/contain no-repeat;display:flex;align-items:center;justify-content:center;padding-bottom:10px;box-sizing:border-box}
+.ans-text{font-weight:bold;color:#000;background:rgba(255,255,255,0.8);padding:4px 8px;border-radius:6px;font-size:16px;pointer-events:none}
+
+.btn{padding:12px 30px;font-size:18px;font-weight:bold;background:#fff;border:none;border-radius:30px;cursor:pointer;box-shadow:0 0 15px var(--neon);transition:.2s}
+.btn:hover{transform:scale(1.1)}
+
+@keyframes pulse{50%{transform:scale(1.1)}}
 </style>
 </head>
 <body>
 <div id="GAME">
-  <div id="BG"></div><div id="SCORE">⭐ 0</div>
-  <div id="TIMER"><span id="CLOCK_ICON">⏱️</span><span id="TIMER_TXT">00:00</span></div>
-  <div id="QUESTION"><span id="QUESTION_TXT"></span></div>
-  <div id="COMBO"><span id="COMBO_BOLT"></span><span id="COMBO_TXT">COMBO x1.0</span></div>
-  <div id="LIVES"></div>
+  <div id="BG"></div>
+  <div id="TIMER">00:00</div>
+  <div id="SCORE">⭐ 0</div>
+  <div id="LIVES">❤️❤️❤️❤️❤️</div>
+  <div id="QUESTION"><div id="QUESTION_TXT">Loading...</div></div>
+  
   <div id="START_SCREEN">
     <div id="START_CARD">
-      <div id="START_TOP"><div id="START_ICON"></div><div><h1 id="START_TITLE">Leap & Learn</h1></div></div>
-      <div class="panel"><h3>How to Play</h3><ul class="rules"><li>Выберите правильный ответ.</li><li>Следите за таймером!</li></ul></div>
-      <div style="margin-top:12px;text-align:center"><button id="START_BTN" class="btn">▶ START</button></div>
+       <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px">
+         <div style="width:80px;height:80px;background:var(--char-img) center/contain no-repeat"></div>
+         <div>
+           <h1>Leap & Learn</h1>
+           <div style="opacity:0.8">Interactive Quiz Game</div>
+         </div>
+       </div>
+       <div class="rules-box">
+         <b>How to Play:</b>
+         <ul>
+           <li>Read the question at the top.</li>
+           <li>Click the platform with the correct answer.</li>
+           <li>Watch out for the timer!</li>
+         </ul>
+       </div>
+       <div style="text-align:right">
+         <button class="btn" onclick="startGame()">▶ START GAME</button>
+       </div>
     </div>
   </div>
+
   <div id="END">
-    <div id="END_TEXT"></div><div id="LEVEL_BANNER">LEVEL COMPLETE</div><div id="LEVEL_NAME"></div>
-    <div id="SCORECARD"><div id="SCOREGRID">
-        <div class="row"><div>Questions</div><div id="STAT_Q">0/0</div></div>
-        <div class="row"><div>Score</div><div id="FINAL_SCORE">0</div></div>
-    </div></div>
-    <div id="END_BTNS"><button id="NEXT_LEVEL" class="btn">⏭ Next</button><button id="RETRY" class="btn">🔁 Play again</button></div>
+    <div id="END_TITLE" class="end-title"></div>
+    <div id="END_SUB" class="end-sub"></div>
+    <div style="font-size:24px;margin-bottom:20px">Score: <span id="FINAL_SCORE">0</span></div>
+    <button class="btn" onclick="location.reload()">🔁 PLAY AGAIN</button>
   </div>
-  <div id="FX"></div>
-  <div id="FROG_WRAP"><div id="FROG"></div></div>
+
   <div id="PLATFORMS"></div>
+  <div id="FROG"></div>
 </div>
 
 <script>
-/* USER CONFIG */
-const LEVELS = ${JSON.stringify(levelsData)};
+const LEVELS = ${JSON.stringify(parsedLevels)};
 const CFG_TIME = ${JSON.stringify(times)};
 const CFG_AUDIO = ${JSON.stringify(audioCfg)};
-const CFG_TEXT = ${JSON.stringify(texts)};
+const CFG_TEXT = ${JSON.stringify(textCfg)};
 
-/* ENGINE */
-const Q_TXT=document.getElementById("QUESTION_TXT"),T=document.getElementById("TIMER"),T_TXT=document.getElementById("TIMER_TXT"),L=document.getElementById("LIVES"),S=document.getElementById("SCORE"),P=document.getElementById("PLATFORMS"),FROG=document.getElementById("FROG");
-const END=document.getElementById("END"),END_TXT=document.getElementById("END_TEXT"),STAT_Q=document.getElementById("STAT_Q"),FINAL_SCORE=document.getElementById("FINAL_SCORE");
-let q=0,lives=5,score=0,started=false,timer=null,timeLeft=0,levelIndex=0,combo=0;
-let QUESTIONS=[];
+/* GAME LOGIC */
+let lvlIdx=0, qIdx=0, score=0, lives=5, timer=null, timeLeft=0;
+let questions=[], correctCount=0;
+let isGame=false;
 
-const ctx=new (AudioContext||webkitAudioContext)();
-function playSound(type){
-  const url = CFG_AUDIO[type];
-  if(url && url.length>5) { new Audio(url).play().catch(e=>console.log(e)); return; }
-  // Fallback synths
-  const t=ctx.currentTime;
-  const o=ctx.createOscillator(),g=ctx.createGain();
-  o.connect(g);g.connect(ctx.destination);
-  if(type==='win'){
-     o.frequency.setValueAtTime(523,t); o.frequency.linearRampToValueAtTime(784,t+0.1);
-     g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.2,t+0.05); g.gain.exponentialRampToValueAtTime(0.01,t+0.3);
-     o.start(t); o.stop(t+0.4);
-  } else if(type==='fail'){
-     o.type='sawtooth'; o.frequency.setValueAtTime(200,t); o.frequency.linearRampToValueAtTime(100,t+0.2);
-     g.gain.setValueAtTime(0.2,t); g.gain.exponentialRampToValueAtTime(0.01,t+0.3);
-     o.start(t); o.stop(t+0.4);
-  }
+const UI={
+  start: document.getElementById('START_SCREEN'),
+  game: document.getElementById('GAME'),
+  end: document.getElementById('END'),
+  q: document.getElementById('QUESTION_TXT'),
+  p: document.getElementById('PLATFORMS'),
+  frog: document.getElementById('FROG'),
+  timer: document.getElementById('TIMER'),
+  score: document.getElementById('SCORE'),
+  lives: document.getElementById('LIVES')
+};
+
+// Auto-start for preview mode if needed
+window.onload = function(){
+  // If the editor asks to show game immediately
+  if(window.location.hash === '#game') startGame();
 }
 
-function getRoundTime(){
-  if(combo<3) return CFG_TIME.t1;
-  if(combo<6) return CFG_TIME.t2;
-  return CFG_TIME.t3;
+function playSound(key){
+  if(CFG_AUDIO[key]) new Audio(CFG_AUDIO[key]).play().catch(()=>{});
 }
 
-function render(){
-  P.innerHTML=""; FROG.classList.remove("sink");
-  if(q>=QUESTIONS.length) { showEnd(true); return; }
-  Q_TXT.textContent=QUESTIONS[q].text;
-  L.textContent="❤️".repeat(lives); S.textContent="⭐ "+score;
-  
-  const STEP=190, y=window.innerHeight/2 + 76;
-  const count=Math.ceil((window.innerWidth-160)/STEP)+4;
-  for(let i=0;i<count;i++){
-    const d=document.createElement("div"); d.className="platform";
-    d.style.left=160+STEP*i-75+"px"; d.style.top=y-75+"px";
-    const lily=document.createElement("div"); lily.className="lily";
-    if(i>0 && i<=QUESTIONS[q].answers.length){
-      lily.textContent=QUESTIONS[q].answers[i-1];
-      d.onclick=()=>pick(i,d);
-    }
-    d.appendChild(lily); P.appendChild(d);
-  }
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
 }
 
-function pick(i,el){
-  if(!started) return;
-  clearInterval(timer);
-  FROG.classList.add("jump"); setTimeout(()=>FROG.classList.remove("jump"),300);
-  document.querySelectorAll(".platform").forEach(p=>p.style.transform=\`translateX(\${-(el.offsetLeft+75-160)}px)\`);
-  setTimeout(()=>{
-    if(i-1===QUESTIONS[q].correct){
-      playSound('win'); score+=100+(timeLeft*10); combo++; q++;
-      if(q>=QUESTIONS.length) showEnd(true); else startRound();
-    } else {
-      fail();
-    }
-  },500);
+function startGame(){
+  UI.start.style.display='none';
+  isGame=true;
+  loadLevel(0);
 }
 
-function fail(){
-  playSound('fail'); lives--; combo=0;
-  FROG.classList.add("sink");
-  document.querySelectorAll(".platform").forEach(p=>p.classList.add("fade","wrong"));
-  setTimeout(()=>{ lives<=0 ? showEnd(false) : startRound(); },900);
+function loadLevel(idx){
+  if(idx >= LEVELS.length){ showEnd(true); return; }
+  lvlIdx = idx;
+  // Deep copy questions
+  questions = JSON.parse(JSON.stringify(LEVELS[idx].questions));
+  // Randomize question order
+  questions = shuffle(questions);
+  qIdx=0;
+  startRound();
 }
 
 function startRound(){
-  render(); clearInterval(timer);
-  timeLeft=getRoundTime();
-  T_TXT.textContent="00:"+String(timeLeft).padStart(2,"0");
-  T.classList.remove("danger");
-  timer=setInterval(()=>{
+  if(qIdx >= questions.length){ loadLevel(lvlIdx+1); return; }
+  
+  const qData = questions[qIdx];
+  UI.q.textContent = qData.text;
+  UI.score.textContent = "⭐ " + score;
+  UI.lives.textContent = "❤️".repeat(lives);
+  UI.frog.classList.remove('jump','sink');
+  
+  // Timer logic
+  let t = (correctCount<3)?CFG_TIME.t1 : (correctCount<6)?CFG_TIME.t2 : CFG_TIME.t3;
+  timeLeft = t;
+  UI.timer.textContent = "00:"+String(timeLeft).padStart(2,'0');
+  UI.timer.className = "";
+  
+  clearInterval(timer);
+  timer = setInterval(()=>{
     timeLeft--;
-    if(timeLeft<=0){ clearInterval(timer); fail(); return; }
-    T_TXT.textContent="00:"+String(timeLeft).padStart(2,"0");
-    if(timeLeft<=3) T.classList.add("danger");
+    if(timeLeft<=3) UI.timer.className="danger";
+    UI.timer.textContent = "00:"+String(timeLeft).padStart(2,'0');
+    if(timeLeft<=0) fail();
   },1000);
+
+  // Platforms
+  UI.p.innerHTML = "";
+  // Prepare answers: {text, isCorrect}
+  let ansObjs = qData.answers.map((a,i) => ({ txt:a, isCorrect:(i===qData.correct) }));
+  ansObjs = shuffle(ansObjs); // Shuffle positions
+
+  // Draw 3 platforms centered
+  const startX = window.innerWidth/2 - 180;
+  ansObjs.slice(0,3).forEach((ans, i) => {
+    const d = document.createElement('div');
+    d.className = 'plat';
+    d.style.left = (startX + i*180) + "px";
+    d.style.top = (window.innerHeight/2 + 60) + "px";
+    
+    d.innerHTML = \`<div class="lily"><div class="ans-text">\${ans.txt}</div></div>\`;
+    d.onclick = () => {
+      if(!isGame) return;
+      clearInterval(timer);
+      UI.frog.classList.add('jump');
+      // Move platforms
+      const offset = d.offsetLeft - (window.innerWidth/2 - 50);
+      const all = document.querySelectorAll('.plat');
+      all.forEach(p => p.style.transform = \`translateX(\${-offset}px)\`);
+      
+      setTimeout(()=>{
+        if(ans.isCorrect){
+           score+=100; correctCount++;
+           playSound('win');
+           qIdx++; startRound();
+        } else {
+           fail();
+        }
+      }, 400);
+    };
+    UI.p.appendChild(d);
+  });
+}
+
+function fail(){
+  clearInterval(timer);
+  lives--;
+  playSound('fail');
+  UI.frog.classList.add('sink');
+  if(lives<=0) showEnd(false);
+  else setTimeout(startRound, 1000);
 }
 
 function showEnd(win){
-  clearInterval(timer); END.classList.add("show");
-  document.getElementById("LEVEL_NAME").textContent = LEVELS[levelIndex].name;
-  STAT_Q.textContent = \`\${q}/\${QUESTIONS.length}\`;
-  FINAL_SCORE.textContent = score;
+  isGame=false;
+  UI.end.classList.add('show');
+  document.getElementById('FINAL_SCORE').textContent = score;
+  const t = document.getElementById('END_TITLE');
+  const s = document.getElementById('END_SUB');
   
   if(win){
-    END_TXT.textContent = CFG_TEXT.winH;
-    END_TXT.className = "win";
-    document.getElementById("LEVEL_BANNER").textContent = CFG_TEXT.winS;
+    t.textContent = CFG_TEXT.winH; s.textContent = CFG_TEXT.winS;
+    t.style.color = "#ffe44d";
     playSound('finalWin');
-    document.getElementById("NEXT_LEVEL").style.display = (levelIndex<LEVELS.length-1) ? "inline-block" : "none";
   } else {
-    END_TXT.textContent = CFG_TEXT.loseH;
-    END_TXT.className = "lose";
-    document.getElementById("LEVEL_BANNER").textContent = CFG_TEXT.loseS;
+    t.textContent = CFG_TEXT.loseH; s.textContent = CFG_TEXT.loseS;
+    t.style.color = "#ff3b3b";
     playSound('finalLose');
-    document.getElementById("NEXT_LEVEL").style.display = "none";
   }
 }
 
-function startLevel(idx){
-  levelIndex=idx; QUESTIONS=LEVELS[idx].questions;
-  q=0; lives=5; score=0; combo=0;
-  document.getElementById("START_SCREEN").style.display="none";
-  END.classList.remove("show");
-  started=true; startRound();
+// Msg listener for editor preview
+window.addEventListener('message', e => {
+   if(e.data === 'showRules') { UI.start.style.display='flex'; UI.end.classList.remove('show'); isGame=false; }
+   if(e.data === 'showGame') { startGame(); }
+});
+
+<\/script>
+</body>
+</html>`;
 }
 
-document.getElementById("START_BTN").onclick=()=>{ ctx.resume(); startLevel(0); };
-document.getElementById("RETRY").onclick=()=>{ startLevel(levelIndex); };
-document.getElementById("NEXT_LEVEL").onclick=()=>{ startLevel(levelIndex+1); };
-
-window.onresize=render;
-render();
-<\/script></body></html>`;
+// --- PREVIEW HANDLING ---
+let typingTimer;
+function updatePreviewDelayed() {
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(updatePreview, 800);
 }
 
 function updatePreview() {
   const html = getGameHTML();
-  document.getElementById('previewFrame').srcdoc = html;
+  const frame = document.getElementById('previewFrame');
+  frame.srcdoc = html;
+  
+  // Restore view mode after load
+  frame.onload = () => {
+    if(currentView === 'game') {
+      frame.contentWindow.postMessage('showGame', '*');
+    }
+  };
+}
+
+function toggleView(mode) {
+  currentView = mode;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  
+  if(mode === 'rules') {
+    document.getElementById('btnViewRules').classList.add('active');
+    document.getElementById('previewFrame').contentWindow.postMessage('showRules', '*');
+  } else {
+    document.getElementById('btnViewGame').classList.add('active');
+    document.getElementById('previewFrame').contentWindow.postMessage('showGame', '*');
+  }
 }
 
 function generateCode() {
   const html = getGameHTML();
+  // We don't want the #hash hack in the final code
   const iframeCode = `<iframe style="width:100%;height:100%;border:0" srcdoc='${html.replace(/'/g, "&#39;")}'></iframe>`;
-  
   document.getElementById('finalCode').value = iframeCode;
   document.getElementById('COPY_MODAL').style.display = 'flex';
 }
