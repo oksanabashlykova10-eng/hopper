@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Leap & Learn Editor - Ultimate FX</title>
+<title>Leap & Learn - Restoration Editor</title>
 <style>
   :root { --primary: #7cf9ff; --dark: #0a1730; --panel: #142342; --text: #eaf6ff; --accent: #4dff88; }
   body { margin:0; display:flex; height:100vh; background: #050b1a; color: var(--text); font-family: 'Segoe UI', sans-serif; overflow:hidden; }
@@ -28,6 +28,7 @@
     width:100%; box-sizing:border-box; padding:8px; background:#080f20; border:1px solid #333; color:#fff; border-radius:4px; font-size:12px;
   }
   input[type="color"] { width:100%; height:30px; border:none; background:none; cursor:pointer; padding:0; }
+  input[type="range"] { width:100%; cursor: pointer; }
   
   .row { display:flex; gap:10px; align-items: flex-end; }
   .col { flex:1; }
@@ -61,7 +62,7 @@
 <body>
 
 <div id="EDITOR">
-  <div id="EDITOR_HEADER"><h2>🐸 Leap & Learn Editor</h2></div>
+  <div id="EDITOR_HEADER"><h2>🐸 Leap & Learn: Restoration</h2></div>
   <div id="TABS">
     <div class="tab active" onclick="setTab('visuals')">ВИЗУАЛ</div>
     <div class="tab" onclick="setTab('fonts')">ШРИФТЫ</div>
@@ -74,7 +75,7 @@
     <!-- VISUALS TAB -->
     <div id="tab-visuals">
       <div class="group">
-        <h3>🎨 Оформление Сцены</h3>
+        <h3>🎨 Сцена</h3>
         <label>Локация</label>
         <select id="bgSelect" onchange="toggleCustom('bgSelect','bgCustom'); updatePreview()">
           <option value="river">Река</option>
@@ -104,22 +105,23 @@
       </div>
       <div class="group">
         <h3>✨ Эффекты</h3>
-        <label>Неоновый акцент (свечение)</label>
+        <label>Основной цвет (Неон/Рамки)</label>
         <input type="color" id="colNeon" value="#7cf9ff" oninput="updatePreview()">
         
-        <label>Финальный салют</label>
+        <label>Финальный эффект</label>
         <select id="winFX" onchange="updatePreview()">
           <option value="confetti">Конфетти (Разноцветные)</option>
           <option value="sparks">Искры (Золотые)</option>
-          <option value="bubbles">Пузыри</option>
         </select>
       </div>
       <div class="group">
-        <h3>🏠 Экран Правил</h3>
-        <label>Цвет затемнения фона</label>
+        <h3>🏠 Экран Правил (Фон)</h3>
+        <label>Цвет затемнения</label>
+        <input type="color" id="colOverlay" value="#0a1730" oninput="updatePreview()">
+        <label>Прозрачность (0 = прозрачно, 100 = глухо)</label>
         <div class="row">
-           <input type="color" id="colOverlay" value="#0a1730" oninput="updatePreview()">
-           <input type="number" id="opOverlay" value="92" min="0" max="100" style="width:60px" oninput="updatePreview()" title="% Прозрачности">
+           <input type="range" id="opOverlay" value="70" min="0" max="100" oninput="updatePreview()">
+           <span id="opVal">70%</span>
         </div>
       </div>
     </div>
@@ -173,14 +175,14 @@
         <label>Заголовок игры</label><input type="text" id="txtTitle" value="Leap & Learn" oninput="updatePreview()">
         <label>Подзаголовок</label><input type="text" id="txtSub" value="Interactive Quiz Game" oninput="updatePreview()">
         <label>Заголовок правил</label><input type="text" id="txtRulesH" value="How to Play" oninput="updatePreview()">
-        <label>Текст правил (HTML можно)</label>
+        <label>Текст правил (HTML)</label>
         <textarea id="txtRules" oninput="updatePreview()" rows="3"><li>Select the correct answer.</li><li>Watch the timer!</li></textarea>
-        <label>Текст кнопки Старт</label><input type="text" id="btnStartTxt" value="▶ START" oninput="updatePreview()">
+        <label>Кнопка Старт</label><input type="text" id="btnStartTxt" value="▶ START" oninput="updatePreview()">
       </div>
       <div class="group">
         <h3>Финал</h3>
         <label>Заголовок Победы</label><input type="text" id="txtWin" value="CONGRATULATIONS!" oninput="updatePreview()">
-        <label>Подзаголовок Победы</label><input type="text" id="txtLevelComp" value="LEVEL COMPLETE" oninput="updatePreview()">
+        <label>Подзаголовок</label><input type="text" id="txtLevelComp" value="LEVEL COMPLETE" oninput="updatePreview()">
         <label>Заголовок Проигрыша</label><input type="text" id="txtLose" value="YOU LOST!" oninput="updatePreview()">
         <label>Кнопка Далее</label><input type="text" id="btnNextTxt" value="⏭ Next Level" oninput="updatePreview()">
         <label>Кнопка Повторить</label><input type="text" id="btnRetryTxt" value="🔁 Play again" oninput="updatePreview()">
@@ -198,8 +200,8 @@
         </div>
       </div>
       <div class="group">
-        <h3>🔊 Звуки</h3>
-        <p style="font-size:10px;color:#888">Если оставить пустым, будут играть стандартные звуки (всплеск, монетки).</p>
+        <h3>🔊 Звуки (Опционально)</h3>
+        <p style="font-size:10px;color:#888">Если пусто - играют встроенные фанфары и всплески!</p>
         <label>Правильный ответ (URL)</label><input type="text" id="audWin">
         <label>Ошибка / Плюх (URL)</label><input type="text" id="audFail">
         <label>Финал: Победа (URL)</label><input type="text" id="audFinalWin">
@@ -240,7 +242,7 @@ const ASSETS={
   plat:{lily:"https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png",stone:"https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png",mound:"https://img.genially.com/67961b32a116fb001568a75e/c6775617-bde5-43e4-9da8-5332d928807e.png"}
 };
 
-let levels=[{name:"Level 1",q:"I ____ a new bike.\nShe ____ got a brother.\nWe ____ a big house.\nHe ____ blue eyes.\nThey ____ two cats.\nIt ____ got long ears.\n____ you got a pen?\n____ she got a sister?",a:"have got | has got | is got\nhas | have | is\nhave got | has got | are got\nhas got | have got | haven't\nhave got | has got | is got\nhas | have | had\nHave | Has | Do\nHas | Have | Does"}];
+let levels=[{name:"Level 1",q:"2 + 2 = ?",a:"4 | 5 | 22"}];
 let viewMode='rules';
 
 /* EDITOR UI */
@@ -330,15 +332,39 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
 
 /* START SCREEN */
 #START_SCREEN{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:var(--overlay);opacity:var(--overlay-op)}
-#START_CARD{width:min(760px, calc(100vw - 40px));border-radius:26px;background:linear-gradient(180deg, rgba(10,20,50,.8), rgba(5,10,25,.9));border:2px solid var(--neon);box-shadow:0 0 30px var(--neon);padding:24px;color:#eaf6ff;position:relative}
+#START_CARD{
+  width:min(760px, calc(100vw - 40px));
+  border-radius:26px;
+  background:linear-gradient(180deg, rgba(10,20,50,.85), rgba(5,10,25,.95));
+  border:2px solid var(--neon);
+  box-shadow:0 0 30px var(--neon);
+  padding:24px;
+  color:#eaf6ff;
+  position:relative;
+  /* Original Panel Style */
+}
 #START_ICON{width:80px;height:80px;background:url("${ch}") no-repeat center/contain}
 
 /* END SCREEN */
 #END{position:absolute;inset:0;z-index:50;background:rgba(8,16,34,.95);display:none;align-items:center;justify-content:center;flex-direction:column}
 #END.show{display:flex}
-#END_TEXT{font-size:50px;font-weight:900;margin:0 0 10px;text-align:center}
+#END_TEXT{font-size:50px;font-weight:900;margin:0 0 10px;text-align:center; z-index:201}
+#LEVEL_BANNER{z-index:201}
+#SCORECARD{
+  width:min(600px, calc(100vw - 40px));
+  background:rgba(255,255,255,.10);
+  border:2px solid var(--neon);
+  border-radius:22px;
+  padding:18px;
+  margin:10px 0 16px;
+  color:#eaf6ff;
+  z-index:201;
+}
+.row{display:flex;justify-content:space-between;background:rgba(255,255,255,.08);padding:10px 14px;border-radius:12px;margin-bottom:6px}
+.row.total{border:2px solid var(--neon);margin-top:10px;font-size:1.2em;font-weight:bold}
 .win{color:#ffe44d;text-shadow:0 0 12px #ffe44d}
 .lose{color:#ff3b3b;text-shadow:0 0 12px #ff3b3b}
+#END_BTNS{z-index:201}
 
 /* GAME OBJECTS */
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
@@ -346,7 +372,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
 #FROG{width:110px;height:110px;background:url("${ch}") no-repeat center/contain;position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);transition:transform .6s ease,opacity .6s ease}
 #FROG.jump{transform:translate(-50%,-95%) scale(1.05)}
 #FROG.sink{transform:translate(-50%,-10%) scale(.6);opacity:0}
-#FROG.aura::after{content:"";position:absolute;left:50%;top:52%;width:120px;height:120px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,228,77,.3),transparent 70%);box-shadow:0 0 30px var(--neon);animation:pulse .5s ease-in-out 2}
+/* GLOW AURA */
+#FROG.aura::after{
+  content:"";position:absolute;left:50%;top:52%;width:140px;height:140px;transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,228,77,.3),transparent 70%);
+  box-shadow:0 0 50px var(--neon), inset 0 0 20px var(--neon);
+  animation:pulse .5s ease-in-out 2;
+}
 
 #PLATFORMS{position:absolute;inset:0;z-index:10}
 .platform{position:absolute;width:150px;height:150px;transition:transform .5s,opacity .6s}
@@ -362,13 +395,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
 .wobble .lily{animation:wobble .35s ease-in-out 3}
 @keyframes wobble{0%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(1px) rotate(-3deg)}50%{transform:translateY(0) rotate(3deg)}75%{transform:translateY(1px) rotate(-2deg)}100%{transform:translateY(0) rotate(0deg)}}
 
-/* FX */
+/* FX - Z-INDEX 200 to be on top */
+#FX{position:absolute;inset:0;pointer-events:none;z-index:200}
 .confetti{position:absolute;width:10px;height:10px;background:#f0f;animation:fall 2s linear forwards}
 @keyframes fall{to{transform:translateY(100vh) rotate(720deg)}}
-.spark{position:absolute;width:5px;height:5px;background:#ff0;border-radius:50%;box-shadow:0 0 10px #ff0;animation:spark 1s ease-out forwards}
+.spark{position:absolute;width:6px;height:6px;background:#ff0;border-radius:50%;box-shadow:0 0 15px #ff0;animation:spark 1s ease-out forwards}
 @keyframes spark{to{transform:translate(var(--dx),var(--dy));opacity:0}}
-.splash{position:absolute;width:80px;height:30px;background:rgba(255,255,255,0.8);border-radius:50%;animation:splash .5s forwards}
-@keyframes splash{to{transform:scale(2);opacity:0}}
+.splash{position:absolute;width:90px;height:34px;background:rgba(255,255,255,0.9);border-radius:50%;animation:splash .5s forwards;filter:drop-shadow(0 0 10px #fff)}
+@keyframes splash{to{transform:scale(2.2);opacity:0}}
+.ripple{position:absolute;border:3px solid rgba(255,255,255,0.9);border-radius:50%;animation:ripple 1.5s forwards}
+@keyframes ripple{to{transform:scale(2.5);opacity:0}}
 </style>`;
 
   // GAME JS - SAFE SCRIPT
@@ -387,39 +423,52 @@ const TEXTS={
   b1:"${g('btnStartTxt')}",b2:"${g('btnNextTxt')}",b3:"${g('btnRetryTxt')}"
 };
 
-let q=0,lives=5,score=0,started=false,timer=null,timeLeft=0,lvl=0,combo=0,QUESTIONS=[];
+let q=0,lives=5,score=0,combo=0,started=false,timer=null,timeLeft=0,lvl=0,QUESTIONS=[];
+// Score stats
+let stBase=0, stTime=0, stCombo=0, stPen=0;
+
 const ctx=new(AudioContext||webkitAudioContext)();
+const FX = document.getElementById('FX');
 
 function sfx(t){
  if(t==='win'&&CFG.win)new Audio(CFG.win).play().catch(()=>{});
  else if(t==='fail'&&CFG.fail)new Audio(CFG.fail).play().catch(()=>{});
- else if(t==='win'){ 
-   const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=523;g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(.2,ctx.currentTime+.05);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.5);
- } else if(t==='fail'){ // Water Splash Synth
+ else if(t==='win'){ // Fanfare Synth (Fallback)
+   const t=ctx.currentTime;
+   const play=(f,d,delay)=>{
+     const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;
+     g.gain.setValueAtTime(0,t+delay);g.gain.linearRampToValueAtTime(.2,t+delay+.05);g.gain.exponentialRampToValueAtTime(.001,t+delay+d);
+     o.connect(g);g.connect(ctx.destination);o.start(t+delay);o.stop(t+delay+d+.1);
+   };
+   [523,659,784,1046].forEach((f,i)=>play(f,.3,i*.1));
+ } else if(t==='fail'){ // Splash Synth
    const b=ctx.createBuffer(1,ctx.sampleRate*.5,ctx.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
-   const s=ctx.createBufferSource(),g=ctx.createGain();s.buffer=b;g.gain.setValueAtTime(0.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.4);
+   const s=ctx.createBufferSource(),g=ctx.createGain();s.buffer=b;g.gain.setValueAtTime(0.4,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.4);
    s.connect(g);g.connect(ctx.destination);s.start();
+ } else if(t==='final'){ // Final Fanfare
+    const t=ctx.currentTime;
+    const play=(f,s,d)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.value=f;g.gain.setValueAtTime(0,t+s);g.gain.linearRampToValueAtTime(.2,t+s+.05);g.gain.exponentialRampToValueAtTime(.001,t+s+d);o.connect(g);g.connect(ctx.destination);o.start(t+s);o.stop(t+s+d+.1);};
+    play(523,0,.5);play(659,.1,.5);play(784,.2,.5);play(1046,.3,1.5);
  }
 }
 
 function fx(type,x,y){
   if(type==='splash'){
-     const s=document.createElement('div');s.className='splash';s.style.left=x+'px';s.style.top=y+'px';
-     document.getElementById('GAME').appendChild(s);setTimeout(()=>s.remove(),500);
+     const s=document.createElement('div');s.className='splash';s.style.left=(x-40)+'px';s.style.top=(y-15)+'px';FX.appendChild(s);setTimeout(()=>s.remove(),500);
+     for(let i=0;i<3;i++){const r=document.createElement('div');r.className='ripple';r.style.width=(50+i*30)+'px';r.style.height=(50+i*30)+'px';r.style.left=(x-(50+i*30)/2)+'px';r.style.top=(y-(50+i*30)/2)+'px';FX.appendChild(r);setTimeout(()=>r.remove(),1500);}
   }
   if(type==='confetti'){
-     for(let i=0;i<50;i++){
+     for(let i=0;i<60;i++){
        const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.top='-10px';
-       c.style.backgroundColor='hsl('+Math.random()*360+',100%,50%)';
-       c.style.animationDuration=(Math.random()*2+1)+'s';
-       document.getElementById('GAME').appendChild(c);setTimeout(()=>c.remove(),3000);
+       c.style.backgroundColor='hsl('+Math.random()*360+',100%,50%)';c.style.animationDuration=(Math.random()*2+1.5)+'s';
+       FX.appendChild(c);setTimeout(()=>c.remove(),3500);
      }
   }
   if(type==='sparks'){
-     for(let i=0;i<20;i++){
+     for(let i=0;i<30;i++){
        const s=document.createElement('div');s.className='spark';s.style.left=x+'px';s.style.top=y+'px';
-       s.style.setProperty('--dx',(Math.random()*200-100)+'px');s.style.setProperty('--dy',(Math.random()*200-100)+'px');
-       document.getElementById('GAME').appendChild(s);setTimeout(()=>s.remove(),1000);
+       s.style.setProperty('--dx',(Math.random()*300-150)+'px');s.style.setProperty('--dy',(Math.random()*300-150)+'px');
+       FX.appendChild(s);setTimeout(()=>s.remove(),1000);
      }
   }
 }
@@ -444,27 +493,33 @@ function render(){
     const d=document.createElement("div");d.className="platform";
     d.style.left=160+STEP*i-75+"px"; d.style.top=y-75+"px";
     const lily=document.createElement("div");lily.className="lily";
-    
     if(i>=1 && i<=ansPool.length){
        const ans = ansPool[i-1];
        lily.textContent = ans.txt;
-       d.onclick=(e)=>pick(ans.correct, d, e.clientX, e.clientY);
+       d.onclick=(e)=>pick(ans.correct, d);
     }
-    
     d.appendChild(lily); document.getElementById('PLATFORMS').appendChild(d);
   }
 }
 
-function pick(isCorrect,el,x,y){
+function pick(isCorrect,el){
   if(!started)return;
   clearInterval(timer);
+  const r = el.getBoundingClientRect();
+  const cx = r.left + r.width/2; 
+  const cy = r.top + r.height/2;
+
   document.getElementById('FROG').classList.add("jump"); setTimeout(()=>document.getElementById('FROG').classList.remove("jump"),300);
   const offset = el.offsetLeft + 75 - 160; 
   document.querySelectorAll(".platform").forEach(p=>p.style.transform=\`translateX(\${-offset}px)\`);
   
   setTimeout(()=>{
     if(isCorrect){
-      sfx('win'); score+=100+timeLeft*10; combo++;
+      sfx('win'); 
+      const pts = 100; const bonus = timeLeft*10; const cmb = Math.floor((pts+bonus)*combo*0.1);
+      stBase+=pts; stTime+=bonus; stCombo+=cmb;
+      score += pts+bonus+cmb;
+      combo++;
       if(combo>1) document.getElementById('FROG').classList.add('aura');
       fx('sparks',window.innerWidth/2,window.innerHeight/2);
       document.getElementById('COMBO').textContent="COMBO x"+(1+combo*0.1).toFixed(1);
@@ -472,7 +527,8 @@ function pick(isCorrect,el,x,y){
       q++; if(q>=QUESTIONS.length)showEnd(true); else startRound();
     }else{
       sfx('fail'); fx('splash',window.innerWidth/2,window.innerHeight/2+60);
-      lives--; combo=0; document.getElementById('FROG').classList.remove('aura');
+      lives--; combo=0; stPen+=50; score=Math.max(0,score-50);
+      document.getElementById('FROG').classList.remove('aura');
       document.getElementById('COMBO').classList.remove('show');
       document.getElementById('FROG').classList.add("sink");
       document.querySelectorAll(".platform").forEach(p=>p.classList.add("fade","wrong","wobble"));
@@ -490,7 +546,7 @@ function startRound(){
     timeLeft--;
     if(timeLeft<=3)document.getElementById('TIMER').classList.add('danger');
     document.getElementById('TIMER').textContent="00:"+String(timeLeft).padStart(2,'0');
-    if(timeLeft<=0){clearInterval(timer);pick(false,document.querySelector('.platform'),0,0);} 
+    if(timeLeft<=0){clearInterval(timer);pick(false,document.querySelector('.platform'));} 
   },1000);
 }
 
@@ -498,9 +554,17 @@ function showEnd(win){
   clearInterval(timer); document.getElementById('END').classList.add("show");
   const txt=document.getElementById('END_TEXT');
   document.getElementById('LEVEL_BANNER').textContent = CFG.txtLvl;
+  
+  // Fill Scorecard
+  document.getElementById('stBase').textContent = stBase;
+  document.getElementById('stTime').textContent = stTime;
+  document.getElementById('stCombo').textContent = stCombo;
+  document.getElementById('stPen').textContent = "-"+stPen;
+  document.getElementById('stTotal').textContent = score;
+
   if(win){
     txt.textContent=CFG.txtWin; txt.className="win";
-    if(CFG.fWin) new Audio(CFG.fWin).play();
+    if(CFG.fWin) new Audio(CFG.fWin).play(); else sfx('final');
     fx(CFG.winFX,0,0);
     document.getElementById('NEXT_LEVEL').style.display = (lvl<LEVELS.length-1)?"inline-block":"none";
     document.getElementById('RETRY').style.display="none";
@@ -515,6 +579,7 @@ function showEnd(win){
 function startGame(idx){
   lvl=idx; QUESTIONS=LEVELS[lvl].questions;
   q=0; lives=5; score=0; combo=0;
+  stBase=0; stTime=0; stCombo=0; stPen=0;
   started=true; document.getElementById('START_SCREEN').style.display="none"; document.getElementById('END').classList.remove("show");
   document.getElementById('FROG').classList.remove('aura');
   ctx.resume(); startRound();
@@ -543,11 +608,19 @@ initUI();
 ` + jsEnd;
 
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">${css}</head><body>
-<div id="GAME"><div id="BG"></div><div id="SCORE">⭐ 0</div><div id="TIMER">00:00</div><div id="QUESTION"><span id="QUESTION_TXT"></span></div><div id="COMBO">COMBO x1.0</div><div id="LIVES"></div>
+<div id="GAME"><div id="BG"></div><div id="FX"></div><div id="SCORE">⭐ 0</div><div id="TIMER">00:00</div><div id="QUESTION"><span id="QUESTION_TXT"></span></div><div id="COMBO">COMBO x1.0</div><div id="LIVES"></div>
 <div id="START_SCREEN"><div id="START_CARD"><div style="display:flex;gap:14px;align-items:center"><div id="START_ICON"></div><div><h1 id="START_TITLE" style="margin:0;font-size:34px"></h1><div id="START_SUB" style="opacity:0.8"></div></div></div>
 <div style="background:rgba(255,255,255,.08);border:1px solid var(--neon);border-radius:18px;padding:12px;margin:10px 0"><h3 id="RULES_H" style="margin:0 0 5px;color:var(--neon)"></h3><ul id="RULES_LIST" style="margin:0;padding-left:20px;line-height:1.4"></ul></div>
 <div style="margin-top:12px;display:flex;justify-content:center;align-items:center"><button id="START_BTN" class="btn"></button></div></div></div>
-<div id="END"><div id="END_TEXT"></div><div id="LEVEL_BANNER" style="color:#fff;margin-bottom:10px;font-size:20px"></div><button id="NEXT_LEVEL" class="btn"></button><button id="RETRY" class="btn" style="display:none"></button></div>
+<div id="END"><div id="END_TEXT"></div><div id="LEVEL_BANNER" style="color:#fff;margin-bottom:10px;font-size:20px"></div>
+<div id="SCORECARD">
+  <div class="row"><span>Base Score</span><span id="stBase">0</span></div>
+  <div class="row"><span>Time Bonus</span><span id="stTime">0</span></div>
+  <div class="row"><span>Combo Bonus</span><span id="stCombo">0</span></div>
+  <div class="row"><span>Penalties</span><span id="stPen">0</span></div>
+  <div class="row total"><span>TOTAL</span><span id="stTotal">0</span></div>
+</div>
+<div id="END_BTNS"><button id="NEXT_LEVEL" class="btn"></button><button id="RETRY" class="btn" style="display:none"></button></div></div>
 <div id="FROG_WRAP"><div id="FROG"></div></div><div id="PLATFORMS"></div></div>
 ${js}
 </body></html>`;
@@ -557,6 +630,7 @@ ${js}
 let updTimer;
 function upd(){ clearTimeout(updTimer); updTimer=setTimeout(updatePreview,500); }
 function updatePreview(){
+  document.getElementById('opVal').textContent = document.getElementById('opOverlay').value + '%';
   const html=getGameHTML();
   const f=document.getElementById('previewFrame');
   f.srcdoc=html;
