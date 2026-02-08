@@ -1,986 +1,593 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Leap & Learn — Editor (Genially)</title>
-
+<meta charset="UTF-8">
+<title>Leap & Learn Editor</title>
 <style>
-  :root{
-    --text:#eaf0ff;
-    --muted:#a9b4d6;
-    --accent:#7cf9ff;
-    --shadow: 0 18px 60px rgba(0,0,0,.55);
-    --radius: 18px;
+  :root { --primary: #7cf9ff; --dark: #0a1730; --panel: #142342; --text: #eaf6ff; }
+  body { margin:0; display:flex; height:100vh; background: #050b1a; color: var(--text); font-family: sans-serif; overflow:hidden; }
+  
+  /* SIDEBAR */
+  #EDITOR { width: 400px; background: var(--dark); border-right: 1px solid #333; display:flex; flex-direction:column; z-index:10; }
+  #EDITOR_HEADER { padding:15px; background:var(--panel); border-bottom:1px solid #333; display:flex; align-items:center; justify-content:space-between; }
+  #EDITOR_HEADER h2 { margin:0; font-size:18px; color:var(--primary); }
+  
+  #TABS { display:flex; background:#000; }
+  .tab { flex:1; padding:10px; text-align:center; cursor:pointer; background:#111; color:#777; border-bottom:2px solid transparent; font-size:12px; font-weight:bold; }
+  .tab.active { background:var(--panel); color:var(--primary); border-bottom:2px solid var(--primary); }
+  
+  #CONTROLS { flex:1; overflow-y:auto; padding:15px; }
+  
+  /* FORM ELEMENTS */
+  .group { margin-bottom:20px; border-bottom:1px solid #222; padding-bottom:15px; }
+  .group h3 { margin:0 0 10px; font-size:14px; color:#aaa; text-transform:uppercase; }
+  label { display:block; font-size:12px; margin-bottom:4px; margin-top:10px; color:#ccc; }
+  input[type="text"], input[type="number"], select, textarea { 
+    width:100%; box-sizing:border-box; padding:8px; background:#000; border:1px solid #444; color:#fff; border-radius:4px; 
   }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    color:var(--text);
-    background:
-      radial-gradient(1200px 800px at 20% 10%, rgba(124,249,255,.12), transparent 60%),
-      radial-gradient(1200px 800px at 80% 90%, rgba(255,59,59,.10), transparent 60%),
-      linear-gradient(180deg, #050612, #070817);
-    overflow:hidden;
-  }
-  header{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 16px;
-    border-bottom:1px solid rgba(124,249,255,.12);
-    background: linear-gradient(180deg, rgba(14,19,48,.75), rgba(8,10,24,.25));
-    backdrop-filter: blur(10px);
-  }
-  header .title{display:flex; gap:10px; align-items:center;}
-  .badge{
-    padding:6px 10px; border-radius:999px;
-    font-weight:900; letter-spacing:.4px; font-size:12px;
-    background: rgba(124,249,255,.12);
-    border:1px solid rgba(124,249,255,.25);
-    color:var(--accent);
-    box-shadow: 0 0 22px rgba(124,249,255,.12);
-  }
-  h1{margin:0;font-size:16px;font-weight:1000;letter-spacing:.2px}
-  .sub{color:var(--muted); font-size:12px}
+  input[type="color"] { width:100%; height:30px; border:none; background:none; cursor:pointer; }
+  
+  .row { display:flex; gap:10px; }
+  .col { flex:1; }
 
-  .wrap{
-    height: calc(100% - 62px);
-    display:grid;
-    grid-template-columns: 460px 1fr;
-    gap:14px;
-    padding:14px;
-  }
-  .left, .right{
-    border-radius: var(--radius);
-    background: linear-gradient(180deg, rgba(14,19,48,.65), rgba(11,16,39,.35));
-    border:1px solid rgba(124,249,255,.12);
-    box-shadow: var(--shadow);
-    overflow:hidden;
-    min-height:0;
-  }
-  .left{display:flex; flex-direction:column;}
-  .left .scroll{padding:12px; overflow:auto; height:100%;}
-
-  .section{
-    border:1px solid rgba(124,249,255,.12);
-    background: rgba(7,9,18,.35);
-    border-radius:16px;
-    padding:10px;
-    margin-bottom:10px;
-  }
-  .section h2{
-    margin:0 0 8px 0;
-    font-size:13px;
-    letter-spacing:.2px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .hint{color:var(--muted); font-size:11px; line-height:1.25}
-
-  .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
-  .grid3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px}
-  label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
-
-  input[type="text"], input[type="number"], textarea, select{
-    width:100%;
-    padding:10px 10px;
-    border-radius:12px;
-    border:1px solid rgba(124,249,255,.16);
-    background: rgba(6,8,18,.6);
-    color: var(--text);
-    outline:none;
-  }
-  textarea{min-height:140px; resize:vertical}
-  input[type="color"]{
-    width:100%;
-    height:42px;
-    border-radius:12px;
-    border:1px solid rgba(124,249,255,.16);
-    background: rgba(6,8,18,.6);
-    padding:6px;
-  }
-
-  .check{
-    display:flex; gap:10px; align-items:center;
-    padding:10px;
-    border-radius:12px;
-    border:1px solid rgba(124,249,255,.12);
-    background: rgba(6,8,18,.45);
-    color:var(--text);
-  }
-  .check input{transform: scale(1.15)}
-
-  .btnbar{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
-  button{
-    cursor:pointer; border:none;
-    padding:10px 12px;
-    border-radius:14px;
-    font-weight:1000;
-    color:#081018;
-    background: linear-gradient(180deg, rgba(124,249,255,1), rgba(124,249,255,.7));
-    box-shadow: 0 0 25px rgba(124,249,255,.18);
-  }
-  button.secondary{
-    color:var(--text);
-    background: rgba(6,8,18,.55);
-    border:1px solid rgba(124,249,255,.18);
-    box-shadow:none;
-  }
-  button.danger{
-    color:#13060a;
-    background: linear-gradient(180deg, rgba(255,59,59,1), rgba(255,59,59,.65));
-    box-shadow: 0 0 25px rgba(255,59,59,.16);
-  }
-
-  /* LEVEL BLOCKS */
-  .lvl{
-    border:1px solid rgba(124,249,255,.14);
-    border-radius:16px;
-    background: rgba(0,0,0,.18);
-    padding:10px;
-    margin-top:10px;
-  }
-  .lvlHead{
-    display:flex; align-items:center; justify-content:space-between;
-    gap:10px; margin-bottom:8px;
-  }
-  .lvlTitle{
-    font-weight:1000; color:var(--accent);
-    display:flex; align-items:center; gap:10px;
-  }
-  .trash{
-    border:1px solid rgba(255,59,59,.35);
-    background: rgba(255,59,59,.14);
-    color:#ffd7d7;
-    border-radius:12px;
-    padding:8px 10px;
-    font-weight:1000;
-    cursor:pointer;
-  }
-  .trash:hover{filter:brightness(1.05)}
-  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
-  .example{
-    margin-top:8px;
-    padding:10px;
-    border-radius:14px;
-    border:1px dashed rgba(124,249,255,.22);
-    background: rgba(6,8,18,.35);
-    color: var(--muted);
-    font-size:11px;
-    line-height:1.35;
-  }
-
-  .right{display:flex; flex-direction:column; min-height:0;}
-  .rightTop{
-    padding:10px 12px;
-    border-bottom:1px solid rgba(124,249,255,.12);
-    display:flex; justify-content:space-between; align-items:center;
-  }
-  .rightTop .title2{font-weight:1000; letter-spacing:.2px}
-  .previewWrap{flex:1; min-height:0; padding:12px;}
-  iframe{
-    width:100%;
-    height:100%;
-    border:1px solid rgba(124,249,255,.16);
-    border-radius:16px;
-    background: rgba(0,0,0,.25);
-  }
-  .out{
-    padding:12px;
-    border-top:1px solid rgba(124,249,255,.12);
-    background: rgba(7,9,18,.35);
-  }
-  .out textarea{min-height:170px}
-
-  .toast{
-    position:fixed; left:50%; bottom:14px; transform:translateX(-50%);
-    padding:10px 12px;
-    border-radius:999px;
-    background: rgba(6,8,18,.75);
-    border:1px solid rgba(124,249,255,.20);
-    color:var(--text);
-    box-shadow: var(--shadow);
-    opacity:0; pointer-events:none;
-    transition:.22s;
-  }
-  .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
-
-  .err{
-    margin-top:10px;
-    padding:10px;
-    border-radius:14px;
-    border:1px solid rgba(255,59,59,.35);
-    background: rgba(255,59,59,.10);
-    color:#ffd7d7;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size:12px;
-    white-space:pre-wrap;
-    display:none;
-  }
+  /* LEVEL EDITOR */
+  .level-item { background:rgba(255,255,255,0.05); border:1px solid #333; margin-bottom:10px; border-radius:4px; overflow:hidden; }
+  .level-header { padding:10px; background:#222; cursor:pointer; font-weight:bold; display:flex; justify-content:space-between; }
+  .level-content { padding:10px; display:none; }
+  .level-content.show { display:block; }
+  
+  .q-item { background:rgba(0,0,0,0.3); padding:8px; margin-bottom:8px; border-left:2px solid var(--primary); }
+  .btn { width:100%; padding:10px; cursor:pointer; background:var(--primary); color:#000; font-weight:bold; border:none; border-radius:4px; margin-top:5px; }
+  .btn:hover { opacity:0.9; }
+  .btn.danger { background:#ff3b3b; color:#fff; margin-top:5px; }
+  .btn.small { width:auto; padding:4px 8px; font-size:10px; }
+  
+  /* PREVIEW */
+  #PREVIEW_AREA { flex:1; background:#000; position:relative; display:flex; flex-direction:column; }
+  #PREVIEW_BAR { height:40px; background:#111; display:flex; align-items:center; justify-content:center; color:#555; font-size:12px; border-bottom:1px solid #333; }
+  iframe { border:none; width:100%; flex:1; background:#fff; }
+  
+  /* COPY OVERLAY */
+  #COPY_MODAL { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:100; display:none; align-items:center; justify-content:center; flex-direction:column; }
+  #COPY_MODAL textarea { width:600px; height:300px; margin-bottom:10px; }
 </style>
 </head>
-
 <body>
-<header>
-  <div class="title">
-    <span class="badge">EDITOR</span>
-    <div>
-      <h1>Leap & Learn</h1>
-      <div class="sub">Редактор → живой предпросмотр → iframe(srcdoc) для Genially</div>
-    </div>
+
+<!-- EDITOR SIDEBAR -->
+<div id="EDITOR">
+  <div id="EDITOR_HEADER">
+    <h2>🐸 Leap & Learn Editor</h2>
   </div>
-  <div class="sub">GitHub Pages → Genially</div>
-</header>
+  
+  <div id="TABS">
+    <div class="tab active" onclick="setTab('visuals')">ВИЗУАЛ</div>
+    <div class="tab" onclick="setTab('gameplay')">ГЕЙМПЛЕЙ</div>
+    <div class="tab" onclick="setTab('levels')">УРОВНИ</div>
+  </div>
+  
+  <div id="CONTROLS">
+    
+    <!-- VISUALS TAB -->
+    <div id="tab-visuals">
+      <div class="group">
+        <h3>Локация и Персонажи</h3>
+        <label>Фон (Локация)</label>
+        <select id="bgSelect" onchange="updatePreview()">
+          <option value="river">Река</option>
+          <option value="lava">Лава</option>
+          <option value="swamp">Болото</option>
+          <option value="custom">Своя ссылка...</option>
+        </select>
+        <input type="text" id="bgCustom" placeholder="https://..." style="display:none; margin-top:5px;" oninput="updatePreview()">
 
-<div class="wrap">
-  <aside class="left">
-    <div class="scroll">
+        <label>Персонаж</label>
+        <select id="charSelect" onchange="updatePreview()">
+          <option value="frog">Лягушка</option>
+          <option value="chameleon">Хамелеон</option>
+          <option value="lizard">Ящерица</option>
+          <option value="custom">Своя ссылка...</option>
+        </select>
+        <input type="text" id="charCustom" placeholder="https://..." style="display:none; margin-top:5px;" oninput="updatePreview()">
 
-      <div class="section">
-        <h2>Базовые</h2>
-        <div class="grid2">
-          <div>
-            <label>Сложность: секунд на вопрос</label>
-            <input id="seconds" type="number" min="3" max="60" value="10">
-          </div>
-          <div>
-            <label>Жизни</label>
-            <input id="lives" type="number" min="1" max="10" value="5">
-          </div>
-        </div>
-        <div class="hint" style="margin-top:8px">
-          Добавляй уровни кнопкой ниже. В каждом уровне — список строк “вопрос + 3 ответа”.
-        </div>
+        <label>Платформа</label>
+        <select id="platSelect" onchange="updatePreview()">
+          <option value="lily">Лилия (Кувшинка)</option>
+          <option value="stone">Камень</option>
+          <option value="mound">Болотная кочка</option>
+          <option value="custom">Своя ссылка...</option>
+        </select>
+        <input type="text" id="platCustom" placeholder="https://..." style="display:none; margin-top:5px;" oninput="updatePreview()">
       </div>
 
-      <div class="section">
-        <h2>Уровни</h2>
+      <div class="group">
+        <h3>Цвета и Текст</h3>
+        <label>Основной неоновый цвет</label>
+        <input type="color" id="colNeon" value="#7cf9ff" oninput="updatePreview()">
+        
+        <label>Цвет фона (Экраны)</label>
+        <input type="color" id="colBg" value="#0a1730" oninput="updatePreview()">
 
-        <div id="levelsBox"></div>
-
-        <div class="btnbar" style="margin-top:10px">
-          <button id="addLevelBtn">➕ Добавить уровень</button>
-        </div>
-
-        <div class="example">
-          Формат строки (1-й ответ правильный):<br>
-          <span class="mono">I ____ running. am/is/are</span><br><br>
-          Можно несколько строк — каждая строка = отдельный вопрос.
-        </div>
-      </div>
-
-      <div class="section">
-        <h2>Цвета и неон</h2>
-        <div class="grid3">
-          <div><label>Неон (main)</label><input id="neonMain" type="color" value="#7cf9ff"></div>
-          <div><label>Danger</label><input id="dangerColor" type="color" value="#ff3b3b"></div>
-          <div><label>Win</label><input id="winColor" type="color" value="#ffe44d"></div>
-        </div>
-        <div class="grid2" style="margin-top:10px">
-          <div class="check">
-            <input id="neonOn" type="checkbox" checked>
-            <div>
-              <div style="font-weight:1000">Неоновая подсветка</div>
-              <div class="hint">Выключи — уберутся glow/тени</div>
-            </div>
-          </div>
-          <div><label>Цвет вопроса</label><input id="questionColor" type="color" value="#000000"></div>
-        </div>
-      </div>
-
-      <div class="section">
-        <h2>Фон / персонаж / платформа</h2>
-        <div class="grid2">
-          <div>
-            <label>Фон (локация)</label>
-            <select id="bgPreset">
-              <option value="river">Река</option>
-              <option value="lava">Лава</option>
-              <option value="swamp">Болото</option>
-              <option value="custom">Загрузить свой</option>
+        <label>Цвет шрифта вопроса</label>
+        <div class="row">
+            <input type="color" id="colFont" value="#0b1630" oninput="updatePreview()">
+            <select id="shadowMode" onchange="updatePreview()">
+                <option value="on">С тенью (для светлого)</option>
+                <option value="off">Без тени (для темного)</option>
             </select>
-            <input id="bgUpload" type="file" accept="image/*" style="margin-top:8px; display:none">
-          </div>
-          <div>
-            <label>Персонаж</label>
-            <select id="heroPreset">
-              <option value="frog">Лягушка</option>
-              <option value="chameleon">Хамелеон</option>
-              <option value="lizard">Ящерица</option>
-              <option value="custom">Загрузить своего</option>
-            </select>
-            <input id="heroUpload" type="file" accept="image/*" style="margin-top:8px; display:none">
-          </div>
         </div>
 
-        <div style="margin-top:10px">
-          <label>Платформа</label>
-          <select id="platformPreset">
-            <option value="lily">Лилия</option>
-            <option value="rock">Камень</option>
-            <option value="hummock">Болотная кочка</option>
-            <option value="custom">Загрузить свою</option>
-          </select>
-          <input id="platformUpload" type="file" accept="image/*" style="margin-top:8px; display:none">
+        <label>Размер шрифта вопроса (px)</label>
+        <input type="number" id="fontSize" value="40" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <!-- GAMEPLAY TAB -->
+    <div id="tab-gameplay" style="display:none">
+      <div class="group">
+        <h3>Сложность (Таймер)</h3>
+        <div class="row">
+          <div class="col"><label>Этап 1 (сек)</label><input type="number" id="time1" value="10"></div>
+          <div class="col"><label>Этап 2</label><input type="number" id="time2" value="7"></div>
+          <div class="col"><label>Этап 3</label><input type="number" id="time3" value="5"></div>
         </div>
+        <small style="color:#777">Таймер уменьшается после 3 и 6 правильных ответов.</small>
       </div>
 
-      <div class="section">
-        <h2>Действия</h2>
-        <div class="btnbar">
-          <button id="copyBtn">Копировать iframe игры</button>
-          <button class="secondary" id="resetBtn">Сбросить (демо)</button>
-          <button class="danger" id="forceReloadBtn">Пересобрать</button>
-        </div>
-
-        <div id="errBox" class="err"></div>
+      <div class="group">
+        <h3>Аудио (Ссылки mp3)</h3>
+        <label>Правильный ответ</label>
+        <input type="text" id="audWin" placeholder="Оставьте пустым для стандартного">
+        <label>Ошибка</label>
+        <input type="text" id="audFail" placeholder="Оставьте пустым для стандартного">
+        <label>Победа (Финал)</label>
+        <input type="text" id="audFinalWin" placeholder="Оставьте пустым для стандартного">
+        <label>Проигрыш (Финал)</label>
+        <input type="text" id="audFinalLose" placeholder="Оставьте пустым для стандартного">
       </div>
 
-    </div>
-  </aside>
-
-  <section class="right">
-    <div class="rightTop">
-      <div class="title2">Предпросмотр</div>
-      <div class="sub">обновляется автоматически</div>
-    </div>
-    <div class="previewWrap">
-      <iframe id="preview" sandbox="allow-scripts"></iframe>
-    </div>
-
-    <div class="out">
-      <label>Готовый код iframe (вставь в Genially)</label>
-      <textarea id="iframeOut" readonly></textarea>
-      <div class="hint" style="margin-top:8px">
-        Это и есть “конечный код” игры. В Genially вставляй целиком.
+      <div class="group">
+        <h3>Тексты финала</h3>
+        <label>Заголовок Победы</label>
+        <input type="text" id="txtWin" value="CONGRATULATIONS!">
+        <label>Подзаголовок Победы</label>
+        <input type="text" id="subWin" value="LEVEL COMPLETE">
+        
+        <label>Заголовок Поражения</label>
+        <input type="text" id="txtLose" value="YOU LOST!">
+        <label>Подзаголовок Поражения</label>
+        <input type="text" id="subLose" value="TRY AGAIN">
       </div>
     </div>
-  </section>
+
+    <!-- LEVELS TAB -->
+    <div id="tab-levels" style="display:none">
+      <div id="levelsContainer"></div>
+      <button class="btn" onclick="addLevel()">+ ДОБАВИТЬ УРОВЕНЬ</button>
+    </div>
+
+    <br><br>
+    <button class="btn" style="background:#4dff88; padding:15px;" onclick="generateCode()">📋 КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
+  </div>
 </div>
 
-<div class="toast" id="toast">Скопировано ✅</div>
+<!-- PREVIEW AREA -->
+<div id="PREVIEW_AREA">
+  <div id="PREVIEW_BAR">Предпросмотр (Интерактивный)</div>
+  <iframe id="previewFrame"></iframe>
+</div>
 
+<!-- COPY MODAL -->
+<div id="COPY_MODAL">
+  <h2 style="color:#fff">Скопируйте этот код:</h2>
+  <textarea id="finalCode"></textarea>
+  <button class="btn" style="width:200px" onclick="document.getElementById('COPY_MODAL').style.display='none'">ЗАКРЫТЬ</button>
+</div>
+
+<!-- TEMPLATE SCRIPT -->
 <script>
-window.addEventListener('error', (ev)=>{
-  try{
-    const box = document.getElementById('errBox');
-    if(!box) return;
-    box.style.display = 'block';
-    box.textContent =
-      'JS ERROR:\\n' +
-      (ev.message || 'unknown') + '\\n' +
-      (ev.filename ? (ev.filename + ':' + ev.lineno + ':' + ev.colno) : '') + '\\n\\n' +
-      (ev.error && ev.error.stack ? ev.error.stack : '');
-  }catch(e){}
-});
-window.addEventListener('unhandledrejection', (ev)=>{
-  try{
-    const box = document.getElementById('errBox');
-    if(!box) return;
-    box.style.display = 'block';
-    box.textContent = 'PROMISE REJECTION:\\n' + String(ev.reason || ev);
-  }catch(e){}
-});
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  const PRESET_BACKGROUNDS = {
+// --- ASSETS DATABASE ---
+const ASSETS = {
+  bg: {
     river: "https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png",
-    lava:  "https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png",
+    lava: "https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png",
     swamp: "https://img.genially.com/67961b32a116fb001568a75e/02b52ad4-9d31-4b21-a305-8fec6e8a4487.png"
-  };
-  const PRESET_HERO = {
+  },
+  char: {
     frog: "https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png",
     chameleon: "https://img.genially.com/67961b32a116fb001568a75e/74b56fcf-5354-43dd-9c9a-f50facc9a9bf.png",
     lizard: "https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png"
-  };
-
-  const PLATFORMS = {
+  },
+  plat: {
     lily: "https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png",
-    rock: "https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png",
-    hummock: "https://img.genially.com/67961b32a116fb001568a75e/c6775617-bde5-43e4-9da8-5332d928807e.png"
-  };
-
-  const $ = (id)=>document.getElementById(id);
-  const ui = {
-    seconds: $('seconds'),
-    lives: $('lives'),
-
-    levelsBox: $('levelsBox'),
-    addLevelBtn: $('addLevelBtn'),
-
-    neonMain: $('neonMain'),
-    dangerColor: $('dangerColor'),
-    winColor: $('winColor'),
-    neonOn: $('neonOn'),
-    questionColor: $('questionColor'),
-
-    bgPreset: $('bgPreset'),
-    bgUpload: $('bgUpload'),
-    heroPreset: $('heroPreset'),
-    heroUpload: $('heroUpload'),
-    platformPreset: $('platformPreset'),
-    platformUpload: $('platformUpload'),
-
-    preview: $('preview'),
-    iframeOut: $('iframeOut'),
-
-    copyBtn: $('copyBtn'),
-    resetBtn: $('resetBtn'),
-    forceReloadBtn: $('forceReloadBtn'),
-
-    toast: $('toast'),
-    errBox: $('errBox'),
-  };
-
-  let customBgDataUrl = "";
-  let customHeroDataUrl = "";
-  let customPlatformDataUrl = "";
-
-  function showError(msg){
-    ui.errBox.style.display = msg ? "block" : "none";
-    ui.errBox.textContent = msg || "";
+    stone: "https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png",
+    mound: "https://img.genially.com/67961b32a116fb001568a75e/c6775617-bde5-43e4-9da8-5332d928807e.png"
   }
-  function toast(msg){
-    ui.toast.textContent = msg;
-    ui.toast.classList.add('show');
-    setTimeout(()=>ui.toast.classList.remove('show'), 1100);
-  }
-  function clampInt(v,min,max,def){
-    const n = parseInt(v,10);
-    if(Number.isNaN(n)) return def;
-    return Math.max(min, Math.min(max, n));
-  }
-  function readFileAsDataURL(file){
-    return new Promise((resolve,reject)=>{
-      const fr=new FileReader();
-      fr.onload=()=>resolve(fr.result);
-      fr.onerror=()=>reject(fr.error);
-      fr.readAsDataURL(file);
-    });
-  }
-  function escapeForSingleQuotedAttr(s){
-    return s.replace(/&/g,'&amp;').replace(/'/g,'&#39;');
-  }
-  function escapeHtml(s){
-    return String(s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
+};
 
-  function getPlatformUrl(){
-    const p = ui.platformPreset.value;
-    if(p === "custom") return customPlatformDataUrl || PLATFORMS.lily;
-    return PLATFORMS[p] || PLATFORMS.lily;
+// --- DEFAULT STATE ---
+let levelsData = [
+  {
+    name: "Уровень 1",
+    questions: [
+      { text: "2 + 2 = ?", answers: ["3", "4", "5"], correct: 1 },
+      { text: "Столица Франции?", answers: ["Лондон", "Берлин", "Париж"], correct: 2 }
+    ]
   }
+];
 
-  // ===== LEVEL UI (ADD / DELETE) =====
-  function renumberLevels(){
-    [...ui.levelsBox.querySelectorAll('.lvl')].forEach((lvl, i)=>{
-      lvl.dataset.idx = String(i);
-      const title = lvl.querySelector('.lvlTitle span');
-      if(title) title.textContent = `Уровень ${i+1}`;
-      const nameInput = lvl.querySelector('.lvlName');
-      if(nameInput && !nameInput.value.trim()){
-        nameInput.value = `Level ${i+1}`;
-      }
-    });
-  }
+// --- EDITOR LOGIC ---
+function setTab(name) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('#CONTROLS > div').forEach(d=>d.style.display='none');
+  document.getElementById('tab-'+name).style.display='block';
+  if(name === 'gameplay') updatePreview(); 
+}
 
-  function addLevel(prefill){
-    const idx = ui.levelsBox.querySelectorAll('.lvl').length;
-    const wrap = document.createElement('div');
-    wrap.className = 'lvl';
-    wrap.dataset.idx = String(idx);
+function toggleCustom(selectId, inputId) {
+  const val = document.getElementById(selectId).value;
+  document.getElementById(inputId).style.display = (val === 'custom') ? 'block' : 'none';
+}
+document.getElementById('bgSelect').addEventListener('change', ()=>toggleCustom('bgSelect','bgCustom'));
+document.getElementById('charSelect').addEventListener('change', ()=>toggleCustom('charSelect','charCustom'));
+document.getElementById('platSelect').addEventListener('change', ()=>toggleCustom('platSelect','platCustom'));
 
-    const nameVal = prefill?.name ?? `Level ${idx+1}`;
-    const tasksVal = prefill?.tasks ?? `I ____ running. am/is/are`;
-
-    wrap.innerHTML = `
-      <div class="lvlHead">
-        <div class="lvlTitle">
-          <span>Уровень ${idx+1}</span>
-        </div>
-        <button class="trash" type="button" title="Удалить уровень">🗑</button>
+// LEVEL EDITOR RENDER
+function renderLevels() {
+  const c = document.getElementById('levelsContainer');
+  c.innerHTML = '';
+  levelsData.forEach((lvl, lIdx) => {
+    const div = document.createElement('div');
+    div.className = 'level-item';
+    div.innerHTML = `
+      <div class="level-header" onclick="this.nextElementSibling.classList.toggle('show')">
+        ${lvl.name} (${lvl.questions.length} вопр.) <span>▼</span>
       </div>
-
-      <div>
+      <div class="level-content">
         <label>Название уровня</label>
-        <input class="lvlName" type="text" value="${escapeHtml(nameVal)}">
-      </div>
-
-      <div style="margin-top:10px">
-        <label>Задания (каждая строка = 1 вопрос)</label>
-        <textarea class="lvlTasks" placeholder="Например:
-I ____ running. am/is/are
-She ____ a teacher. am/is/are">${escapeHtml(tasksVal)}</textarea>
+        <input type="text" value="${lvl.name}" oninput="levelsData[${lIdx}].name=this.value; updatePreview()">
+        <br><br>
+        <div id="qList_${lIdx}"></div>
+        <button class="btn small" onclick="addQuestion(${lIdx})">+ Вопрос</button>
+        <button class="btn small danger" onclick="removeLevel(${lIdx})">Удалить уровень</button>
       </div>
     `;
-
-    // delete
-    wrap.querySelector('.trash').addEventListener('click', ()=>{
-      wrap.remove();
-      renumberLevels();
-      rebuild();
+    c.appendChild(div);
+    
+    const qList = div.querySelector(`#qList_${lIdx}`);
+    lvl.questions.forEach((q, qIdx) => {
+      const qDiv = document.createElement('div');
+      qDiv.className = 'q-item';
+      qDiv.innerHTML = `
+        <label>Вопрос:</label>
+        <input type="text" value="${q.text}" onchange="updateQ(${lIdx},${qIdx},'text',this.value)">
+        <label>Варианты ответов (отметьте правильный):</label>
+        ${q.answers.map((ans, aIdx) => `
+          <div class="row" style="margin-bottom:2px">
+            <input type="radio" name="corr_${lIdx}_${qIdx}" ${aIdx===q.correct?'checked':''} onchange="updateQ(${lIdx},${qIdx},'correct',${aIdx})">
+            <input type="text" value="${ans}" onchange="updateQ(${lIdx},${qIdx},'ans_${aIdx}',this.value)">
+          </div>
+        `).join('')}
+        <button class="btn small danger" onclick="removeQ(${lIdx},${qIdx})">x</button>
+      `;
+      qList.appendChild(qDiv);
     });
+  });
+}
 
-    // rebuild on edit
-    wrap.querySelectorAll('input,textarea').forEach(el=>{
-      el.addEventListener('input', rebuild);
-      el.addEventListener('change', rebuild);
-    });
-
-    ui.levelsBox.appendChild(wrap);
-    renumberLevels();
-    // прокрутить к новому уровню
-    setTimeout(()=>wrap.scrollIntoView({behavior:'smooth', block:'start'}), 20);
-    rebuild();
+function addLevel() {
+  levelsData.push({ name: "Новый уровень", questions: [] });
+  renderLevels();
+  updatePreview();
+}
+function removeLevel(idx) {
+  if(confirm('Удалить уровень?')) {
+    levelsData.splice(idx,1);
+    renderLevels();
+    updatePreview();
   }
-
-  ui.addLevelBtn.addEventListener('click', ()=>addLevel());
-
-  // ===== TASK PARSER =====
-  // Accepts lines like: "I ____ running. am/is/are"
-  // We split by the LAST space before "a/b/c". Safer: find last token containing "/" and 3 parts.
-  function parseTasksText(text){
-    const lines = String(text||"")
-      .split(/\r?\n/)
-      .map(s=>s.trim())
-      .filter(s=>s.length>0);
-
-    const questions = [];
-
-    for(const line of lines){
-      // find an answers chunk with two slashes
-      // try: last chunk after last space
-      let qPart = line;
-      let aPart = "";
-
-      // first try split by " :: "
-      if(line.includes("::")){
-        const parts = line.split("::");
-        qPart = (parts[0]||"").trim();
-        aPart = (parts.slice(1).join("::")||"").trim();
-      } else {
-        // find last space where the rest contains a/b/c
-        const lastSpace = line.lastIndexOf(" ");
-        if(lastSpace>0){
-          const tail = line.slice(lastSpace+1).trim();
-          if((tail.match(/\//g)||[]).length>=2){
-            qPart = line.slice(0,lastSpace).trim();
-            aPart = tail;
-          } else {
-            // fallback: find first token in line that contains slashes
-            const tokens = line.split(/\s+/);
-            const slashTok = [...tokens].reverse().find(t => (t.match(/\//g)||[]).length>=2);
-            if(slashTok){
-              aPart = slashTok;
-              const pos = line.lastIndexOf(slashTok);
-              qPart = line.slice(0,pos).trim();
-            }
-          }
-        }
-      }
-
-      const ans = aPart.split("/").map(x=>x.trim()).filter(Boolean);
-      if(ans.length < 3){
-        // if format broken, skip silently (or could keep as text only)
-        continue;
-      }
-      const a1 = ans[0], a2 = ans[1], a3 = ans[2];
-      questions.push({ text: qPart || "…", answers:[a1,a2,a3], correct:0 });
-    }
-    return questions;
+}
+function addQuestion(lIdx) {
+  levelsData[lIdx].questions.push({ text: "Вопрос...", answers: ["А","Б","В"], correct: 0 });
+  renderLevels();
+  updatePreview();
+}
+function removeQ(lIdx, qIdx) {
+  levelsData[lIdx].questions.splice(qIdx,1);
+  renderLevels();
+  updatePreview();
+}
+function updateQ(lIdx, qIdx, field, val) {
+  if(field === 'text') levelsData[lIdx].questions[qIdx].text = val;
+  if(field === 'correct') levelsData[lIdx].questions[qIdx].correct = parseInt(val);
+  if(field.startsWith('ans_')) {
+    const aIdx = parseInt(field.split('_')[1]);
+    levelsData[lIdx].questions[qIdx].answers[aIdx] = val;
   }
+  updatePreview(); // Опционально, можно не обновлять при каждом нажатии клавиши
+}
 
-  // ===== CONFIG =====
-  function getConfig(){
-    const seconds = clampInt(ui.seconds.value, 3, 60, 10);
-    const lives = clampInt(ui.lives.value, 1, 10, 5);
+// --- GENERATE GAME HTML ---
+function getGameHTML() {
+  // 1. Gather Settings
+  const getVal = (id) => document.getElementById(id).value;
+  
+  const bgType = getVal('bgSelect');
+  const bgUrl = bgType === 'custom' ? getVal('bgCustom') : ASSETS.bg[bgType];
+  
+  const charType = getVal('charSelect');
+  const charUrl = charType === 'custom' ? getVal('charCustom') : ASSETS.char[charType];
+  
+  const platType = getVal('platSelect');
+  const platUrl = platType === 'custom' ? getVal('platCustom') : ASSETS.plat[platType];
 
-    const levels = [...ui.levelsBox.querySelectorAll('.lvl')].map((lvl, i)=>{
-      const name = (lvl.querySelector('.lvlName')?.value || "").trim() || `Level ${i+1}`;
-      const tasks = (lvl.querySelector('.lvlTasks')?.value || "");
-      const questions = parseTasksText(tasks);
-      // если учитель ничего не ввёл/ошибся с форматом — оставим хотя бы 1 вопрос, чтобы игра не ломалась
-      if(questions.length === 0){
-        return {
-          name,
-          questions: [{ text: "Добавь задания в редакторе", answers:["OK","...","..."], correct:0 }]
-        };
-      }
-      return { name, questions };
-    });
+  const colNeon = getVal('colNeon');
+  const colBg = getVal('colBg');
+  const colFont = getVal('colFont');
+  const fontSize = getVal('fontSize');
+  const shadowMode = getVal('shadowMode');
+  const fontShadow = shadowMode === 'on' ? `text-shadow:0 2px 0 rgba(0,0,0,.35)` : `text-shadow:none`;
 
-    const bgUrl = (ui.bgPreset.value==='custom')
-      ? (customBgDataUrl || PRESET_BACKGROUNDS.river)
-      : PRESET_BACKGROUNDS[ui.bgPreset.value];
+  const times = { t1: parseInt(getVal('time1')), t2: parseInt(getVal('time2')), t3: parseInt(getVal('time3')) };
+  
+  const audioCfg = {
+    win: getVal('audWin'),
+    fail: getVal('audFail'),
+    finalWin: getVal('audFinalWin'),
+    finalLose: getVal('audFinalLose')
+  };
 
-    const heroUrl = (ui.heroPreset.value==='custom')
-      ? (customHeroDataUrl || PRESET_HERO.frog)
-      : PRESET_HERO[ui.heroPreset.value];
+  const texts = {
+    winH: getVal('txtWin'), winS: getVal('subWin'),
+    loseH: getVal('txtLose'), loseS: getVal('subLose')
+  };
 
-    return {
-      seconds,
-      lives,
-      levelsData: levels.length ? levels : [{
-        name:"Level 1",
-        questions:[{text:"I ____ running.",answers:["am","is","are"],correct:0}]
-      }],
-      colors:{
-        neonMain: ui.neonMain.value,
-        danger: ui.dangerColor.value,
-        win: ui.winColor.value,
-        question: ui.questionColor.value
-      },
-      neonOn: !!ui.neonOn.checked,
-      assets:{ bg:bgUrl, hero:heroUrl, platform: getPlatformUrl() }
-    };
-  }
-
-  // ===== GAME SRC DOC (answers shuffled) =====
-  function buildGameSrcdoc(cfg){
-    const CFG_JSON = JSON.stringify(cfg);
-
-    let html = `<!doctype html>
-<html lang="ru"><head>
+  // 2. Base Template (Based on provided code, minified slightly)
+  // Мы вставляем конфиг в начало JS, а стили в CSS переменные
+  return `<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Leap & Learn</title>
 <style>
-:root{--neon-main:${cfg.colors.neonMain};--danger:${cfg.colors.danger};--win:${cfg.colors.win};}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;background:#0a1730}
+:root{
+  --neon-main: ${colNeon};
+  --bg-color: ${colBg};
+  --bg-img: url("${bgUrl}");
+  --char-img: url("${charUrl}");
+  --plat-img: url("${platUrl}");
+  --font-col: ${colFont};
+  --font-size: ${fontSize}px;
+  --danger:#ff3b3b;
+  --win:#ffe44d;
+}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;background:var(--bg-color)}
 #GAME{position:relative;width:100%;height:100%}
-#BG{position:absolute;inset:0;z-index:0;background:url("${cfg.assets.bg}") center/cover no-repeat}
-#QUESTION{position:absolute;top:26px;width:100%;text-align:center;font-size:26px;z-index:20;color:${cfg.colors.question};text-shadow:0 2px 0 rgba(0,0,0,.35)}
-#TIMER{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 18px var(--neon-main)" : "none"};z-index:20;font-weight:900;color:#053149}
-#TIMER.danger{border-color:var(--danger);color:var(--danger);box-shadow:${cfg.neonOn ? "0 0 25px var(--danger)" : "none"}}
-#LEVELNAME{position:absolute;top:125px;left:50%;transform:translateX(-50%);z-index:20;font-weight:900;color:#eaf6ff;opacity:.95;text-shadow:${cfg.neonOn ? "0 0 16px rgba(124,249,255,.20)" : "none"}}
-#LIVES{position:absolute;top:30px;right:30px;font-size:26px;z-index:20}
+#GAME.shake{animation:shake .25s}
+@keyframes shake{0%{transform:translate(0)}25%{transform:translate(-4px,3px)}50%{transform:translate(4px,-3px)}75%{transform:translate(-3px,2px)}100%{transform:translate(0)}}
+#BG{position:absolute;inset:0;z-index:0;background:var(--bg-img) center/cover no-repeat}
 #SCORE{position:absolute;top:30px;left:30px;font-size:20px;font-weight:900;z-index:20;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
-#FROG{position:absolute;left:160px;top:50%;width:110px;height:110px;background:url("${cfg.assets.hero}") no-repeat center/contain;transform:translate(-50%,-65%);z-index:15;pointer-events:none}
-#PLATFORMS{position:absolute;inset:0;z-index:10}
-.platform{position:absolute;width:150px;height:150px;transition:filter .15s}
-.pl{width:150px;height:150px;background:url("${cfg.assets.platform}") no-repeat center/contain;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65),0 0 10px rgba(0,0,0,.35);padding:10px;text-align:center}
-.platform.answer{cursor:pointer}
-.platform.answer:hover{filter:drop-shadow(0 0 14px rgba(124,249,255,.35))}
-#START{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;background:rgba(8,16,34,.92)}
-.card{width:min(780px,calc(100vw - 40px));border-radius:26px;background:rgba(10,20,50,.92);border:2px solid rgba(124,249,255,.55);box-shadow:${cfg.neonOn ? "0 0 30px rgba(124,249,255,.35)" : "none"};padding:18px;color:#eaf6ff}
-.btn{padding:12px 34px;border-radius:16px;font-weight:900;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 15px var(--neon-main)" : "none"};cursor:pointer;color:#043149}
-#END{position:absolute;inset:0;z-index:80;background:rgba(8,16,34,.92);display:none;align-items:center;justify-content:center;flex-direction:column}
+#TIMER{position:absolute;top:26px;left:120px;height:38px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 14px;background:rgba(255,255,255,.95);border:2px solid var(--neon-main);box-shadow:0 0 18px var(--neon-main);z-index:20;font-weight:900;color:#053149}
+#CLOCK_ICON{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+#TIMER.danger{border-color:var(--danger);color:var(--danger);box-shadow:0 0 25px var(--danger);animation:timerPulse .8s infinite}
+@keyframes timerPulse{50%{transform:scale(1.07)}}
+#LIVES{position:absolute;top:30px;right:30px;font-size:26px;z-index:20}
+#QUESTION{position:absolute;top:18px;width:100%;display:flex;justify-content:center;z-index:20}
+#QUESTION_TXT{font-size:var(--font-size);font-weight:900;color:var(--font-col);padding:10px 18px;border-radius:18px;background:rgba(255,255,255,.72);border:1px solid rgba(124,249,255,.40);box-shadow:0 0 18px rgba(124,249,255,.25);${fontShadow}}
+#COMBO{position:absolute;top:165px;left:50%;transform:translateX(-50%);z-index:20;padding:10px 16px;border-radius:18px;background:rgba(255,255,255,.88);border:2px solid var(--neon-main);box-shadow:0 0 18px var(--neon-main);font-weight:900;color:#043149;display:none;gap:10px;align-items:center}
+#COMBO.show{display:inline-flex}
+#COMBO_BOLT{width:18px;height:18px;border-radius:6px;background:rgba(124,249,255,.25);display:inline-block}
+#COMBO.pulse{animation:comboPulse .55s ease}
+@keyframes comboPulse{0%{transform:translateX(-50%) translateY(10px) scale(.92);opacity:0}40%{transform:translateX(-50%) translateY(0px) scale(1.14);opacity:1}100%{transform:translateX(-50%) translateY(0px) scale(1);opacity:1}}
+.btn{padding:12px 34px;border-radius:16px;font-weight:900;background:#fff;border:2px solid var(--neon-main);box-shadow:0 0 15px var(--neon-main);cursor:pointer;color:#043149}
+.btn:active{transform:translateY(1px)}
+.btn.dark{background:rgba(255,255,255,.10);color:#eaf6ff;border:2px solid var(--neon-main)}
+#START.hide{display:none}
+#START_SCREEN{position:absolute;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(8,16,34,.92)}
+#START_CARD{width:min(760px, calc(100vw - 40px));border-radius:26px;background:linear-gradient(180deg, var(--bg-color), rgba(5,10,25,.92));border:2px solid var(--neon-main);box-shadow:0 0 30px var(--neon-main);padding:18px;position:relative;overflow:hidden;color:#eaf6ff}
+#START_TOP{position:relative;display:flex;align-items:center;gap:14px;padding:6px}
+#START_ICON{width:64px;height:64px;flex:0 0 auto;background:var(--char-img) no-repeat center/contain}
+#START_TITLE{font-weight:900;font-size:34px;color:#eaf6ff;text-shadow:0 0 18px var(--neon-main);margin:0}
+.panel{background:rgba(255,255,255,.08);border:1px solid var(--neon-main);border-radius:18px;padding:12px;margin-top:10px}
+#END{position:absolute;inset:0;z-index:50;background:rgba(8,16,34,.92);display:none;align-items:center;justify-content:center;flex-direction:column}
 #END.show{display:flex}
-#END h1{margin:0 0 10px;font-size:48px;text-align:center}
-.win{color:var(--win)} .lose{color:var(--danger)}
-</style></head><body>
+#END_TEXT{font-size:58px;font-weight:900;margin:0 0 10px;text-align:center}
+.win{color:var(--win);text-shadow:0 0 12px var(--win)}
+.lose{color:var(--danger);text-shadow:0 0 12px var(--danger)}
+#LEVEL_BANNER{margin:0 0 10px;padding:14px 18px;border-radius:20px;background:rgba(255,255,255,.12);border:1px solid var(--win);color:#fff7cf;font-weight:900;text-transform:uppercase;text-align:center}
+#LEVEL_NAME{margin:0 0 10px;color:#bfe9ff;font-weight:900}
+#SCORECARD{width:min(620px, calc(100vw - 40px));background:rgba(255,255,255,.10);border:2px solid var(--neon-main);border-radius:22px;padding:18px;margin:6px 0 16px;color:#eaf6ff}
+#SCOREGRID{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row{display:flex;justify-content:space-between;background:rgba(255,255,255,.08);padding:12px;border-radius:16px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+#FROG_WRAP{position:absolute;left:calc(160px - 17mm + 15mm - 11mm);top:calc(50% + 13mm - 11mm);width:110px;height:110px;z-index:15;pointer-events:none;animation:float 3.5s ease-in-out infinite}
+#FROG{width:110px;height:110px;background:var(--char-img) no-repeat center/contain;position:absolute;left:50%;top:50%;transform:translate(-50%,-65%);transition:transform .6s ease,opacity .6s ease}
+#FROG.jump{transform:translate(-50%,-95%) scale(1.05)}
+#FROG.sink{transform:translate(-50%,-10%) scale(.6);opacity:0}
+#PLATFORMS{position:absolute;inset:0;z-index:10}
+.platform{position:absolute;width:150px;height:150px;transition:transform .5s,opacity .6s}
+.lily{width:150px;height:150px;background:var(--plat-img) no-repeat center/contain;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65);animation:float 3.5s ease-in-out infinite;cursor:pointer}
+.platform.fade{opacity:0}
+.platform.wrong .lily{filter:drop-shadow(0 0 18px red)}
+#FX{position:absolute;inset:0;pointer-events:none;z-index:200}
+</style>
+</head>
+<body>
 <div id="GAME">
-  <div id="BG"></div>
-  <div id="SCORE">⭐ 0</div>
-  <div id="QUESTION"></div>
-  <div id="TIMER">00:10</div>
-  <div id="LEVELNAME"></div>
+  <div id="BG"></div><div id="SCORE">⭐ 0</div>
+  <div id="TIMER"><span id="CLOCK_ICON">⏱️</span><span id="TIMER_TXT">00:00</span></div>
+  <div id="QUESTION"><span id="QUESTION_TXT"></span></div>
+  <div id="COMBO"><span id="COMBO_BOLT"></span><span id="COMBO_TXT">COMBO x1.0</span></div>
   <div id="LIVES"></div>
-  <div id="FROG"></div>
-  <div id="PLATFORMS"></div>
-
-  <div id="START">
-    <div class="card">
-      <h2 style="margin:0 0 8px;font-weight:900">Leap & Learn</h2>
-      <div style="opacity:.9;font-weight:700;margin-bottom:14px">Нажми START и выбери правильный ответ до окончания таймера.</div>
-      <button id="START_BTN" class="btn">▶ START</button>
+  <div id="START_SCREEN">
+    <div id="START_CARD">
+      <div id="START_TOP"><div id="START_ICON"></div><div><h1 id="START_TITLE">Leap & Learn</h1></div></div>
+      <div class="panel"><h3>How to Play</h3><ul class="rules"><li>Выберите правильный ответ.</li><li>Следите за таймером!</li></ul></div>
+      <div style="margin-top:12px;text-align:center"><button id="START_BTN" class="btn">▶ START</button></div>
     </div>
   </div>
-
   <div id="END">
-    <h1 id="END_TXT"></h1>
-    <button id="RETRY" class="btn">🔁 Play again</button>
+    <div id="END_TEXT"></div><div id="LEVEL_BANNER">LEVEL COMPLETE</div><div id="LEVEL_NAME"></div>
+    <div id="SCORECARD"><div id="SCOREGRID">
+        <div class="row"><div>Questions</div><div id="STAT_Q">0/0</div></div>
+        <div class="row"><div>Score</div><div id="FINAL_SCORE">0</div></div>
+    </div></div>
+    <div id="END_BTNS"><button id="NEXT_LEVEL" class="btn">⏭ Next</button><button id="RETRY" class="btn">🔁 Play again</button></div>
   </div>
+  <div id="FX"></div>
+  <div id="FROG_WRAP"><div id="FROG"></div></div>
+  <div id="PLATFORMS"></div>
 </div>
 
 <script>
-const CFG = ${CFG_JSON};
-let LEVELS = (CFG.levelsData||[]).map(l=>({
-  name:l.name||'Level',
-  questions:(l.questions||[]).slice()
-}));
+/* USER CONFIG */
+const LEVELS = ${JSON.stringify(levelsData)};
+const CFG_TIME = ${JSON.stringify(times)};
+const CFG_AUDIO = ${JSON.stringify(audioCfg)};
+const CFG_TEXT = ${JSON.stringify(texts)};
 
-function shuffle(a){
-  const arr=a.slice();
-  for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
+/* ENGINE */
+const Q_TXT=document.getElementById("QUESTION_TXT"),T=document.getElementById("TIMER"),T_TXT=document.getElementById("TIMER_TXT"),L=document.getElementById("LIVES"),S=document.getElementById("SCORE"),P=document.getElementById("PLATFORMS"),FROG=document.getElementById("FROG");
+const END=document.getElementById("END"),END_TXT=document.getElementById("END_TEXT"),STAT_Q=document.getElementById("STAT_Q"),FINAL_SCORE=document.getElementById("FINAL_SCORE");
+let q=0,lives=5,score=0,started=false,timer=null,timeLeft=0,levelIndex=0,combo=0;
+let QUESTIONS=[];
+
+const ctx=new (AudioContext||webkitAudioContext)();
+function playSound(type){
+  const url = CFG_AUDIO[type];
+  if(url && url.length>5) { new Audio(url).play().catch(e=>console.log(e)); return; }
+  // Fallback synths
+  const t=ctx.currentTime;
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  if(type==='win'){
+     o.frequency.setValueAtTime(523,t); o.frequency.linearRampToValueAtTime(784,t+0.1);
+     g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.2,t+0.05); g.gain.exponentialRampToValueAtTime(0.01,t+0.3);
+     o.start(t); o.stop(t+0.4);
+  } else if(type==='fail'){
+     o.type='sawtooth'; o.frequency.setValueAtTime(200,t); o.frequency.linearRampToValueAtTime(100,t+0.2);
+     g.gain.setValueAtTime(0.2,t); g.gain.exponentialRampToValueAtTime(0.01,t+0.3);
+     o.start(t); o.stop(t+0.4);
   }
-  return arr;
 }
 
-// shuffle answers and keep correct
-function randomizeQuestion(q){
-  const packs = q.answers.map((txt,idx)=>({txt, idx}));
-  const s = shuffle(packs);
-  const answers = s.map(x=>x.txt);
-  const correct = s.findIndex(x=>x.idx===q.correct);
-  return { text:q.text, answers, correct };
+function getRoundTime(){
+  if(combo<3) return CFG_TIME.t1;
+  if(combo<6) return CFG_TIME.t2;
+  return CFG_TIME.t3;
 }
-
-// shuffle questions inside each level (but keep the level order)
-LEVELS = LEVELS.map(l=>{
-  const qs = shuffle((l.questions||[]).map(q=>randomizeQuestion(q)));
-  return {...l, questions: qs};
-});
-
-let score=0, lives=(CFG.lives||5), timer=null, timeLeft=0;
-
-const Q = document.getElementById("QUESTION");
-const T = document.getElementById("TIMER");
-const L = document.getElementById("LIVES");
-const S = document.getElementById("SCORE");
-const P = document.getElementById("PLATFORMS");
-const START = document.getElementById("START");
-const START_BTN = document.getElementById("START_BTN");
-const END = document.getElementById("END");
-const END_TXT = document.getElementById("END_TXT");
-const RETRY = document.getElementById("RETRY");
-const LEVELNAME = document.getElementById("LEVELNAME");
-
-function fmt(s){ return "00:"+String(s).padStart(2,"0"); }
-
-let lvl=0; // index level
-let qi=0; // index question in level
-
-function curLevel(){ return LEVELS[lvl]; }
-function curQ(){ return (curLevel()?.questions||[])[qi]; }
 
 function render(){
-  P.innerHTML="";
-  const level = curLevel();
-  const qq = curQ();
-
-  LEVELNAME.textContent = level ? level.name : "";
-  Q.textContent = qq?.text || "";
-  L.textContent = "❤️".repeat(lives);
-  S.textContent = "⭐ "+score;
-
-  const answers = qq?.answers || [];
-  const correct = qq?.correct ?? 0;
-
-  const STEP=190, y=innerHeight/2;
-  const count=Math.ceil((innerWidth-160)/STEP)+4;
-
+  P.innerHTML=""; FROG.classList.remove("sink");
+  if(q>=QUESTIONS.length) { showEnd(true); return; }
+  Q_TXT.textContent=QUESTIONS[q].text;
+  L.textContent="❤️".repeat(lives); S.textContent="⭐ "+score;
+  
+  const STEP=190, y=window.innerHeight/2 + 76;
+  const count=Math.ceil((window.innerWidth-160)/STEP)+4;
   for(let i=0;i<count;i++){
-    const d=document.createElement("div");
-    d.className="platform";
-    d.style.left=160+STEP*i-75+"px";
-    d.style.top=y-75+"px";
-
-    const pl=document.createElement("div");
-    pl.className="pl";
-
-    if(i>0 && i<=answers.length){
-      pl.textContent = answers[i-1];
-      d.classList.add("answer");
-      d.onclick = () => pick(i-1, correct);
+    const d=document.createElement("div"); d.className="platform";
+    d.style.left=160+STEP*i-75+"px"; d.style.top=y-75+"px";
+    const lily=document.createElement("div"); lily.className="lily";
+    if(i>0 && i<=QUESTIONS[q].answers.length){
+      lily.textContent=QUESTIONS[q].answers[i-1];
+      d.onclick=()=>pick(i,d);
     }
-
-    d.appendChild(pl);
-    P.appendChild(d);
+    d.appendChild(lily); P.appendChild(d);
   }
 }
 
-function startTimer(){
+function pick(i,el){
+  if(!started) return;
   clearInterval(timer);
-  timeLeft = CFG.seconds || 10;
+  FROG.classList.add("jump"); setTimeout(()=>FROG.classList.remove("jump"),300);
+  document.querySelectorAll(".platform").forEach(p=>p.style.transform=\`translateX(\${-(el.offsetLeft+75-160)}px)\`);
+  setTimeout(()=>{
+    if(i-1===QUESTIONS[q].correct){
+      playSound('win'); score+=100+(timeLeft*10); combo++; q++;
+      if(q>=QUESTIONS.length) showEnd(true); else startRound();
+    } else {
+      fail();
+    }
+  },500);
+}
+
+function fail(){
+  playSound('fail'); lives--; combo=0;
+  FROG.classList.add("sink");
+  document.querySelectorAll(".platform").forEach(p=>p.classList.add("fade","wrong"));
+  setTimeout(()=>{ lives<=0 ? showEnd(false) : startRound(); },900);
+}
+
+function startRound(){
+  render(); clearInterval(timer);
+  timeLeft=getRoundTime();
+  T_TXT.textContent="00:"+String(timeLeft).padStart(2,"0");
   T.classList.remove("danger");
-  T.textContent = fmt(timeLeft);
   timer=setInterval(()=>{
     timeLeft--;
-    if(timeLeft<=0){
-      clearInterval(timer);
-      fail();
-      return;
-    }
-    T.textContent = fmt(timeLeft);
+    if(timeLeft<=0){ clearInterval(timer); fail(); return; }
+    T_TXT.textContent="00:"+String(timeLeft).padStart(2,"0");
     if(timeLeft<=3) T.classList.add("danger");
   },1000);
 }
 
-function pick(answerIdx, correctIdx){
-  clearInterval(timer);
-  if(answerIdx === correctIdx){
-    score += 100 + timeLeft*10;
-    nextStep();
-  }else{
-    fail();
-  }
-}
-
-function fail(){
-  lives--;
-  score = Math.max(0, score-80);
-  if(lives<=0){ showEnd(false); return; }
-  startRound();
-}
-
-function nextStep(){
-  const level = curLevel();
-  const totalQ = (level?.questions||[]).length;
-
-  qi++;
-  if(qi >= totalQ){
-    // next level
-    lvl++;
-    qi=0;
-    if(lvl >= LEVELS.length){
-      showEnd(true);
-      return;
-    }
-  }
-  startRound();
-}
-
-function startRound(){
-  render();
-  startTimer();
-}
-
 function showEnd(win){
-  clearInterval(timer);
-  END.classList.add("show");
-  END_TXT.textContent = win ? "CONGRATULATIONS!" : "YOU LOST!";
-  END_TXT.className = win ? "win" : "lose";
+  clearInterval(timer); END.classList.add("show");
+  document.getElementById("LEVEL_NAME").textContent = LEVELS[levelIndex].name;
+  STAT_Q.textContent = \`\${q}/\${QUESTIONS.length}\`;
+  FINAL_SCORE.textContent = score;
+  
+  if(win){
+    END_TXT.textContent = CFG_TEXT.winH;
+    END_TXT.className = "win";
+    document.getElementById("LEVEL_BANNER").textContent = CFG_TEXT.winS;
+    playSound('finalWin');
+    document.getElementById("NEXT_LEVEL").style.display = (levelIndex<LEVELS.length-1) ? "inline-block" : "none";
+  } else {
+    END_TXT.textContent = CFG_TEXT.loseH;
+    END_TXT.className = "lose";
+    document.getElementById("LEVEL_BANNER").textContent = CFG_TEXT.loseS;
+    playSound('finalLose');
+    document.getElementById("NEXT_LEVEL").style.display = "none";
+  }
 }
 
-function reset(){
-  clearInterval(timer);
+function startLevel(idx){
+  levelIndex=idx; QUESTIONS=LEVELS[idx].questions;
+  q=0; lives=5; score=0; combo=0;
+  document.getElementById("START_SCREEN").style.display="none";
   END.classList.remove("show");
-  START.style.display="flex";
-  score=0; lives=(CFG.lives||5); lvl=0; qi=0;
-  // reshuffle on restart
-  LEVELS = (CFG.levelsData||[]).map(l=>({
-    name:l.name||'Level',
-    questions: shuffle((l.questions||[]).map(q=>randomizeQuestion(q)))
-  }));
-  T.textContent = fmt(CFG.seconds||10);
-  render();
+  started=true; startRound();
 }
 
-START_BTN.onclick=()=>{
-  START.style.display="none";
-  score=0; lives=(CFG.lives||5); lvl=0; qi=0;
-  startRound();
-};
-RETRY.onclick=()=>reset();
+document.getElementById("START_BTN").onclick=()=>{ ctx.resume(); startLevel(0); };
+document.getElementById("RETRY").onclick=()=>{ startLevel(levelIndex); };
+document.getElementById("NEXT_LEVEL").onclick=()=>{ startLevel(levelIndex+1); };
 
-T.textContent = fmt(CFG.seconds||10);
+window.onresize=render;
 render();
-<\/script>
-</body></html>`;
+<\/script></body></html>`;
+}
 
-    html = html.replaceAll("</script>", "<\\/script>");
-    return html;
-  }
+function updatePreview() {
+  const html = getGameHTML();
+  document.getElementById('previewFrame').srcdoc = html;
+}
 
-  function buildIframeCode(srcdoc){
-    const escaped = escapeForSingleQuotedAttr(srcdoc);
-    return `<iframe style="width:100%;height:100%;border:0" srcdoc='${escaped}'></iframe>`;
-  }
+function generateCode() {
+  const html = getGameHTML();
+  const iframeCode = `<iframe style="width:100%;height:100%;border:0" srcdoc='${html.replace(/'/g, "&#39;")}'></iframe>`;
+  
+  document.getElementById('finalCode').value = iframeCode;
+  document.getElementById('COPY_MODAL').style.display = 'flex';
+}
 
-  let rebuildTimer=null;
-  function rebuild(){
-    clearTimeout(rebuildTimer);
-    rebuildTimer=setTimeout(()=>{
-      try{
-        showError("");
-        const cfg = getConfig();
-        const srcdoc = buildGameSrcdoc(cfg);
-        ui.preview.srcdoc = srcdoc;
-        ui.iframeOut.value = buildIframeCode(srcdoc);
-      }catch(e){
-        showError(String(e && (e.stack || e.message) || e));
-        ui.preview.removeAttribute("srcdoc");
-        ui.iframeOut.value = "";
-      }
-    },80);
-  }
-
-  function bindRebuild(el){
-    el.addEventListener('input', rebuild);
-    el.addEventListener('change', rebuild);
-  }
-
-  // uploads
-  ui.bgPreset.addEventListener('change', ()=>{
-    ui.bgUpload.style.display = (ui.bgPreset.value==='custom') ? 'block' : 'none';
-    rebuild();
-  });
-  ui.bgUpload.addEventListener('change', async ()=>{
-    const f=ui.bgUpload.files && ui.bgUpload.files[0];
-    customBgDataUrl = f ? await readFileAsDataURL(f) : "";
-    rebuild();
-  });
-
-  ui.heroPreset.addEventListener('change', ()=>{
-    ui.heroUpload.style.display = (ui.heroPreset.value==='custom') ? 'block' : 'none';
-    rebuild();
-  });
-  ui.heroUpload.addEventListener('change', async ()=>{
-    const f=ui.heroUpload.files && ui.heroUpload.files[0];
-    customHeroDataUrl = f ? await readFileAsDataURL(f) : "";
-    rebuild();
-  });
-
-  ui.platformPreset.addEventListener('change', ()=>{
-    ui.platformUpload.style.display = (ui.platformPreset.value==='custom') ? 'block' : 'none';
-    rebuild();
-  });
-  ui.platformUpload.addEventListener('change', async ()=>{
-    const f=ui.platformUpload.files && ui.platformUpload.files[0];
-    customPlatformDataUrl = f ? await readFileAsDataURL(f) : "";
-    rebuild();
-  });
-
-  // bind basics
-  [ui.seconds, ui.lives, ui.neonMain, ui.dangerColor, ui.winColor, ui.neonOn, ui.questionColor,
-   ui.bgPreset, ui.heroPreset, ui.platformPreset
-  ].forEach(bindRebuild);
-
-  // buttons
-  ui.copyBtn.addEventListener('click', async ()=>{
-    try{
-      await navigator.clipboard.writeText(ui.iframeOut.value);
-      toast("Скопировано ✅");
-    }catch(e){
-      ui.iframeOut.focus(); ui.iframeOut.select();
-      document.execCommand('copy');
-      toast("Скопировано ✅");
-    }
-  });
-
-  ui.forceReloadBtn.addEventListener('click', ()=>{ rebuild(); toast("Пересобрано"); });
-
-  ui.resetBtn.addEventListener('click', ()=>{
-    ui.seconds.value=10;
-    ui.lives.value=5;
-
-    ui.neonMain.value="#7cf9ff";
-    ui.dangerColor.value="#ff3b3b";
-    ui.winColor.value="#ffe44d";
-    ui.neonOn.checked=true;
-    ui.questionColor.value="#000000";
-
-    ui.bgPreset.value="river"; ui.bgUpload.style.display="none"; customBgDataUrl="";
-    ui.heroPreset.value="frog"; ui.heroUpload.style.display="none"; customHeroDataUrl="";
-    ui.platformPreset.value="lily"; ui.platformUpload.style.display="none"; customPlatformDataUrl="";
-
-    ui.levelsBox.innerHTML="";
-    addLevel({name:"Level 1", tasks:"I ____ running. am/is/are\nShe ____ a teacher. is/am/are"});
-
-    rebuild();
-    toast("Сброшено");
-  });
-
-  // старт: один уровень по умолчанию
-  addLevel({name:"Level 1", tasks:"I ____ running. am/is/are"});
-
-  rebuild();
-});
+// Init
+renderLevels();
+updatePreview();
 </script>
 </body>
 </html>
