@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Leap & Learn — Editor (Genially)</title>
+
 <style>
   :root{
     --text:#eaf0ff;
@@ -178,6 +179,7 @@
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
 
+  /* аварийный вывод ошибок */
   .err{
     margin-top:10px;
     padding:10px;
@@ -222,14 +224,55 @@
           </div>
         </div>
         <div class="hint" style="margin-top:8px">
-          Для каждого уровня появится окно: вопрос + 3 ответа (1-й правильный).
+          Для каждого уровня: вопрос + 3 ответа (1-й правильный).
         </div>
       </div>
 
       <div class="section">
         <h2>Задания по уровням</h2>
-        <div class="hint">1 — правильный, 2–3 — неправильные.</div>
-        <div id="levelsEditor"></div>
+        <div class="hint">Впиши свои задания ниже. (1 — правильный, 2–3 — неправильные)</div>
+
+        <!-- ВАЖНО: эти окна видны даже если JS не запустился -->
+        <div id="levelsEditor">
+          <div class="lvlCard" data-lvl="1">
+            <div class="lvlHead"><div>Уровень 1</div><div class="lvlNote">1✅ 2❌ 3❌</div></div>
+            <label>Название уровня</label><input class="lvlname" type="text" value="Level 1">
+            <div style="margin-top:10px">
+              <label>Вопрос</label><input class="q" type="text" value="Question 1">
+            </div>
+            <div class="grid3" style="margin-top:10px">
+              <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="Correct"></div>
+              <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="Wrong A"></div>
+              <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="Wrong B"></div>
+            </div>
+          </div>
+
+          <div class="lvlCard" data-lvl="2">
+            <div class="lvlHead"><div>Уровень 2</div><div class="lvlNote">1✅ 2❌ 3❌</div></div>
+            <label>Название уровня</label><input class="lvlname" type="text" value="Level 2">
+            <div style="margin-top:10px">
+              <label>Вопрос</label><input class="q" type="text" value="Question 2">
+            </div>
+            <div class="grid3" style="margin-top:10px">
+              <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="Correct"></div>
+              <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="Wrong A"></div>
+              <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="Wrong B"></div>
+            </div>
+          </div>
+
+          <div class="lvlCard" data-lvl="3">
+            <div class="lvlHead"><div>Уровень 3</div><div class="lvlNote">1✅ 2❌ 3❌</div></div>
+            <label>Название уровня</label><input class="lvlname" type="text" value="Level 3">
+            <div style="margin-top:10px">
+              <label>Вопрос</label><input class="q" type="text" value="Question 3">
+            </div>
+            <div class="grid3" style="margin-top:10px">
+              <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="Correct"></div>
+              <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="Wrong A"></div>
+              <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="Wrong B"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="section">
@@ -279,32 +322,12 @@
         <div style="margin-top:10px">
           <label>Платформа</label>
           <select id="platformPreset">
-            <option value="lily">Кувшинка</option>
-            <option value="rock">Камень (URL)</option>
-            <option value="hummock">Кочка (URL)</option>
+            <option value="lily">Лилия</option>
+            <option value="rock">Камень</option>
+            <option value="hummock">Болотная кочка</option>
             <option value="custom">Загрузить свою</option>
           </select>
-
           <input id="platformUpload" type="file" accept="image/*" style="margin-top:8px; display:none">
-
-          <div class="grid3" style="margin-top:10px">
-            <div>
-              <label>URL камня</label>
-              <input id="rockUrl" type="text" placeholder="вставь ссылку на камень">
-            </div>
-            <div>
-              <label>URL кочки</label>
-              <input id="hummockUrl" type="text" placeholder="вставь ссылку на кочку">
-            </div>
-            <div>
-              <label>Своё URL (если нужно)</label>
-              <input id="customPlatformUrl" type="text" placeholder="https://...">
-            </div>
-          </div>
-
-          <div class="hint" style="margin-top:8px">
-            В идеале пришли мне ссылки на камень и кочку — я поставлю их как пресеты без полей.
-          </div>
         </div>
       </div>
 
@@ -315,7 +338,11 @@
           <button class="secondary" id="resetBtn">Сбросить (демо)</button>
           <button class="danger" id="forceReloadBtn">Пересобрать</button>
         </div>
+
         <div id="errBox" class="err"></div>
+        <div class="hint" style="margin-top:8px">
+          Если вдруг снова будет “пусто” — тут появится ошибка (красным).
+        </div>
       </div>
 
     </div>
@@ -343,7 +370,30 @@
 <div class="toast" id="toast">Скопировано ✅</div>
 
 <script>
-(() => {
+/* аварийный ловец ошибок — будет виден даже если JS упадёт в неожиданный момент */
+window.addEventListener('error', (ev)=>{
+  try{
+    const box = document.getElementById('errBox');
+    if(!box) return;
+    box.style.display = 'block';
+    box.textContent =
+      'JS ERROR:\\n' +
+      (ev.message || 'unknown') + '\\n' +
+      (ev.filename ? (ev.filename + ':' + ev.lineno + ':' + ev.colno) : '') + '\\n\\n' +
+      (ev.error && ev.error.stack ? ev.error.stack : '');
+  }catch(e){}
+});
+
+window.addEventListener('unhandledrejection', (ev)=>{
+  try{
+    const box = document.getElementById('errBox');
+    if(!box) return;
+    box.style.display = 'block';
+    box.textContent = 'PROMISE REJECTION:\\n' + String(ev.reason || ev);
+  }catch(e){}
+});
+
+document.addEventListener('DOMContentLoaded', ()=>{
   const PRESET_BACKGROUNDS = {
     river: "https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png",
     lava:  "https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png",
@@ -355,10 +405,15 @@
     lizard: "https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png"
   };
 
-  // ТВОЯ КУВШИНКА
-  const LILY_URL = "https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png";
+  // ТВОИ ПЛАТФОРМЫ
+  const PLATFORMS = {
+    lily: "https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png",
+    rock: "https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png",
+    hummock: "https://img.genially.com/67961b32a116fb001568a75e/c6775617-bde5-43e4-9da8-5332d928807e.png"
+  };
 
   const $ = (id)=>document.getElementById(id);
+
   const ui = {
     levels: $('levels'),
     seconds: $('seconds'),
@@ -378,17 +433,16 @@
 
     platformPreset: $('platformPreset'),
     platformUpload: $('platformUpload'),
-    rockUrl: $('rockUrl'),
-    hummockUrl: $('hummockUrl'),
-    customPlatformUrl: $('customPlatformUrl'),
 
     preview: $('preview'),
     iframeOut: $('iframeOut'),
+
     copyBtn: $('copyBtn'),
     resetBtn: $('resetBtn'),
     forceReloadBtn: $('forceReloadBtn'),
+
     toast: $('toast'),
-    errBox: $('errBox'),
+    errBox: $('errBox')
   };
 
   let customBgDataUrl = "";
@@ -399,16 +453,19 @@
     ui.errBox.style.display = msg ? "block" : "none";
     ui.errBox.textContent = msg || "";
   }
+
   function toast(msg){
     ui.toast.textContent = msg;
     ui.toast.classList.add('show');
     setTimeout(()=>ui.toast.classList.remove('show'), 1100);
   }
+
   function clampInt(v,min,max,def){
     const n = parseInt(v,10);
     if(Number.isNaN(n)) return def;
     return Math.max(min, Math.min(max, n));
   }
+
   function readFileAsDataURL(file){
     return new Promise((resolve,reject)=>{
       const fr=new FileReader();
@@ -421,129 +478,62 @@
   function escapeForSingleQuotedAttr(s){
     return s.replace(/&/g,'&amp;').replace(/'/g,'&#39;');
   }
-  function escapeHtmlAttr(s){
-    return String(s)
-      .replace(/&/g,'&amp;')
-      .replace(/"/g,'&quot;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;');
-  }
 
-  // 1 уровень = 1 окно (вопрос + 3 ответа)
-  function buildLevelsEditor(){
-    const n = clampInt(ui.levels.value, 1, 30, 3);
-
-    // save existing
-    const existing = [];
-    ui.levelsEditor.querySelectorAll('[data-lvl]').forEach(card=>{
-      const idx = parseInt(card.getAttribute('data-lvl'),10);
-      existing[idx-1] = {
-        name: card.querySelector('.lvlname').value,
-        q: card.querySelector('.q').value,
-        a1: card.querySelector('.a1').value,
-        a2: card.querySelector('.a2').value,
-        a3: card.querySelector('.a3').value,
-      };
-    });
-
-    ui.levelsEditor.innerHTML = "";
-    for(let i=1;i<=n;i++){
-      const data = existing[i-1] || {
-        name:`Level ${i}`,
-        q:`Question for level ${i}`,
-        a1:`Correct`,
-        a2:`Wrong A`,
-        a3:`Wrong B`,
-      };
-
+  function ensureLevelCards(count){
+    const cards = [...ui.levelsEditor.querySelectorAll('.lvlCard')];
+    // remove extra
+    while(cards.length > count){
+      cards.pop().remove();
+    }
+    // add missing
+    while(ui.levelsEditor.querySelectorAll('.lvlCard').length < count){
+      const idx = ui.levelsEditor.querySelectorAll('.lvlCard').length + 1;
       const wrap=document.createElement('div');
       wrap.className='lvlCard';
-      wrap.setAttribute('data-lvl', String(i));
+      wrap.setAttribute('data-lvl', String(idx));
       wrap.innerHTML = `
-        <div class="lvlHead">
-          <div>Уровень ${i}</div>
-          <div class="lvlNote">1✅ 2❌ 3❌</div>
-        </div>
-
-        <div>
-          <label>Название уровня</label>
-          <input class="lvlname" type="text" value="${escapeHtmlAttr(data.name)}">
-        </div>
-
-        <div style="margin-top:10px">
-          <label>Вопрос</label>
-          <input class="q" type="text" value="${escapeHtmlAttr(data.q)}">
-        </div>
-
+        <div class="lvlHead"><div>Уровень ${idx}</div><div class="lvlNote">1✅ 2❌ 3❌</div></div>
+        <label>Название уровня</label><input class="lvlname" type="text" value="Level ${idx}">
+        <div style="margin-top:10px"><label>Вопрос</label><input class="q" type="text" value="Question ${idx}"></div>
         <div class="grid3" style="margin-top:10px">
-          <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="${escapeHtmlAttr(data.a1)}"></div>
-          <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="${escapeHtmlAttr(data.a2)}"></div>
-          <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="${escapeHtmlAttr(data.a3)}"></div>
-        </div>
-      `;
+          <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="Correct"></div>
+          <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="Wrong A"></div>
+          <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="Wrong B"></div>
+        </div>`;
       ui.levelsEditor.appendChild(wrap);
     }
-
-    ui.levelsEditor.querySelectorAll('input').forEach(inp=>{
-      inp.addEventListener('input', rebuild);
-      inp.addEventListener('change', rebuild);
+    // refresh headings
+    ui.levelsEditor.querySelectorAll('.lvlCard').forEach((c,i)=>{
+      c.setAttribute('data-lvl', String(i+1));
+      const head = c.querySelector('.lvlHead div');
+      if(head) head.textContent = "Уровень " + (i+1);
     });
   }
 
   function readLevelsData(){
-    const cards = [...ui.levelsEditor.querySelectorAll('[data-lvl]')];
+    const cards = [...ui.levelsEditor.querySelectorAll('.lvlCard')];
     return cards.map(card=>{
-      return {
-        name: card.querySelector('.lvlname').value.trim() || "Level",
-        questions: [{
-          text: card.querySelector('.q').value.trim() || "…",
-          answers: [
-            card.querySelector('.a1').value.trim() || "…",
-            card.querySelector('.a2').value.trim() || "…",
-            card.querySelector('.a3').value.trim() || "…"
-          ],
-          correct: 0
-        }]
-      };
+      const name = (card.querySelector('.lvlname')?.value || '').trim() || "Level";
+      const text = (card.querySelector('.q')?.value || '').trim() || "…";
+      const a1 = (card.querySelector('.a1')?.value || '').trim() || "…";
+      const a2 = (card.querySelector('.a2')?.value || '').trim() || "…";
+      const a3 = (card.querySelector('.a3')?.value || '').trim() || "…";
+      return { name, questions:[{ text, answers:[a1,a2,a3], correct:0 }] };
     });
   }
 
   function getPlatformUrl(){
-    const preset = ui.platformPreset.value;
-
-    if(preset === "custom"){
-      // upload has priority
-      return customPlatformDataUrl
-        || ui.customPlatformUrl.value.trim()
-        || LILY_URL;
-    }
-
-    if(preset === "lily") return LILY_URL;
-
-    if(preset === "rock"){
-      return ui.rockUrl.value.trim() || LILY_URL;
-    }
-
-    if(preset === "hummock"){
-      return ui.hummockUrl.value.trim() || LILY_URL;
-    }
-
-    return LILY_URL;
+    const p = ui.platformPreset.value;
+    if(p === "custom") return customPlatformDataUrl || PLATFORMS.lily;
+    return PLATFORMS[p] || PLATFORMS.lily;
   }
 
   function getConfig(){
     const levels = clampInt(ui.levels.value, 1, 30, 3);
     const seconds = clampInt(ui.seconds.value, 3, 60, 10);
 
-    let levelsData = readLevelsData();
-    while(levelsData.length < levels){
-      const i = levelsData.length+1;
-      levelsData.push({
-        name:`Level ${i}`,
-        questions:[{text:`Question for level ${i}`,answers:["Correct","Wrong A","Wrong B"],correct:0}]
-      });
-    }
-    levelsData.length = levels;
+    ensureLevelCards(levels);
+    const levelsData = readLevelsData().slice(0, levels);
 
     const bgUrl = (ui.bgPreset.value==='custom')
       ? (customBgDataUrl || PRESET_BACKGROUNDS.river)
@@ -567,14 +557,10 @@
     };
   }
 
-  // очень простой, но рабочий srcdoc игры (на базе твоего механизма платформ/вопросов/таймера)
   function buildGameSrcdoc(cfg){
     const CFG_JSON = JSON.stringify(cfg);
-    // ВАЖНО: экранируем </script> => <\/script>, чтобы никогда не рвать редактор
-    const html =
-`<!doctype html>
-<html lang="ru">
-<head>
+    let html = `<!doctype html>
+<html lang="ru"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Leap & Learn</title>
@@ -584,25 +570,23 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
 #GAME{position:relative;width:100%;height:100%}
 #BG{position:absolute;inset:0;z-index:0;background:url("${cfg.assets.bg}") center/cover no-repeat}
 #QUESTION{position:absolute;top:26px;width:100%;text-align:center;font-size:26px;z-index:20;color:${cfg.colors.question};text-shadow:0 2px 0 rgba(0,0,0,.35)}
-#TIMER{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 18px var(--neon-main)" : "none"};z-index:20;font-weight:900;color:#053149;}
-#TIMER.danger{border-color:var(--danger);color:var(--danger);box-shadow:${cfg.neonOn ? "0 0 25px var(--danger)" : "none"};}
+#TIMER{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 18px var(--neon-main)" : "none"};z-index:20;font-weight:900;color:#053149}
+#TIMER.danger{border-color:var(--danger);color:var(--danger);box-shadow:${cfg.neonOn ? "0 0 25px var(--danger)" : "none"}}
 #LIVES{position:absolute;top:30px;right:30px;font-size:26px;z-index:20}
 #SCORE{position:absolute;top:30px;left:30px;font-size:20px;font-weight:900;z-index:20;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
-#FROG{position:absolute;left:160px;top:50%;width:110px;height:110px;background:url("${cfg.assets.hero}") no-repeat center/contain;transform:translate(-50%,-65%);z-index:15;pointer-events:none;}
+#FROG{position:absolute;left:160px;top:50%;width:110px;height:110px;background:url("${cfg.assets.hero}") no-repeat center/contain;transform:translate(-50%,-65%);z-index:15;pointer-events:none}
 #PLATFORMS{position:absolute;inset:0;z-index:10}
 .platform{position:absolute;width:150px;height:150px}
-.lily{width:150px;height:150px;background:url("${cfg.assets.platform}") no-repeat center/contain;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65), 0 0 10px rgba(0,0,0,.35)}
+.pl{width:150px;height:150px;background:url("${cfg.assets.platform}") no-repeat center/contain;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65),0 0 10px rgba(0,0,0,.35)}
 .platform.answer{cursor:pointer}
 #START{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;background:rgba(8,16,34,.92)}
 .card{width:min(720px,calc(100vw - 40px));border-radius:26px;background:rgba(10,20,50,.92);border:2px solid rgba(124,249,255,.55);box-shadow:${cfg.neonOn ? "0 0 30px rgba(124,249,255,.35)" : "none"};padding:18px;color:#eaf6ff}
-.btn{padding:12px 34px;border-radius:16px;font-weight:900;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 15px var(--neon-main)" : "none"};cursor:pointer;color:#043149;}
+.btn{padding:12px 34px;border-radius:16px;font-weight:900;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 15px var(--neon-main)" : "none"};cursor:pointer;color:#043149}
 #END{position:absolute;inset:0;z-index:80;background:rgba(8,16,34,.92);display:none;align-items:center;justify-content:center;flex-direction:column}
 #END.show{display:flex}
 #END h1{margin:0 0 10px;font-size:48px}
 .win{color:var(--win)} .lose{color:var(--danger)}
-</style>
-</head>
-<body>
+</style></head><body>
 <div id="GAME">
   <div id="BG"></div>
   <div id="SCORE">⭐ 0</div>
@@ -629,8 +613,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
 <script>
 const CFG = ${CFG_JSON};
 const LEVELS = CFG.levelsData || [];
-let levelIndex = 0;
-let score=0, lives=5, q=0, timer=null, timeLeft=0;
+let score=0, lives=5, timer=null, timeLeft=0;
 
 const Q = document.getElementById("QUESTION");
 const T = document.getElementById("TIMER");
@@ -645,10 +628,12 @@ const RETRY = document.getElementById("RETRY");
 
 function fmt(s){ return "00:"+String(s).padStart(2,"0"); }
 
+let idx=0; // уровень
+function currentQ(){ return (LEVELS[idx]?.questions||[])[0]; }
+
 function render(){
   P.innerHTML="";
-  const lvl = LEVELS[levelIndex] || LEVELS[0];
-  const qq = (lvl.questions||[])[q];
+  const qq = currentQ();
   Q.textContent = qq?.text || "";
   L.textContent = "❤️".repeat(lives);
   S.textContent = "⭐ "+score;
@@ -665,18 +650,18 @@ function render(){
     d.style.left=160+STEP*i-75+"px";
     d.style.top=y-75+"px";
 
-    const lily=document.createElement("div");
-    lily.className="lily";
+    const pl=document.createElement("div");
+    pl.className="pl";
 
     if(i>0 && i<=answers.length){
-      lily.textContent = answers[i-1];
+      pl.textContent = answers[i-1];
       d.classList.add("answer");
       d.onclick = () => {
         clearInterval(timer);
         if((i-1)===correct){
           score += 100 + timeLeft*10;
-          q++;
-          if(q >= (lvl.questions||[]).length){ showEnd(true); }
+          idx++;
+          if(idx >= LEVELS.length){ showEnd(true); }
           else startRound();
         }else{
           lives--;
@@ -686,7 +671,7 @@ function render(){
         }
       };
     }
-    d.appendChild(lily);
+    d.appendChild(pl);
     P.appendChild(d);
   }
 }
@@ -698,7 +683,13 @@ function startTimer(){
   T.textContent = fmt(timeLeft);
   timer=setInterval(()=>{
     timeLeft--;
-    if(timeLeft<=0){ clearInterval(timer); lives--; if(lives<=0) showEnd(false); else startRound(); return; }
+    if(timeLeft<=0){
+      clearInterval(timer);
+      lives--;
+      if(lives<=0) showEnd(false);
+      else startRound();
+      return;
+    }
     T.textContent = fmt(timeLeft);
     if(timeLeft<=3) T.classList.add("danger");
   },1000);
@@ -720,14 +711,14 @@ function reset(){
   clearInterval(timer);
   END.classList.remove("show");
   START.style.display="flex";
-  score=0; lives=5; q=0; levelIndex=0;
+  score=0; lives=5; idx=0;
   render();
   T.textContent = fmt(CFG.seconds||10);
 }
 
 START_BTN.onclick=()=>{
   START.style.display="none";
-  q=0; lives=5; score=0; levelIndex=0;
+  score=0; lives=5; idx=0;
   startRound();
 };
 RETRY.onclick=()=>reset();
@@ -735,9 +726,11 @@ RETRY.onclick=()=>reset();
 T.textContent = fmt(CFG.seconds||10);
 render();
 <\/script>
-</body>
-</html>`;
-    return html.replaceAll("</script>", "<\\/script>");
+</body></html>`;
+
+    // защита от разрыва <script> внутри srcdoc
+    html = html.replaceAll("</script>", "<\\/script>");
+    return html;
   }
 
   function buildIframeCode(srcdoc){
@@ -751,8 +744,8 @@ render();
     rebuildTimer=setTimeout(()=>{
       try{
         showError("");
-        const cfg=getConfig();
-        const srcdoc=buildGameSrcdoc(cfg);
+        const cfg = getConfig();
+        const srcdoc = buildGameSrcdoc(cfg);
         ui.preview.srcdoc = srcdoc;
         ui.iframeOut.value = buildIframeCode(srcdoc);
       }catch(e){
@@ -763,96 +756,88 @@ render();
     },60);
   }
 
-  function bindAuto(ids){
-    ids.forEach(id=>{
-      const el=$(id);
-      el.addEventListener('input', rebuild);
-      el.addEventListener('change', rebuild);
-    });
+  function bindRebuild(el){
+    el.addEventListener('input', rebuild);
+    el.addEventListener('change', rebuild);
   }
 
-  async function init(){
-    // uploads
-    ui.bgPreset.addEventListener('change', ()=>{
-      ui.bgUpload.style.display = (ui.bgPreset.value==='custom') ? 'block' : 'none';
-      rebuild();
-    });
-    ui.bgUpload.addEventListener('change', async ()=>{
-      const f=ui.bgUpload.files && ui.bgUpload.files[0];
-      customBgDataUrl = f ? await readFileAsDataURL(f) : "";
-      rebuild();
-    });
-
-    ui.heroPreset.addEventListener('change', ()=>{
-      ui.heroUpload.style.display = (ui.heroPreset.value==='custom') ? 'block' : 'none';
-      rebuild();
-    });
-    ui.heroUpload.addEventListener('change', async ()=>{
-      const f=ui.heroUpload.files && ui.heroUpload.files[0];
-      customHeroDataUrl = f ? await readFileAsDataURL(f) : "";
-      rebuild();
-    });
-
-    ui.platformPreset.addEventListener('change', ()=>{
-      ui.platformUpload.style.display = (ui.platformPreset.value==='custom') ? 'block' : 'none';
-      rebuild();
-    });
-    ui.platformUpload.addEventListener('change', async ()=>{
-      const f=ui.platformUpload.files && ui.platformUpload.files[0];
-      customPlatformDataUrl = f ? await readFileAsDataURL(f) : "";
-      rebuild();
-    });
-
-    ui.levels.addEventListener('input', ()=>{ buildLevelsEditor(); rebuild(); });
-    ui.levels.addEventListener('change', ()=>{ buildLevelsEditor(); rebuild(); });
-
-    bindAuto([
-      'levels','seconds',
-      'neonMain','dangerColor','winColor','neonOn','questionColor',
-      'bgPreset','heroPreset',
-      'platformPreset','rockUrl','hummockUrl','customPlatformUrl'
-    ]);
-
-    ui.copyBtn.addEventListener('click', async ()=>{
-      try{
-        await navigator.clipboard.writeText(ui.iframeOut.value);
-        toast("Скопировано ✅");
-      }catch(e){
-        ui.iframeOut.focus(); ui.iframeOut.select();
-        document.execCommand('copy');
-        toast("Скопировано ✅");
-      }
-    });
-
-    ui.forceReloadBtn.addEventListener('click', ()=>{ rebuild(); toast("Пересобрано"); });
-
-    ui.resetBtn.addEventListener('click', ()=>{
-      ui.levels.value=3;
-      ui.seconds.value=10;
-      ui.neonMain.value="#7cf9ff";
-      ui.dangerColor.value="#ff3b3b";
-      ui.winColor.value="#ffe44d";
-      ui.neonOn.checked=true;
-      ui.questionColor.value="#000000";
-
-      ui.bgPreset.value="river"; ui.bgUpload.style.display="none"; customBgDataUrl="";
-      ui.heroPreset.value="frog"; ui.heroUpload.style.display="none"; customHeroDataUrl="";
-
-      ui.platformPreset.value="lily"; ui.platformUpload.style.display="none"; customPlatformDataUrl="";
-      ui.rockUrl.value=""; ui.hummockUrl.value=""; ui.customPlatformUrl.value="";
-
-      buildLevelsEditor();
-      rebuild();
-      toast("Сброшено");
-    });
-
-    // ВАЖНО: именно здесь создаём поля (иначе будет пусто)
-    buildLevelsEditor();
+  // uploads
+  ui.bgPreset.addEventListener('change', ()=>{
+    ui.bgUpload.style.display = (ui.bgPreset.value==='custom') ? 'block' : 'none';
     rebuild();
-  }
+  });
+  ui.bgUpload.addEventListener('change', async ()=>{
+    const f=ui.bgUpload.files && ui.bgUpload.files[0];
+    customBgDataUrl = f ? await readFileAsDataURL(f) : "";
+    rebuild();
+  });
 
-  window.addEventListener("DOMContentLoaded", init);
-})();
+  ui.heroPreset.addEventListener('change', ()=>{
+    ui.heroUpload.style.display = (ui.heroPreset.value==='custom') ? 'block' : 'none';
+    rebuild();
+  });
+  ui.heroUpload.addEventListener('change', async ()=>{
+    const f=ui.heroUpload.files && ui.heroUpload.files[0];
+    customHeroDataUrl = f ? await readFileAsDataURL(f) : "";
+    rebuild();
+  });
+
+  ui.platformPreset.addEventListener('change', ()=>{
+    ui.platformUpload.style.display = (ui.platformPreset.value==='custom') ? 'block' : 'none';
+    rebuild();
+  });
+  ui.platformUpload.addEventListener('change', async ()=>{
+    const f=ui.platformUpload.files && ui.platformUpload.files[0];
+    customPlatformDataUrl = f ? await readFileAsDataURL(f) : "";
+    rebuild();
+  });
+
+  // bind inputs
+  [ui.levels, ui.seconds, ui.neonMain, ui.dangerColor, ui.winColor, ui.neonOn, ui.questionColor,
+   ui.bgPreset, ui.heroPreset, ui.platformPreset
+  ].forEach(bindRebuild);
+
+  // bind task fields
+  ui.levelsEditor.querySelectorAll('input').forEach(bindRebuild);
+
+  // buttons
+  ui.copyBtn.addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText(ui.iframeOut.value);
+      toast("Скопировано ✅");
+    }catch(e){
+      ui.iframeOut.focus(); ui.iframeOut.select();
+      document.execCommand('copy');
+      toast("Скопировано ✅");
+    }
+  });
+
+  ui.forceReloadBtn.addEventListener('click', ()=>{ rebuild(); toast("Пересобрано"); });
+
+  ui.resetBtn.addEventListener('click', ()=>{
+    ui.levels.value=3;
+    ui.seconds.value=10;
+    ui.neonMain.value="#7cf9ff";
+    ui.dangerColor.value="#ff3b3b";
+    ui.winColor.value="#ffe44d";
+    ui.neonOn.checked=true;
+    ui.questionColor.value="#000000";
+
+    ui.bgPreset.value="river"; ui.bgUpload.style.display="none"; customBgDataUrl="";
+    ui.heroPreset.value="frog"; ui.heroUpload.style.display="none"; customHeroDataUrl="";
+    ui.platformPreset.value="lily"; ui.platformUpload.style.display="none"; customPlatformDataUrl="";
+
+    // привести количество карточек к 3
+    ensureLevelCards(3);
+    ui.levelsEditor.querySelectorAll('input').forEach(bindRebuild);
+
+    rebuild();
+    toast("Сброшено");
+  });
+
+  // первая сборка
+  rebuild();
+});
 </script>
 </body>
 </html>
