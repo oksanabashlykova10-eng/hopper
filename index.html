@@ -90,6 +90,7 @@
     color: var(--text);
     outline:none;
   }
+  textarea{min-height:140px; resize:vertical}
   input[type="color"]{
     width:100%;
     height:42px;
@@ -108,6 +109,7 @@
     color:var(--text);
   }
   .check input{transform: scale(1.15)}
+
   .btnbar{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
   button{
     cursor:pointer; border:none;
@@ -130,19 +132,43 @@
     box-shadow: 0 0 25px rgba(255,59,59,.16);
   }
 
-  .lvlCard{
-    border:1px solid rgba(124,249,255,.12);
-    border-radius:14px;
+  /* LEVEL BLOCKS */
+  .lvl{
+    border:1px solid rgba(124,249,255,.14);
+    border-radius:16px;
     background: rgba(0,0,0,.18);
     padding:10px;
     margin-top:10px;
   }
   .lvlHead{
-    display:flex; justify-content:space-between; align-items:center;
-    font-weight:1000; font-size:12px; color:var(--accent);
-    margin-bottom:8px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:10px; margin-bottom:8px;
   }
-  .lvlNote{font-size:11px; color:var(--muted)}
+  .lvlTitle{
+    font-weight:1000; color:var(--accent);
+    display:flex; align-items:center; gap:10px;
+  }
+  .trash{
+    border:1px solid rgba(255,59,59,.35);
+    background: rgba(255,59,59,.14);
+    color:#ffd7d7;
+    border-radius:12px;
+    padding:8px 10px;
+    font-weight:1000;
+    cursor:pointer;
+  }
+  .trash:hover{filter:brightness(1.05)}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+  .example{
+    margin-top:8px;
+    padding:10px;
+    border-radius:14px;
+    border:1px dashed rgba(124,249,255,.22);
+    background: rgba(6,8,18,.35);
+    color: var(--muted);
+    font-size:11px;
+    line-height:1.35;
+  }
 
   .right{display:flex; flex-direction:column; min-height:0;}
   .rightTop{
@@ -179,7 +205,6 @@
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
 
-  /* аварийный вывод ошибок */
   .err{
     margin-top:10px;
     padding:10px;
@@ -215,63 +240,32 @@
         <h2>Базовые</h2>
         <div class="grid2">
           <div>
-            <label>Количество уровней</label>
-            <input id="levels" type="number" min="1" max="30" value="3">
+            <label>Сложность: секунд на вопрос</label>
+            <input id="seconds" type="number" min="3" max="60" value="10">
           </div>
           <div>
-            <label>Сложность: секунд (t1=t2=t3)</label>
-            <input id="seconds" type="number" min="3" max="60" value="10">
+            <label>Жизни</label>
+            <input id="lives" type="number" min="1" max="10" value="5">
           </div>
         </div>
         <div class="hint" style="margin-top:8px">
-          Для каждого уровня: вопрос + 3 ответа (1-й правильный).
+          Добавляй уровни кнопкой ниже. В каждом уровне — список строк “вопрос + 3 ответа”.
         </div>
       </div>
 
       <div class="section">
-        <h2>Задания по уровням</h2>
-        <div class="hint">Впиши свои задания ниже. (1 — правильный, 2–3 — неправильные)</div>
+        <h2>Уровни</h2>
 
-        <!-- ВАЖНО: эти окна видны даже если JS не запустился -->
-        <div id="levelsEditor">
-          <div class="lvlCard" data-lvl="1">
-            <div class="lvlHead"><div>Уровень 1</div><div class="lvlNote">1✅ 2❌ 3❌</div></div>
-            <label>Название уровня</label><input class="lvlname" type="text" value="Level 1">
-            <div style="margin-top:10px">
-              <label>Вопрос</label><input class="q" type="text" value="Question 1">
-            </div>
-            <div class="grid3" style="margin-top:10px">
-              <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="Correct"></div>
-              <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="Wrong A"></div>
-              <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="Wrong B"></div>
-            </div>
-          </div>
+        <div id="levelsBox"></div>
 
-          <div class="lvlCard" data-lvl="2">
-            <div class="lvlHead"><div>Уровень 2</div><div class="lvlNote">1✅ 2❌ 3❌</div></div>
-            <label>Название уровня</label><input class="lvlname" type="text" value="Level 2">
-            <div style="margin-top:10px">
-              <label>Вопрос</label><input class="q" type="text" value="Question 2">
-            </div>
-            <div class="grid3" style="margin-top:10px">
-              <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="Correct"></div>
-              <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="Wrong A"></div>
-              <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="Wrong B"></div>
-            </div>
-          </div>
+        <div class="btnbar" style="margin-top:10px">
+          <button id="addLevelBtn">➕ Добавить уровень</button>
+        </div>
 
-          <div class="lvlCard" data-lvl="3">
-            <div class="lvlHead"><div>Уровень 3</div><div class="lvlNote">1✅ 2❌ 3❌</div></div>
-            <label>Название уровня</label><input class="lvlname" type="text" value="Level 3">
-            <div style="margin-top:10px">
-              <label>Вопрос</label><input class="q" type="text" value="Question 3">
-            </div>
-            <div class="grid3" style="margin-top:10px">
-              <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="Correct"></div>
-              <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="Wrong A"></div>
-              <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="Wrong B"></div>
-            </div>
-          </div>
+        <div class="example">
+          Формат строки (1-й ответ правильный):<br>
+          <span class="mono">I ____ running. am/is/are</span><br><br>
+          Можно несколько строк — каждая строка = отдельный вопрос.
         </div>
       </div>
 
@@ -340,9 +334,6 @@
         </div>
 
         <div id="errBox" class="err"></div>
-        <div class="hint" style="margin-top:8px">
-          Если вдруг снова будет “пусто” — тут появится ошибка (красным).
-        </div>
       </div>
 
     </div>
@@ -370,7 +361,6 @@
 <div class="toast" id="toast">Скопировано ✅</div>
 
 <script>
-/* аварийный ловец ошибок — будет виден даже если JS упадёт в неожиданный момент */
 window.addEventListener('error', (ev)=>{
   try{
     const box = document.getElementById('errBox');
@@ -383,7 +373,6 @@ window.addEventListener('error', (ev)=>{
       (ev.error && ev.error.stack ? ev.error.stack : '');
   }catch(e){}
 });
-
 window.addEventListener('unhandledrejection', (ev)=>{
   try{
     const box = document.getElementById('errBox');
@@ -405,7 +394,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     lizard: "https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png"
   };
 
-  // ТВОИ ПЛАТФОРМЫ
   const PLATFORMS = {
     lily: "https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png",
     rock: "https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png",
@@ -413,11 +401,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   };
 
   const $ = (id)=>document.getElementById(id);
-
   const ui = {
-    levels: $('levels'),
     seconds: $('seconds'),
-    levelsEditor: $('levelsEditor'),
+    lives: $('lives'),
+
+    levelsBox: $('levelsBox'),
+    addLevelBtn: $('addLevelBtn'),
 
     neonMain: $('neonMain'),
     dangerColor: $('dangerColor'),
@@ -427,10 +416,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     bgPreset: $('bgPreset'),
     bgUpload: $('bgUpload'),
-
     heroPreset: $('heroPreset'),
     heroUpload: $('heroUpload'),
-
     platformPreset: $('platformPreset'),
     platformUpload: $('platformUpload'),
 
@@ -442,7 +429,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     forceReloadBtn: $('forceReloadBtn'),
 
     toast: $('toast'),
-    errBox: $('errBox')
+    errBox: $('errBox'),
   };
 
   let customBgDataUrl = "";
@@ -453,19 +440,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
     ui.errBox.style.display = msg ? "block" : "none";
     ui.errBox.textContent = msg || "";
   }
-
   function toast(msg){
     ui.toast.textContent = msg;
     ui.toast.classList.add('show');
     setTimeout(()=>ui.toast.classList.remove('show'), 1100);
   }
-
   function clampInt(v,min,max,def){
     const n = parseInt(v,10);
     if(Number.isNaN(n)) return def;
     return Math.max(min, Math.min(max, n));
   }
-
   function readFileAsDataURL(file){
     return new Promise((resolve,reject)=>{
       const fr=new FileReader();
@@ -474,52 +458,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
       fr.readAsDataURL(file);
     });
   }
-
   function escapeForSingleQuotedAttr(s){
     return s.replace(/&/g,'&amp;').replace(/'/g,'&#39;');
   }
-
-  function ensureLevelCards(count){
-    const cards = [...ui.levelsEditor.querySelectorAll('.lvlCard')];
-    // remove extra
-    while(cards.length > count){
-      cards.pop().remove();
-    }
-    // add missing
-    while(ui.levelsEditor.querySelectorAll('.lvlCard').length < count){
-      const idx = ui.levelsEditor.querySelectorAll('.lvlCard').length + 1;
-      const wrap=document.createElement('div');
-      wrap.className='lvlCard';
-      wrap.setAttribute('data-lvl', String(idx));
-      wrap.innerHTML = `
-        <div class="lvlHead"><div>Уровень ${idx}</div><div class="lvlNote">1✅ 2❌ 3❌</div></div>
-        <label>Название уровня</label><input class="lvlname" type="text" value="Level ${idx}">
-        <div style="margin-top:10px"><label>Вопрос</label><input class="q" type="text" value="Question ${idx}"></div>
-        <div class="grid3" style="margin-top:10px">
-          <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="Correct"></div>
-          <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="Wrong A"></div>
-          <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="Wrong B"></div>
-        </div>`;
-      ui.levelsEditor.appendChild(wrap);
-    }
-    // refresh headings
-    ui.levelsEditor.querySelectorAll('.lvlCard').forEach((c,i)=>{
-      c.setAttribute('data-lvl', String(i+1));
-      const head = c.querySelector('.lvlHead div');
-      if(head) head.textContent = "Уровень " + (i+1);
-    });
-  }
-
-  function readLevelsData(){
-    const cards = [...ui.levelsEditor.querySelectorAll('.lvlCard')];
-    return cards.map(card=>{
-      const name = (card.querySelector('.lvlname')?.value || '').trim() || "Level";
-      const text = (card.querySelector('.q')?.value || '').trim() || "…";
-      const a1 = (card.querySelector('.a1')?.value || '').trim() || "…";
-      const a2 = (card.querySelector('.a2')?.value || '').trim() || "…";
-      const a3 = (card.querySelector('.a3')?.value || '').trim() || "…";
-      return { name, questions:[{ text, answers:[a1,a2,a3], correct:0 }] };
-    });
+  function escapeHtml(s){
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function getPlatformUrl(){
@@ -528,12 +473,143 @@ document.addEventListener('DOMContentLoaded', ()=>{
     return PLATFORMS[p] || PLATFORMS.lily;
   }
 
-  function getConfig(){
-    const levels = clampInt(ui.levels.value, 1, 30, 3);
-    const seconds = clampInt(ui.seconds.value, 3, 60, 10);
+  // ===== LEVEL UI (ADD / DELETE) =====
+  function renumberLevels(){
+    [...ui.levelsBox.querySelectorAll('.lvl')].forEach((lvl, i)=>{
+      lvl.dataset.idx = String(i);
+      const title = lvl.querySelector('.lvlTitle span');
+      if(title) title.textContent = `Уровень ${i+1}`;
+      const nameInput = lvl.querySelector('.lvlName');
+      if(nameInput && !nameInput.value.trim()){
+        nameInput.value = `Level ${i+1}`;
+      }
+    });
+  }
 
-    ensureLevelCards(levels);
-    const levelsData = readLevelsData().slice(0, levels);
+  function addLevel(prefill){
+    const idx = ui.levelsBox.querySelectorAll('.lvl').length;
+    const wrap = document.createElement('div');
+    wrap.className = 'lvl';
+    wrap.dataset.idx = String(idx);
+
+    const nameVal = prefill?.name ?? `Level ${idx+1}`;
+    const tasksVal = prefill?.tasks ?? `I ____ running. am/is/are`;
+
+    wrap.innerHTML = `
+      <div class="lvlHead">
+        <div class="lvlTitle">
+          <span>Уровень ${idx+1}</span>
+        </div>
+        <button class="trash" type="button" title="Удалить уровень">🗑</button>
+      </div>
+
+      <div>
+        <label>Название уровня</label>
+        <input class="lvlName" type="text" value="${escapeHtml(nameVal)}">
+      </div>
+
+      <div style="margin-top:10px">
+        <label>Задания (каждая строка = 1 вопрос)</label>
+        <textarea class="lvlTasks" placeholder="Например:
+I ____ running. am/is/are
+She ____ a teacher. am/is/are">${escapeHtml(tasksVal)}</textarea>
+      </div>
+    `;
+
+    // delete
+    wrap.querySelector('.trash').addEventListener('click', ()=>{
+      wrap.remove();
+      renumberLevels();
+      rebuild();
+    });
+
+    // rebuild on edit
+    wrap.querySelectorAll('input,textarea').forEach(el=>{
+      el.addEventListener('input', rebuild);
+      el.addEventListener('change', rebuild);
+    });
+
+    ui.levelsBox.appendChild(wrap);
+    renumberLevels();
+    // прокрутить к новому уровню
+    setTimeout(()=>wrap.scrollIntoView({behavior:'smooth', block:'start'}), 20);
+    rebuild();
+  }
+
+  ui.addLevelBtn.addEventListener('click', ()=>addLevel());
+
+  // ===== TASK PARSER =====
+  // Accepts lines like: "I ____ running. am/is/are"
+  // We split by the LAST space before "a/b/c". Safer: find last token containing "/" and 3 parts.
+  function parseTasksText(text){
+    const lines = String(text||"")
+      .split(/\r?\n/)
+      .map(s=>s.trim())
+      .filter(s=>s.length>0);
+
+    const questions = [];
+
+    for(const line of lines){
+      // find an answers chunk with two slashes
+      // try: last chunk after last space
+      let qPart = line;
+      let aPart = "";
+
+      // first try split by " :: "
+      if(line.includes("::")){
+        const parts = line.split("::");
+        qPart = (parts[0]||"").trim();
+        aPart = (parts.slice(1).join("::")||"").trim();
+      } else {
+        // find last space where the rest contains a/b/c
+        const lastSpace = line.lastIndexOf(" ");
+        if(lastSpace>0){
+          const tail = line.slice(lastSpace+1).trim();
+          if((tail.match(/\//g)||[]).length>=2){
+            qPart = line.slice(0,lastSpace).trim();
+            aPart = tail;
+          } else {
+            // fallback: find first token in line that contains slashes
+            const tokens = line.split(/\s+/);
+            const slashTok = [...tokens].reverse().find(t => (t.match(/\//g)||[]).length>=2);
+            if(slashTok){
+              aPart = slashTok;
+              const pos = line.lastIndexOf(slashTok);
+              qPart = line.slice(0,pos).trim();
+            }
+          }
+        }
+      }
+
+      const ans = aPart.split("/").map(x=>x.trim()).filter(Boolean);
+      if(ans.length < 3){
+        // if format broken, skip silently (or could keep as text only)
+        continue;
+      }
+      const a1 = ans[0], a2 = ans[1], a3 = ans[2];
+      questions.push({ text: qPart || "…", answers:[a1,a2,a3], correct:0 });
+    }
+    return questions;
+  }
+
+  // ===== CONFIG =====
+  function getConfig(){
+    const seconds = clampInt(ui.seconds.value, 3, 60, 10);
+    const lives = clampInt(ui.lives.value, 1, 10, 5);
+
+    const levels = [...ui.levelsBox.querySelectorAll('.lvl')].map((lvl, i)=>{
+      const name = (lvl.querySelector('.lvlName')?.value || "").trim() || `Level ${i+1}`;
+      const tasks = (lvl.querySelector('.lvlTasks')?.value || "");
+      const questions = parseTasksText(tasks);
+      // если учитель ничего не ввёл/ошибся с форматом — оставим хотя бы 1 вопрос, чтобы игра не ломалась
+      if(questions.length === 0){
+        return {
+          name,
+          questions: [{ text: "Добавь задания в редакторе", answers:["OK","...","..."], correct:0 }]
+        };
+      }
+      return { name, questions };
+    });
 
     const bgUrl = (ui.bgPreset.value==='custom')
       ? (customBgDataUrl || PRESET_BACKGROUNDS.river)
@@ -545,7 +621,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
     return {
       seconds,
-      levelsData,
+      lives,
+      levelsData: levels.length ? levels : [{
+        name:"Level 1",
+        questions:[{text:"I ____ running.",answers:["am","is","are"],correct:0}]
+      }],
       colors:{
         neonMain: ui.neonMain.value,
         danger: ui.dangerColor.value,
@@ -557,8 +637,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
     };
   }
 
+  // ===== GAME SRC DOC (answers shuffled) =====
   function buildGameSrcdoc(cfg){
     const CFG_JSON = JSON.stringify(cfg);
+
     let html = `<!doctype html>
 <html lang="ru"><head>
 <meta charset="utf-8">
@@ -572,19 +654,21 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
 #QUESTION{position:absolute;top:26px;width:100%;text-align:center;font-size:26px;z-index:20;color:${cfg.colors.question};text-shadow:0 2px 0 rgba(0,0,0,.35)}
 #TIMER{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 18px var(--neon-main)" : "none"};z-index:20;font-weight:900;color:#053149}
 #TIMER.danger{border-color:var(--danger);color:var(--danger);box-shadow:${cfg.neonOn ? "0 0 25px var(--danger)" : "none"}}
+#LEVELNAME{position:absolute;top:125px;left:50%;transform:translateX(-50%);z-index:20;font-weight:900;color:#eaf6ff;opacity:.95;text-shadow:${cfg.neonOn ? "0 0 16px rgba(124,249,255,.20)" : "none"}}
 #LIVES{position:absolute;top:30px;right:30px;font-size:26px;z-index:20}
 #SCORE{position:absolute;top:30px;left:30px;font-size:20px;font-weight:900;z-index:20;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
 #FROG{position:absolute;left:160px;top:50%;width:110px;height:110px;background:url("${cfg.assets.hero}") no-repeat center/contain;transform:translate(-50%,-65%);z-index:15;pointer-events:none}
 #PLATFORMS{position:absolute;inset:0;z-index:10}
-.platform{position:absolute;width:150px;height:150px}
-.pl{width:150px;height:150px;background:url("${cfg.assets.platform}") no-repeat center/contain;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65),0 0 10px rgba(0,0,0,.35)}
+.platform{position:absolute;width:150px;height:150px;transition:filter .15s}
+.pl{width:150px;height:150px;background:url("${cfg.assets.platform}") no-repeat center/contain;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65),0 0 10px rgba(0,0,0,.35);padding:10px;text-align:center}
 .platform.answer{cursor:pointer}
+.platform.answer:hover{filter:drop-shadow(0 0 14px rgba(124,249,255,.35))}
 #START{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;background:rgba(8,16,34,.92)}
-.card{width:min(720px,calc(100vw - 40px));border-radius:26px;background:rgba(10,20,50,.92);border:2px solid rgba(124,249,255,.55);box-shadow:${cfg.neonOn ? "0 0 30px rgba(124,249,255,.35)" : "none"};padding:18px;color:#eaf6ff}
+.card{width:min(780px,calc(100vw - 40px));border-radius:26px;background:rgba(10,20,50,.92);border:2px solid rgba(124,249,255,.55);box-shadow:${cfg.neonOn ? "0 0 30px rgba(124,249,255,.35)" : "none"};padding:18px;color:#eaf6ff}
 .btn{padding:12px 34px;border-radius:16px;font-weight:900;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 15px var(--neon-main)" : "none"};cursor:pointer;color:#043149}
 #END{position:absolute;inset:0;z-index:80;background:rgba(8,16,34,.92);display:none;align-items:center;justify-content:center;flex-direction:column}
 #END.show{display:flex}
-#END h1{margin:0 0 10px;font-size:48px}
+#END h1{margin:0 0 10px;font-size:48px;text-align:center}
 .win{color:var(--win)} .lose{color:var(--danger)}
 </style></head><body>
 <div id="GAME">
@@ -592,6 +676,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
   <div id="SCORE">⭐ 0</div>
   <div id="QUESTION"></div>
   <div id="TIMER">00:10</div>
+  <div id="LEVELNAME"></div>
   <div id="LIVES"></div>
   <div id="FROG"></div>
   <div id="PLATFORMS"></div>
@@ -612,8 +697,36 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
 
 <script>
 const CFG = ${CFG_JSON};
-const LEVELS = CFG.levelsData || [];
-let score=0, lives=5, timer=null, timeLeft=0;
+let LEVELS = (CFG.levelsData||[]).map(l=>({
+  name:l.name||'Level',
+  questions:(l.questions||[]).slice()
+}));
+
+function shuffle(a){
+  const arr=a.slice();
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// shuffle answers and keep correct
+function randomizeQuestion(q){
+  const packs = q.answers.map((txt,idx)=>({txt, idx}));
+  const s = shuffle(packs);
+  const answers = s.map(x=>x.txt);
+  const correct = s.findIndex(x=>x.idx===q.correct);
+  return { text:q.text, answers, correct };
+}
+
+// shuffle questions inside each level (but keep the level order)
+LEVELS = LEVELS.map(l=>{
+  const qs = shuffle((l.questions||[]).map(q=>randomizeQuestion(q)));
+  return {...l, questions: qs};
+});
+
+let score=0, lives=(CFG.lives||5), timer=null, timeLeft=0;
 
 const Q = document.getElementById("QUESTION");
 const T = document.getElementById("TIMER");
@@ -625,15 +738,22 @@ const START_BTN = document.getElementById("START_BTN");
 const END = document.getElementById("END");
 const END_TXT = document.getElementById("END_TXT");
 const RETRY = document.getElementById("RETRY");
+const LEVELNAME = document.getElementById("LEVELNAME");
 
 function fmt(s){ return "00:"+String(s).padStart(2,"0"); }
 
-let idx=0; // уровень
-function currentQ(){ return (LEVELS[idx]?.questions||[])[0]; }
+let lvl=0; // index level
+let qi=0; // index question in level
+
+function curLevel(){ return LEVELS[lvl]; }
+function curQ(){ return (curLevel()?.questions||[])[qi]; }
 
 function render(){
   P.innerHTML="";
-  const qq = currentQ();
+  const level = curLevel();
+  const qq = curQ();
+
+  LEVELNAME.textContent = level ? level.name : "";
   Q.textContent = qq?.text || "";
   L.textContent = "❤️".repeat(lives);
   S.textContent = "⭐ "+score;
@@ -641,7 +761,7 @@ function render(){
   const answers = qq?.answers || [];
   const correct = qq?.correct ?? 0;
 
-  const STEP=190,y=innerHeight/2;
+  const STEP=190, y=innerHeight/2;
   const count=Math.ceil((innerWidth-160)/STEP)+4;
 
   for(let i=0;i<count;i++){
@@ -656,21 +776,9 @@ function render(){
     if(i>0 && i<=answers.length){
       pl.textContent = answers[i-1];
       d.classList.add("answer");
-      d.onclick = () => {
-        clearInterval(timer);
-        if((i-1)===correct){
-          score += 100 + timeLeft*10;
-          idx++;
-          if(idx >= LEVELS.length){ showEnd(true); }
-          else startRound();
-        }else{
-          lives--;
-          score = Math.max(0, score-80);
-          if(lives<=0) showEnd(false);
-          else startRound();
-        }
-      };
+      d.onclick = () => pick(i-1, correct);
     }
+
     d.appendChild(pl);
     P.appendChild(d);
   }
@@ -685,14 +793,46 @@ function startTimer(){
     timeLeft--;
     if(timeLeft<=0){
       clearInterval(timer);
-      lives--;
-      if(lives<=0) showEnd(false);
-      else startRound();
+      fail();
       return;
     }
     T.textContent = fmt(timeLeft);
     if(timeLeft<=3) T.classList.add("danger");
   },1000);
+}
+
+function pick(answerIdx, correctIdx){
+  clearInterval(timer);
+  if(answerIdx === correctIdx){
+    score += 100 + timeLeft*10;
+    nextStep();
+  }else{
+    fail();
+  }
+}
+
+function fail(){
+  lives--;
+  score = Math.max(0, score-80);
+  if(lives<=0){ showEnd(false); return; }
+  startRound();
+}
+
+function nextStep(){
+  const level = curLevel();
+  const totalQ = (level?.questions||[]).length;
+
+  qi++;
+  if(qi >= totalQ){
+    // next level
+    lvl++;
+    qi=0;
+    if(lvl >= LEVELS.length){
+      showEnd(true);
+      return;
+    }
+  }
+  startRound();
 }
 
 function startRound(){
@@ -711,14 +851,19 @@ function reset(){
   clearInterval(timer);
   END.classList.remove("show");
   START.style.display="flex";
-  score=0; lives=5; idx=0;
-  render();
+  score=0; lives=(CFG.lives||5); lvl=0; qi=0;
+  // reshuffle on restart
+  LEVELS = (CFG.levelsData||[]).map(l=>({
+    name:l.name||'Level',
+    questions: shuffle((l.questions||[]).map(q=>randomizeQuestion(q)))
+  }));
   T.textContent = fmt(CFG.seconds||10);
+  render();
 }
 
 START_BTN.onclick=()=>{
   START.style.display="none";
-  score=0; lives=5; idx=0;
+  score=0; lives=(CFG.lives||5); lvl=0; qi=0;
   startRound();
 };
 RETRY.onclick=()=>reset();
@@ -728,7 +873,6 @@ render();
 <\/script>
 </body></html>`;
 
-    // защита от разрыва <script> внутри srcdoc
     html = html.replaceAll("</script>", "<\\/script>");
     return html;
   }
@@ -753,7 +897,7 @@ render();
         ui.preview.removeAttribute("srcdoc");
         ui.iframeOut.value = "";
       }
-    },60);
+    },80);
   }
 
   function bindRebuild(el){
@@ -792,13 +936,10 @@ render();
     rebuild();
   });
 
-  // bind inputs
-  [ui.levels, ui.seconds, ui.neonMain, ui.dangerColor, ui.winColor, ui.neonOn, ui.questionColor,
+  // bind basics
+  [ui.seconds, ui.lives, ui.neonMain, ui.dangerColor, ui.winColor, ui.neonOn, ui.questionColor,
    ui.bgPreset, ui.heroPreset, ui.platformPreset
   ].forEach(bindRebuild);
-
-  // bind task fields
-  ui.levelsEditor.querySelectorAll('input').forEach(bindRebuild);
 
   // buttons
   ui.copyBtn.addEventListener('click', async ()=>{
@@ -815,8 +956,9 @@ render();
   ui.forceReloadBtn.addEventListener('click', ()=>{ rebuild(); toast("Пересобрано"); });
 
   ui.resetBtn.addEventListener('click', ()=>{
-    ui.levels.value=3;
     ui.seconds.value=10;
+    ui.lives.value=5;
+
     ui.neonMain.value="#7cf9ff";
     ui.dangerColor.value="#ff3b3b";
     ui.winColor.value="#ffe44d";
@@ -827,15 +969,16 @@ render();
     ui.heroPreset.value="frog"; ui.heroUpload.style.display="none"; customHeroDataUrl="";
     ui.platformPreset.value="lily"; ui.platformUpload.style.display="none"; customPlatformDataUrl="";
 
-    // привести количество карточек к 3
-    ensureLevelCards(3);
-    ui.levelsEditor.querySelectorAll('input').forEach(bindRebuild);
+    ui.levelsBox.innerHTML="";
+    addLevel({name:"Level 1", tasks:"I ____ running. am/is/are\nShe ____ a teacher. is/am/are"});
 
     rebuild();
     toast("Сброшено");
   });
 
-  // первая сборка
+  // старт: один уровень по умолчанию
+  addLevel({name:"Level 1", tasks:"I ____ running. am/is/are"});
+
   rebuild();
 });
 </script>
