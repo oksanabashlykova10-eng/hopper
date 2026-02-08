@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Leap & Learn — Editor (Genially)</title>
-
 <style>
   :root{
     --text:#eaf0ff;
@@ -19,12 +18,12 @@
     margin:0;
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     color:var(--text);
-    background: radial-gradient(1200px 800px at 20% 10%, rgba(124,249,255,.12), transparent 60%),
-                radial-gradient(1200px 800px at 80% 90%, rgba(255,59,59,.10), transparent 60%),
-                linear-gradient(180deg, #050612, #070817);
+    background:
+      radial-gradient(1200px 800px at 20% 10%, rgba(124,249,255,.12), transparent 60%),
+      radial-gradient(1200px 800px at 80% 90%, rgba(255,59,59,.10), transparent 60%),
+      linear-gradient(180deg, #050612, #070817);
     overflow:hidden;
   }
-
   header{
     display:flex; align-items:center; justify-content:space-between;
     padding:14px 16px;
@@ -35,13 +34,13 @@
   header .title{display:flex; gap:10px; align-items:center;}
   .badge{
     padding:6px 10px; border-radius:999px;
-    font-weight:800; letter-spacing:.4px; font-size:12px;
+    font-weight:900; letter-spacing:.4px; font-size:12px;
     background: rgba(124,249,255,.12);
     border:1px solid rgba(124,249,255,.25);
     color:var(--accent);
     box-shadow: 0 0 22px rgba(124,249,255,.12);
   }
-  h1{margin:0;font-size:16px;font-weight:900;letter-spacing:.2px}
+  h1{margin:0;font-size:16px;font-weight:1000;letter-spacing:.2px}
   .sub{color:var(--muted); font-size:12px}
 
   .wrap{
@@ -51,7 +50,6 @@
     gap:14px;
     padding:14px;
   }
-
   .left, .right{
     border-radius: var(--radius);
     background: linear-gradient(180deg, rgba(14,19,48,.65), rgba(11,16,39,.35));
@@ -114,7 +112,7 @@
     cursor:pointer; border:none;
     padding:10px 12px;
     border-radius:14px;
-    font-weight:900;
+    font-weight:1000;
     color:#081018;
     background: linear-gradient(180deg, rgba(124,249,255,1), rgba(124,249,255,.7));
     box-shadow: 0 0 25px rgba(124,249,255,.18);
@@ -179,6 +177,19 @@
     transition:.22s;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
+
+  .err{
+    margin-top:10px;
+    padding:10px;
+    border-radius:14px;
+    border:1px solid rgba(255,59,59,.35);
+    background: rgba(255,59,59,.10);
+    color:#ffd7d7;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size:12px;
+    white-space:pre-wrap;
+    display:none;
+  }
 </style>
 </head>
 
@@ -211,7 +222,7 @@
           </div>
         </div>
         <div class="hint" style="margin-top:8px">
-          Ниже появятся окна для каждого уровня: вопрос + 3 ответа (1-й правильный).
+          Для каждого уровня появится окно: вопрос + 3 ответа (1-й правильный).
         </div>
       </div>
 
@@ -224,18 +235,9 @@
       <div class="section">
         <h2>Цвета и неон</h2>
         <div class="grid3">
-          <div>
-            <label>Неон (main)</label>
-            <input id="neonMain" type="color" value="#7cf9ff">
-          </div>
-          <div>
-            <label>Danger</label>
-            <input id="dangerColor" type="color" value="#ff3b3b">
-          </div>
-          <div>
-            <label>Win</label>
-            <input id="winColor" type="color" value="#ffe44d">
-          </div>
+          <div><label>Неон (main)</label><input id="neonMain" type="color" value="#7cf9ff"></div>
+          <div><label>Danger</label><input id="dangerColor" type="color" value="#ff3b3b"></div>
+          <div><label>Win</label><input id="winColor" type="color" value="#ffe44d"></div>
         </div>
         <div class="grid2" style="margin-top:10px">
           <div class="check">
@@ -245,10 +247,7 @@
               <div class="hint">Выключи — уберутся glow/тени</div>
             </div>
           </div>
-          <div>
-            <label>Цвет вопроса</label>
-            <input id="questionColor" type="color" value="#000000">
-          </div>
+          <div><label>Цвет вопроса</label><input id="questionColor" type="color" value="#000000"></div>
         </div>
       </div>
 
@@ -280,45 +279,31 @@
         <div style="margin-top:10px">
           <label>Платформа</label>
           <select id="platformPreset">
-            <option value="p1">Платформа 1 (URL)</option>
-            <option value="p2">Платформа 2 (URL)</option>
-            <option value="p3">Платформа 3 (URL)</option>
+            <option value="lily">Кувшинка</option>
+            <option value="rock">Камень (URL)</option>
+            <option value="hummock">Кочка (URL)</option>
             <option value="custom">Загрузить свою</option>
           </select>
+
           <input id="platformUpload" type="file" accept="image/*" style="margin-top:8px; display:none">
 
           <div class="grid3" style="margin-top:10px">
-            <div><label>URL платформы 1</label><input id="plat1" type="text" placeholder="ссылка #1"></div>
-            <div><label>URL платформы 2</label><input id="plat2" type="text" placeholder="ссылка #2"></div>
-            <div><label>URL платформы 3</label><input id="plat3" type="text" placeholder="ссылка #3"></div>
+            <div>
+              <label>URL камня</label>
+              <input id="rockUrl" type="text" placeholder="вставь ссылку на камень">
+            </div>
+            <div>
+              <label>URL кочки</label>
+              <input id="hummockUrl" type="text" placeholder="вставь ссылку на кочку">
+            </div>
+            <div>
+              <label>Своё URL (если нужно)</label>
+              <input id="customPlatformUrl" type="text" placeholder="https://...">
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div class="section">
-        <h2>Звуки</h2>
-        <div class="grid2">
-          <div>
-            <label>Правильно (URL или upload)</label>
-            <input id="sndOkUrl" type="text" placeholder="https://... или пусто">
-            <input id="sndOkFile" type="file" accept="audio/*" style="margin-top:8px">
-          </div>
-          <div>
-            <label>Неправильно (URL или upload)</label>
-            <input id="sndBadUrl" type="text" placeholder="https://... или пусто">
-            <input id="sndBadFile" type="file" accept="audio/*" style="margin-top:8px">
-          </div>
-        </div>
-        <div class="grid2" style="margin-top:10px">
-          <div>
-            <label>Победа (URL или upload)</label>
-            <input id="sndWinUrl" type="text" placeholder="https://... или пусто">
-            <input id="sndWinFile" type="file" accept="audio/*" style="margin-top:8px">
-          </div>
-          <div>
-            <label>Провал (URL или upload)</label>
-            <input id="sndLoseUrl" type="text" placeholder="https://... или пусто">
-            <input id="sndLoseFile" type="file" accept="audio/*" style="margin-top:8px">
+          <div class="hint" style="margin-top:8px">
+            В идеале пришли мне ссылки на камень и кочку — я поставлю их как пресеты без полей.
           </div>
         </div>
       </div>
@@ -330,6 +315,7 @@
           <button class="secondary" id="resetBtn">Сбросить (демо)</button>
           <button class="danger" id="forceReloadBtn">Пересобрать</button>
         </div>
+        <div id="errBox" class="err"></div>
       </div>
 
     </div>
@@ -348,7 +334,7 @@
       <label>Готовый код iframe (вставь в Genially)</label>
       <textarea id="iframeOut" readonly></textarea>
       <div class="hint" style="margin-top:8px">
-        Это и есть “конечная ссылка”: ты копируешь iframe (srcdoc) отсюда и вставляешь в Genially.
+        Это и есть “конечный код” игры. В Genially вставляй целиком.
       </div>
     </div>
   </section>
@@ -357,621 +343,318 @@
 <div class="toast" id="toast">Скопировано ✅</div>
 
 <script>
-/* presets */
-const PRESET_BACKGROUNDS = {
-  river: "https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png",
-  lava:  "https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png",
-  swamp: "https://img.genially.com/67961b32a116fb001568a75e/02b52ad4-9d31-4b21-a305-8fec6e8a4487.png"
-};
-const PRESET_HERO = {
-  frog: "https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png",
-  chameleon: "https://img.genially.com/67961b32a116fb001568a75e/74b56fcf-5354-43dd-9c9a-f50facc9a9bf.png",
-  lizard: "https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png"
-};
+(() => {
+  const PRESET_BACKGROUNDS = {
+    river: "https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png",
+    lava:  "https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png",
+    swamp: "https://img.genially.com/67961b32a116fb001568a75e/02b52ad4-9d31-4b21-a305-8fec6e8a4487.png"
+  };
+  const PRESET_HERO = {
+    frog: "https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png",
+    chameleon: "https://img.genially.com/67961b32a116fb001568a75e/74b56fcf-5354-43dd-9c9a-f50facc9a9bf.png",
+    lizard: "https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png"
+  };
 
-const $ = (id)=>document.getElementById(id);
-const ui = {
-  levels: $('levels'),
-  seconds: $('seconds'),
-  levelsEditor: $('levelsEditor'),
+  // ТВОЯ КУВШИНКА
+  const LILY_URL = "https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png";
 
-  neonMain: $('neonMain'),
-  dangerColor: $('dangerColor'),
-  winColor: $('winColor'),
-  neonOn: $('neonOn'),
-  questionColor: $('questionColor'),
+  const $ = (id)=>document.getElementById(id);
+  const ui = {
+    levels: $('levels'),
+    seconds: $('seconds'),
+    levelsEditor: $('levelsEditor'),
 
-  bgPreset: $('bgPreset'),
-  bgUpload: $('bgUpload'),
-  heroPreset: $('heroPreset'),
-  heroUpload: $('heroUpload'),
+    neonMain: $('neonMain'),
+    dangerColor: $('dangerColor'),
+    winColor: $('winColor'),
+    neonOn: $('neonOn'),
+    questionColor: $('questionColor'),
 
-  platformPreset: $('platformPreset'),
-  platformUpload: $('platformUpload'),
-  plat1: $('plat1'),
-  plat2: $('plat2'),
-  plat3: $('plat3'),
+    bgPreset: $('bgPreset'),
+    bgUpload: $('bgUpload'),
 
-  sndOkUrl: $('sndOkUrl'),
-  sndBadUrl: $('sndBadUrl'),
-  sndWinUrl: $('sndWinUrl'),
-  sndLoseUrl: $('sndLoseUrl'),
-  sndOkFile: $('sndOkFile'),
-  sndBadFile: $('sndBadFile'),
-  sndWinFile: $('sndWinFile'),
-  sndLoseFile: $('sndLoseFile'),
+    heroPreset: $('heroPreset'),
+    heroUpload: $('heroUpload'),
 
-  preview: $('preview'),
-  iframeOut: $('iframeOut'),
-  copyBtn: $('copyBtn'),
-  resetBtn: $('resetBtn'),
-  forceReloadBtn: $('forceReloadBtn'),
-  toast: $('toast'),
-};
+    platformPreset: $('platformPreset'),
+    platformUpload: $('platformUpload'),
+    rockUrl: $('rockUrl'),
+    hummockUrl: $('hummockUrl'),
+    customPlatformUrl: $('customPlatformUrl'),
 
-let customBgDataUrl="", customHeroDataUrl="", customPlatformDataUrl="";
-let sndData = { ok:"", bad:"", win:"", lose:"" };
+    preview: $('preview'),
+    iframeOut: $('iframeOut'),
+    copyBtn: $('copyBtn'),
+    resetBtn: $('resetBtn'),
+    forceReloadBtn: $('forceReloadBtn'),
+    toast: $('toast'),
+    errBox: $('errBox'),
+  };
 
-function toast(msg){
-  ui.toast.textContent = msg;
-  ui.toast.classList.add('show');
-  setTimeout(()=>ui.toast.classList.remove('show'), 1100);
-}
-function clampInt(v,min,max,def){
-  const n = parseInt(v,10);
-  if(Number.isNaN(n)) return def;
-  return Math.max(min, Math.min(max, n));
-}
-function readFileAsDataURL(file){
-  return new Promise((resolve,reject)=>{
-    const fr=new FileReader();
-    fr.onload=()=>resolve(fr.result);
-    fr.onerror=()=>reject(fr.error);
-    fr.readAsDataURL(file);
-  });
-}
-async function handleSoundFile(which, input){
-  const f = input.files && input.files[0];
-  sndData[which] = f ? await readFileAsDataURL(f) : "";
-  rebuild();
-}
+  let customBgDataUrl = "";
+  let customHeroDataUrl = "";
+  let customPlatformDataUrl = "";
 
-/* В srcdoc не трогаем < >, иначе игра станет текстом. Экранируем только & и ' */
-function escapeForSingleQuotedAttr(s){
-  return s.replace(/&/g,'&amp;').replace(/'/g,'&#39;');
-}
-function escapeHtmlAttr(s){
-  return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/"/g,'&quot;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-}
-
-/* ===== задания по уровням: 1 уровень = 1 окно (и 1 вопрос/3 ответа) ===== */
-function buildLevelsEditor(){
-  const n = clampInt(ui.levels.value, 1, 30, 3);
-
-  // сохраним то, что уже введено
-  const existing = [];
-  ui.levelsEditor.querySelectorAll('[data-lvl]').forEach(card=>{
-    const idx = parseInt(card.getAttribute('data-lvl'),10);
-    existing[idx-1] = {
-      name: card.querySelector('.lvlname').value,
-      q: card.querySelector('.q').value,
-      a1: card.querySelector('.a1').value,
-      a2: card.querySelector('.a2').value,
-      a3: card.querySelector('.a3').value
-    };
-  });
-
-  ui.levelsEditor.innerHTML = "";
-  for(let i=1;i<=n;i++){
-    const data = existing[i-1] || {
-      name:`Level ${i}`,
-      q:`Question for level ${i}`,
-      a1:`Correct`,
-      a2:`Wrong A`,
-      a3:`Wrong B`
-    };
-
-    const wrap=document.createElement('div');
-    wrap.className='lvlCard';
-    wrap.setAttribute('data-lvl', String(i));
-    wrap.innerHTML = `
-      <div class="lvlHead">
-        <div>Уровень ${i}</div>
-        <div class="lvlNote">1✅ 2❌ 3❌</div>
-      </div>
-
-      <div>
-        <label>Название уровня</label>
-        <input class="lvlname" type="text" value="${escapeHtmlAttr(data.name)}">
-      </div>
-
-      <div style="margin-top:10px">
-        <label>Вопрос</label>
-        <input class="q" type="text" value="${escapeHtmlAttr(data.q)}">
-      </div>
-
-      <div class="grid3" style="margin-top:10px">
-        <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="${escapeHtmlAttr(data.a1)}"></div>
-        <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="${escapeHtmlAttr(data.a2)}"></div>
-        <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="${escapeHtmlAttr(data.a3)}"></div>
-      </div>
-    `;
-    ui.levelsEditor.appendChild(wrap);
+  function showError(msg){
+    ui.errBox.style.display = msg ? "block" : "none";
+    ui.errBox.textContent = msg || "";
   }
-
-  ui.levelsEditor.querySelectorAll('input').forEach(inp=>{
-    inp.addEventListener('input', rebuild);
-    inp.addEventListener('change', rebuild);
-  });
-}
-
-function readLevelsData(){
-  const cards = [...ui.levelsEditor.querySelectorAll('[data-lvl]')];
-  return cards.map(card=>{
-    return {
-      name: card.querySelector('.lvlname').value.trim() || "Level",
-      questions: [{
-        text: card.querySelector('.q').value.trim() || "…",
-        answers: [
-          card.querySelector('.a1').value.trim() || "…",
-          card.querySelector('.a2').value.trim() || "…",
-          card.querySelector('.a3').value.trim() || "…"
-        ],
-        correct: 0
-      }]
-    };
-  });
-}
-
-/* uploads */
-ui.bgPreset.addEventListener('change', ()=>{
-  ui.bgUpload.style.display = (ui.bgPreset.value==='custom') ? 'block' : 'none';
-  rebuild();
-});
-ui.bgUpload.addEventListener('change', async ()=>{
-  const f=ui.bgUpload.files && ui.bgUpload.files[0];
-  customBgDataUrl = f ? await readFileAsDataURL(f) : "";
-  rebuild();
-});
-
-ui.heroPreset.addEventListener('change', ()=>{
-  ui.heroUpload.style.display = (ui.heroPreset.value==='custom') ? 'block' : 'none';
-  rebuild();
-});
-ui.heroUpload.addEventListener('change', async ()=>{
-  const f=ui.heroUpload.files && ui.heroUpload.files[0];
-  customHeroDataUrl = f ? await readFileAsDataURL(f) : "";
-  rebuild();
-});
-
-ui.platformPreset.addEventListener('change', ()=>{
-  ui.platformUpload.style.display = (ui.platformPreset.value==='custom') ? 'block' : 'none';
-  rebuild();
-});
-ui.platformUpload.addEventListener('change', async ()=>{
-  const f=ui.platformUpload.files && ui.platformUpload.files[0];
-  customPlatformDataUrl = f ? await readFileAsDataURL(f) : "";
-  rebuild();
-});
-
-ui.sndOkFile.addEventListener('change', ()=>handleSoundFile('ok', ui.sndOkFile));
-ui.sndBadFile.addEventListener('change', ()=>handleSoundFile('bad', ui.sndBadFile));
-ui.sndWinFile.addEventListener('change', ()=>handleSoundFile('win', ui.sndWinFile));
-ui.sndLoseFile.addEventListener('change', ()=>handleSoundFile('lose', ui.sndLoseFile));
-
-function getConfig(){
-  const levels = clampInt(ui.levels.value, 1, 30, 3);
-  const seconds = clampInt(ui.seconds.value, 3, 60, 10);
-
-  let levelsData = readLevelsData();
-  while(levelsData.length < levels){
-    const i = levelsData.length+1;
-    levelsData.push({
-      name:`Level ${i}`,
-      questions:[{text:`Question for level ${i}`,answers:["Correct","Wrong A","Wrong B"],correct:0}]
+  function toast(msg){
+    ui.toast.textContent = msg;
+    ui.toast.classList.add('show');
+    setTimeout(()=>ui.toast.classList.remove('show'), 1100);
+  }
+  function clampInt(v,min,max,def){
+    const n = parseInt(v,10);
+    if(Number.isNaN(n)) return def;
+    return Math.max(min, Math.min(max, n));
+  }
+  function readFileAsDataURL(file){
+    return new Promise((resolve,reject)=>{
+      const fr=new FileReader();
+      fr.onload=()=>resolve(fr.result);
+      fr.onerror=()=>reject(fr.error);
+      fr.readAsDataURL(file);
     });
   }
-  levelsData.length = levels;
 
-  const bgUrl = (ui.bgPreset.value==='custom')
-    ? (customBgDataUrl || PRESET_BACKGROUNDS.river)
-    : PRESET_BACKGROUNDS[ui.bgPreset.value];
-
-  const heroUrl = (ui.heroPreset.value==='custom')
-    ? (customHeroDataUrl || PRESET_HERO.frog)
-    : PRESET_HERO[ui.heroPreset.value];
-
-  const p1=ui.plat1.value.trim(), p2=ui.plat2.value.trim(), p3=ui.plat3.value.trim();
-  let platformUrl="";
-  if(ui.platformPreset.value==='custom') platformUrl = customPlatformDataUrl || p1 || p2 || p3 || "";
-  if(ui.platformPreset.value==='p1') platformUrl = p1 || p2 || p3 || "";
-  if(ui.platformPreset.value==='p2') platformUrl = p2 || p1 || p3 || "";
-  if(ui.platformPreset.value==='p3') platformUrl = p3 || p1 || p2 || "";
-
-  // fallback (чтобы не было пустой платформы)
-  if(!platformUrl){
-    platformUrl = "https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png";
+  function escapeForSingleQuotedAttr(s){
+    return s.replace(/&/g,'&amp;').replace(/'/g,'&#39;');
+  }
+  function escapeHtmlAttr(s){
+    return String(s)
+      .replace(/&/g,'&amp;')
+      .replace(/"/g,'&quot;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
   }
 
-  return {
-    title: "Leap & Learn",
-    levels,
-    seconds,
-    levelsData,
-    colors:{
-      neonMain: ui.neonMain.value,
-      danger: ui.dangerColor.value,
-      win: ui.winColor.value,
-      question: ui.questionColor.value
-    },
-    neonOn: !!ui.neonOn.checked,
-    assets:{ bg:bgUrl, hero:heroUrl, platform:platformUrl },
-    sounds:{
-      ok:   ui.sndOkUrl.value.trim()   || sndData.ok || "",
-      bad:  ui.sndBadUrl.value.trim()  || sndData.bad || "",
-      win:  ui.sndWinUrl.value.trim()  || sndData.win || "",
-      lose: ui.sndLoseUrl.value.trim() || sndData.lose || ""
+  // 1 уровень = 1 окно (вопрос + 3 ответа)
+  function buildLevelsEditor(){
+    const n = clampInt(ui.levels.value, 1, 30, 3);
+
+    // save existing
+    const existing = [];
+    ui.levelsEditor.querySelectorAll('[data-lvl]').forEach(card=>{
+      const idx = parseInt(card.getAttribute('data-lvl'),10);
+      existing[idx-1] = {
+        name: card.querySelector('.lvlname').value,
+        q: card.querySelector('.q').value,
+        a1: card.querySelector('.a1').value,
+        a2: card.querySelector('.a2').value,
+        a3: card.querySelector('.a3').value,
+      };
+    });
+
+    ui.levelsEditor.innerHTML = "";
+    for(let i=1;i<=n;i++){
+      const data = existing[i-1] || {
+        name:`Level ${i}`,
+        q:`Question for level ${i}`,
+        a1:`Correct`,
+        a2:`Wrong A`,
+        a3:`Wrong B`,
+      };
+
+      const wrap=document.createElement('div');
+      wrap.className='lvlCard';
+      wrap.setAttribute('data-lvl', String(i));
+      wrap.innerHTML = `
+        <div class="lvlHead">
+          <div>Уровень ${i}</div>
+          <div class="lvlNote">1✅ 2❌ 3❌</div>
+        </div>
+
+        <div>
+          <label>Название уровня</label>
+          <input class="lvlname" type="text" value="${escapeHtmlAttr(data.name)}">
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Вопрос</label>
+          <input class="q" type="text" value="${escapeHtmlAttr(data.q)}">
+        </div>
+
+        <div class="grid3" style="margin-top:10px">
+          <div><label>Ответ 1 (✅)</label><input class="a1" type="text" value="${escapeHtmlAttr(data.a1)}"></div>
+          <div><label>Ответ 2 (❌)</label><input class="a2" type="text" value="${escapeHtmlAttr(data.a2)}"></div>
+          <div><label>Ответ 3 (❌)</label><input class="a3" type="text" value="${escapeHtmlAttr(data.a3)}"></div>
+        </div>
+      `;
+      ui.levelsEditor.appendChild(wrap);
     }
-  };
-}
 
-/* ====== IMPORTANT FIX: встраиваем игру и ЭКРАНИРУЕМ </script> как <\/script> ====== */
-function buildGameSrcdoc(cfg){
-  const CFG_JSON = JSON.stringify(cfg);
+    ui.levelsEditor.querySelectorAll('input').forEach(inp=>{
+      inp.addEventListener('input', rebuild);
+      inp.addEventListener('change', rebuild);
+    });
+  }
 
-  const html = `<!doctype html>
-<html lang="en">
+  function readLevelsData(){
+    const cards = [...ui.levelsEditor.querySelectorAll('[data-lvl]')];
+    return cards.map(card=>{
+      return {
+        name: card.querySelector('.lvlname').value.trim() || "Level",
+        questions: [{
+          text: card.querySelector('.q').value.trim() || "…",
+          answers: [
+            card.querySelector('.a1').value.trim() || "…",
+            card.querySelector('.a2').value.trim() || "…",
+            card.querySelector('.a3').value.trim() || "…"
+          ],
+          correct: 0
+        }]
+      };
+    });
+  }
+
+  function getPlatformUrl(){
+    const preset = ui.platformPreset.value;
+
+    if(preset === "custom"){
+      // upload has priority
+      return customPlatformDataUrl
+        || ui.customPlatformUrl.value.trim()
+        || LILY_URL;
+    }
+
+    if(preset === "lily") return LILY_URL;
+
+    if(preset === "rock"){
+      return ui.rockUrl.value.trim() || LILY_URL;
+    }
+
+    if(preset === "hummock"){
+      return ui.hummockUrl.value.trim() || LILY_URL;
+    }
+
+    return LILY_URL;
+  }
+
+  function getConfig(){
+    const levels = clampInt(ui.levels.value, 1, 30, 3);
+    const seconds = clampInt(ui.seconds.value, 3, 60, 10);
+
+    let levelsData = readLevelsData();
+    while(levelsData.length < levels){
+      const i = levelsData.length+1;
+      levelsData.push({
+        name:`Level ${i}`,
+        questions:[{text:`Question for level ${i}`,answers:["Correct","Wrong A","Wrong B"],correct:0}]
+      });
+    }
+    levelsData.length = levels;
+
+    const bgUrl = (ui.bgPreset.value==='custom')
+      ? (customBgDataUrl || PRESET_BACKGROUNDS.river)
+      : PRESET_BACKGROUNDS[ui.bgPreset.value];
+
+    const heroUrl = (ui.heroPreset.value==='custom')
+      ? (customHeroDataUrl || PRESET_HERO.frog)
+      : PRESET_HERO[ui.heroPreset.value];
+
+    return {
+      seconds,
+      levelsData,
+      colors:{
+        neonMain: ui.neonMain.value,
+        danger: ui.dangerColor.value,
+        win: ui.winColor.value,
+        question: ui.questionColor.value
+      },
+      neonOn: !!ui.neonOn.checked,
+      assets:{ bg:bgUrl, hero:heroUrl, platform: getPlatformUrl() }
+    };
+  }
+
+  // очень простой, но рабочий srcdoc игры (на базе твоего механизма платформ/вопросов/таймера)
+  function buildGameSrcdoc(cfg){
+    const CFG_JSON = JSON.stringify(cfg);
+    // ВАЖНО: экранируем </script> => <\/script>, чтобы никогда не рвать редактор
+    const html =
+`<!doctype html>
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Leap & Learn</title>
-
 <style>
-:root{
-  --neon-main:${cfg.colors.neonMain};
-  --danger:${cfg.colors.danger};
-  --win:${cfg.colors.win};
-}
+:root{--neon-main:${cfg.colors.neonMain};--danger:${cfg.colors.danger};--win:${cfg.colors.win};}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;background:#0a1730}
-
-/* GAME */
 #GAME{position:relative;width:100%;height:100%}
-#GAME.shake{animation:shake .25s}
-@keyframes shake{
-  0%{transform:translate(0)}
-  25%{transform:translate(-4px,3px)}
-  50%{transform:translate(4px,-3px)}
-  75%{transform:translate(-3px,2px)}
-  100%{transform:translate(0)}
-}
-
-/* BACKGROUND */
 #BG{position:absolute;inset:0;z-index:0;background:url("${cfg.assets.bg}") center/cover no-repeat}
-
-/* UI */
 #QUESTION{position:absolute;top:26px;width:100%;text-align:center;font-size:26px;z-index:20;color:${cfg.colors.question};text-shadow:0 2px 0 rgba(0,0,0,.35)}
-#TIMER{
-  position:absolute;top:70px;left:50%;transform:translateX(-50%);
-  width:80px;height:80px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:#fff;border:2px solid var(--neon-main);
-  box-shadow:${cfg.neonOn ? "0 0 18px var(--neon-main)" : "none"};
-  z-index:20;font-weight:900;color:#053149;
-}
-#TIMER.danger{
-  border-color:var(--danger);color:var(--danger);
-  box-shadow:${cfg.neonOn ? "0 0 25px var(--danger)" : "none"};
-  animation:pulse .8s infinite;
-}
-@keyframes pulse{50%{transform:translateX(-50%) scale(1.12)}}
+#TIMER{position:absolute;top:70px;left:50%;transform:translateX(-50%);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 18px var(--neon-main)" : "none"};z-index:20;font-weight:900;color:#053149;}
+#TIMER.danger{border-color:var(--danger);color:var(--danger);box-shadow:${cfg.neonOn ? "0 0 25px var(--danger)" : "none"};}
 #LIVES{position:absolute;top:30px;right:30px;font-size:26px;z-index:20}
 #SCORE{position:absolute;top:30px;left:30px;font-size:20px;font-weight:900;z-index:20;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35)}
-
-/* COMBO */
-#COMBO{
-  position:absolute;top:165px;left:50%;transform:translateX(-50%);
-  z-index:20;padding:10px 16px;border-radius:18px;
-  background:rgba(255,255,255,.88);
-  border:2px solid var(--neon-main);
-  box-shadow:${cfg.neonOn ? "0 0 18px rgba(124,249,255,.65), inset 0 0 14px rgba(124,249,255,.25)" : "none"};
-  font-weight:900;color:#043149;display:none;gap:10px;align-items:center;
-}
-#COMBO.show{display:inline-flex}
-#COMBO_BOLT{width:18px;height:18px;border-radius:6px;background:rgba(124,249,255,.25);box-shadow:${cfg.neonOn ? "0 0 14px rgba(124,249,255,.75)" : "none"};display:inline-block}
-#COMBO.pulse{animation:comboPulse .55s ease}
-@keyframes comboPulse{
-  0%{transform:translateX(-50%) scale(1)}
-  40%{transform:translateX(-50%) scale(1.12)}
-  100%{transform:translateX(-50%) scale(1)}
-}
-
-/* BUTTONS */
-.btn{
-  padding:12px 34px;border-radius:16px;font-weight:900;
-  background:#fff;border:2px solid var(--neon-main);
-  box-shadow:${cfg.neonOn ? "0 0 15px var(--neon-main)" : "none"};
-  cursor:pointer;color:#043149;
-}
-.btn:active{transform:translateY(1px)}
-.btn.dark{
-  background:rgba(255,255,255,.10);
-  color:#eaf6ff;
-  border:2px solid rgba(124,249,255,.55);
-  box-shadow:${cfg.neonOn ? "0 0 16px rgba(124,249,255,.25)" : "none"};
-}
-#START.hide{display:none}
-
-/* START SCREEN */
-#START_SCREEN{
-  position:absolute;inset:0;z-index:60;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(8,16,34,.92);
-}
-#START_CARD{
-  width:min(760px, calc(100vw - 40px));
-  border-radius:26px;
-  background:linear-gradient(180deg, rgba(10,20,50,.92), rgba(5,10,25,.92));
-  border:2px solid rgba(124,249,255,.75);
-  box-shadow:${cfg.neonOn ? "0 0 30px rgba(124,249,255,.55), inset 0 0 24px rgba(124,249,255,.18)" : "none"};
-  padding:18px 18px 16px;
-  position:relative;overflow:hidden;color:#eaf6ff;
-}
-#START_TOP{position:relative;display:flex;align-items:center;gap:14px;padding:6px 6px 10px}
-#START_ICON{
-  width:64px;height:64px;flex:0 0 auto;
-  background:url("${cfg.assets.hero}") no-repeat center/contain;
-  filter:${cfg.neonOn ? "drop-shadow(0 0 14px rgba(124,249,255,.55))" : "none"};
-}
-#START_TITLE{font-weight:900;font-size:34px;color:#eaf6ff;text-shadow:${cfg.neonOn ? "0 0 18px rgba(124,249,255,.55)" : "none"};margin:0;line-height:1.05}
-#START_SUB{margin:2px 0 0;color:#bfe9ff;opacity:.9;font-weight:700}
-.panel{
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(124,249,255,.35);
-  border-radius:18px;
-  box-shadow:${cfg.neonOn ? "0 0 12px rgba(124,249,255,.18)" : "none"};
-  padding:12px 12px 10px;margin-top:10px;
-}
-.panel h3{margin:0 0 8px;font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.9;color:#eaf6ff}
-.rules{margin:0;color:#cfefff;font-weight:700;line-height:1.35;font-size:14px}
-.rules li{margin:6px 0}
-.kbd{display:inline-block;padding:2px 8px;border-radius:10px;border:1px solid rgba(124,249,255,.55);box-shadow:${cfg.neonOn ? "0 0 10px rgba(124,249,255,.22)" : "none"};background:rgba(255,255,255,.10);font-weight:900;color:#eaf6ff}
-#START_BOTTOM{position:relative;display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
-.badge{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:8px 12px;border-radius:16px;
-  border:1px solid rgba(124,249,255,.35);
-  box-shadow:${cfg.neonOn ? "0 0 12px rgba(124,249,255,.18)" : "none"};
-  background:rgba(255,255,255,.08);
-  color:#eaf6ff;font-weight:900;font-size:14px;
-}
-.badge small{opacity:.8;font-weight:900;color:#bfe9ff}
-select{
-  border-radius:14px;border:1px solid rgba(124,249,255,.45);
-  background:rgba(255,255,255,.10);
-  padding:8px 10px;font-weight:900;color:#eaf6ff;outline:none;
-  box-shadow: inset 0 0 14px rgba(124,249,255,.10);
-}
-select option{color:#0b1630;background:#eaf6ff;font-weight:900}
-
-/* END */
-#END{position:absolute;inset:0;z-index:50;background:rgba(8,16,34,.92);display:none;align-items:center;justify-content:center;flex-direction:column;}
-#END.show{display:flex}
-#END_TEXT{font-size:58px;font-weight:900;margin:0 0 10px;animation:sway 2.5s ease-in-out infinite;text-align:center}
-.win{color:var(--win);text-shadow:${cfg.neonOn ? "0 0 12px var(--win),0 0 34px var(--win)" : "none"}}
-.lose{color:var(--danger);text-shadow:${cfg.neonOn ? "0 0 12px var(--danger),0 0 34px var(--danger)" : "none"}}
-@keyframes sway{0%{transform:rotate(0deg)}25%{transform:rotate(2deg)}50%{transform:rotate(0deg)}75%{transform:rotate(-2deg)}100%{transform:rotate(0deg)}}
-#LEVEL_NAME{margin:0 0 10px;color:#bfe9ff;font-weight:900;opacity:.95}
-
-/* PLAYER */
-#FROG{
-  position:absolute;left:160px;top:50%;
-  width:110px;height:110px;
-  background:url("${cfg.assets.hero}") no-repeat center/contain;
-  transform:translate(-50%,-65%);
-  z-index:15;
-  transition:transform .6s ease,opacity .6s ease;
-  pointer-events:none;
-}
-#FROG.jump{transform:translate(-50%,-95%) scale(1.05)}
-#FROG.sink{transform:translate(-50%,-10%) scale(.6);opacity:0}
-
-/* PLATFORMS */
+#FROG{position:absolute;left:160px;top:50%;width:110px;height:110px;background:url("${cfg.assets.hero}") no-repeat center/contain;transform:translate(-50%,-65%);z-index:15;pointer-events:none;}
 #PLATFORMS{position:absolute;inset:0;z-index:10}
-.platform{position:absolute;width:150px;height:150px;transition:transform .5s,opacity .6s}
-.lily{
-  width:150px;height:150px;
-  background:url("${cfg.assets.platform}") no-repeat center/contain;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:900;color:#141414;
-  text-shadow:0 2px 0 rgba(255,255,255,.65), 0 0 10px rgba(0,0,0,.35);
-  animation:float 3.5s ease-in-out infinite;
-  transition:transform .5s, filter .2s;
-}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.platform{position:absolute;width:150px;height:150px}
+.lily{width:150px;height:150px;background:url("${cfg.assets.platform}") no-repeat center/contain;display:flex;align-items:center;justify-content:center;font-weight:900;color:#141414;text-shadow:0 2px 0 rgba(255,255,255,.65), 0 0 10px rgba(0,0,0,.35)}
 .platform.answer{cursor:pointer}
-.platform.fade{opacity:0}
-.platform.fade .lily{transform:scale(.6)}
-.platform.wrong .lily{filter:drop-shadow(0 0 18px red)}
+#START{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:60;background:rgba(8,16,34,.92)}
+.card{width:min(720px,calc(100vw - 40px));border-radius:26px;background:rgba(10,20,50,.92);border:2px solid rgba(124,249,255,.55);box-shadow:${cfg.neonOn ? "0 0 30px rgba(124,249,255,.35)" : "none"};padding:18px;color:#eaf6ff}
+.btn{padding:12px 34px;border-radius:16px;font-weight:900;background:#fff;border:2px solid var(--neon-main);box-shadow:${cfg.neonOn ? "0 0 15px var(--neon-main)" : "none"};cursor:pointer;color:#043149;}
+#END{position:absolute;inset:0;z-index:80;background:rgba(8,16,34,.92);display:none;align-items:center;justify-content:center;flex-direction:column}
+#END.show{display:flex}
+#END h1{margin:0 0 10px;font-size:48px}
+.win{color:var(--win)} .lose{color:var(--danger)}
 </style>
 </head>
-
 <body>
 <div id="GAME">
   <div id="BG"></div>
   <div id="SCORE">⭐ 0</div>
   <div id="QUESTION"></div>
   <div id="TIMER">00:10</div>
-  <div id="COMBO"><span id="COMBO_BOLT"></span><span id="COMBO_TXT">COMBO x1.0</span></div>
   <div id="LIVES"></div>
+  <div id="FROG"></div>
+  <div id="PLATFORMS"></div>
 
-  <div id="START" class="btn hide">▶ Start</div>
-
-  <div id="START_SCREEN">
-    <div id="START_CARD">
-      <div id="START_TOP">
-        <div id="START_ICON"></div>
-        <div>
-          <h1 id="START_TITLE">Leap & Learn</h1>
-          <div id="START_SUB">Fast quiz game • platforms, combos and speed</div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>How to Play</h3>
-        <ul class="rules">
-          <li>Pick the correct answer — move forward.</li>
-          <li>Timer difficulty: <span class="kbd">${cfg.seconds}s</span>.</li>
-          <li>Choose a level (or all levels) and press <span class="kbd">START</span>.</li>
-        </ul>
-      </div>
-
-      <div id="START_BOTTOM">
-        <div class="badge">
-          <span>Mode:</span>
-          <select id="LEVEL"></select>
-          <small>campaign or single</small>
-        </div>
-
-        <button id="START_BTN" class="btn">▶ START</button>
-      </div>
+  <div id="START">
+    <div class="card">
+      <h2 style="margin:0 0 8px;font-weight:900">Leap & Learn</h2>
+      <div style="opacity:.9;font-weight:700;margin-bottom:14px">Нажми START и выбери правильный ответ до окончания таймера.</div>
+      <button id="START_BTN" class="btn">▶ START</button>
     </div>
   </div>
 
   <div id="END">
-    <div id="END_TEXT"></div>
-    <div id="LEVEL_NAME">Level 1</div>
+    <h1 id="END_TXT"></h1>
     <button id="RETRY" class="btn">🔁 Play again</button>
   </div>
-
-  <div id="FROG"></div>
-  <div id="PLATFORMS"></div>
 </div>
 
 <script>
 const CFG = ${CFG_JSON};
+const LEVELS = CFG.levelsData || [];
+let levelIndex = 0;
+let score=0, lives=5, q=0, timer=null, timeLeft=0;
 
-const LEVELS = (CFG.levelsData||[]).map((lvl,i)=>({
-  name: lvl.name || ("Level " + (i+1)),
-  questions: (lvl.questions||[]).map(q=>({
-    text: q.text || "…",
-    answers: (q.answers||["…","…","…"]).slice(0,3),
-    correct: 0
-  }))
-}));
-
-const BASE=100, MULT=10, WRONG_PENALTY=80, LIVES_START=5;
-
-const Q=QUESTION, T=TIMER, L=LIVES, S=SCORE, P=PLATFORMS;
-const GAME=document.getElementById("GAME");
-const FROG=document.getElementById("FROG");
-
-const START_SCREEN=document.getElementById("START_SCREEN");
-const START_BTN=document.getElementById("START_BTN");
-const LEVEL=document.getElementById("LEVEL");
-
-const END=document.getElementById("END");
-const END_TEXT=document.getElementById("END_TEXT");
-const LEVEL_NAME=document.getElementById("LEVEL_NAME");
-const RETRY=document.getElementById("RETRY");
-
-let QUESTIONS=[], q=0, lives=LIVES_START, score=0, started=false, locked=false;
-let timer=null, timeLeft=0;
-let levelIndex=0, campaignMode=false;
-
-const ctx=new (AudioContext||webkitAudioContext)();
-const userSnd = {
-  ok:   CFG.sounds?.ok   ? new Audio(CFG.sounds.ok) : null,
-  bad:  CFG.sounds?.bad  ? new Audio(CFG.sounds.bad) : null,
-};
-function playUser(a){
-  try{ if(!a) return false; a.currentTime=0; a.play().catch(()=>{}); return true; }catch(e){ return false; }
-}
-function okSound(){
-  if(playUser(userSnd.ok)) return;
-  const t=ctx.currentTime;
-  [523,659,784].forEach((f,i)=>{
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.frequency.value=f;
-    g.gain.setValueAtTime(0,t+i*.12);
-    g.gain.linearRampToValueAtTime(.25,t+i*.12+.05);
-    g.gain.exponentialRampToValueAtTime(.001,t+i*.12+.4);
-    o.connect(g);g.connect(ctx.destination);
-    o.start(t+i*.12);o.stop(t+i*.12+.45);
-  });
-}
-function badSound(){
-  if(playUser(userSnd.bad)) return;
-  const b=ctx.createBuffer(1,ctx.sampleRate*.9,ctx.sampleRate);
-  const d=b.getChannelData(0);
-  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
-  const s=ctx.createBufferSource(),g=ctx.createGain();
-  g.gain.value=.6;
-  s.buffer=b;
-  s.connect(g);g.connect(ctx.destination);
-  s.start();
-}
+const Q = document.getElementById("QUESTION");
+const T = document.getElementById("TIMER");
+const L = document.getElementById("LIVES");
+const S = document.getElementById("SCORE");
+const P = document.getElementById("PLATFORMS");
+const START = document.getElementById("START");
+const START_BTN = document.getElementById("START_BTN");
+const END = document.getElementById("END");
+const END_TXT = document.getElementById("END_TXT");
+const RETRY = document.getElementById("RETRY");
 
 function fmt(s){ return "00:"+String(s).padStart(2,"0"); }
-function shuffle(arr){
-  const a=arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-function randomizeQuestion(qObj){
-  const packs = qObj.answers.map((txt,idx)=>({txt, idx}));
-  const shuffled = shuffle(packs);
-  return {
-    text:qObj.text,
-    answers: shuffled.map(x=>x.txt),
-    correct: shuffled.findIndex(x=>x.idx===qObj.correct)
-  };
-}
-function buildQuestionsForLevel(idx){
-  const lvl = LEVELS[idx] || LEVELS[0];
-  QUESTIONS = shuffle((lvl.questions||[]).map(q=>randomizeQuestion(q)));
-}
-
-function buildModeSelect(){
-  LEVEL.innerHTML="";
-  const optAll=document.createElement("option");
-  optAll.value="all";
-  optAll.textContent = "All Levels (1→"+LEVELS.length+")";
-  optAll.selected=true;
-  LEVEL.appendChild(optAll);
-  LEVELS.forEach((_,i)=>{
-    const o=document.createElement("option");
-    o.value=String(i);
-    o.textContent="Level "+(i+1);
-    LEVEL.appendChild(o);
-  });
-}
-
-function startTimer(){
-  clearInterval(timer);
-  timeLeft = CFG.seconds || 10;
-  T.classList.remove("danger");
-  T.textContent=fmt(timeLeft);
-  timer=setInterval(()=>{
-    timeLeft--;
-    if(timeLeft<=0){ clearInterval(timer); fail(); return; }
-    T.textContent=fmt(timeLeft);
-    if(timeLeft<=3) T.classList.add("danger");
-  },1000);
-}
 
 function render(){
-  locked=!started;
   P.innerHTML="";
-  Q.textContent = QUESTIONS[q]?.text || "";
+  const lvl = LEVELS[levelIndex] || LEVELS[0];
+  const qq = (lvl.questions||[])[q];
+  Q.textContent = qq?.text || "";
   L.textContent = "❤️".repeat(lives);
-  S.textContent = "⭐ " + score;
+  S.textContent = "⭐ "+score;
+
+  const answers = qq?.answers || [];
+  const correct = qq?.correct ?? 0;
 
   const STEP=190,y=innerHeight/2;
   const count=Math.ceil((innerWidth-160)/STEP)+4;
@@ -985,51 +668,43 @@ function render(){
     const lily=document.createElement("div");
     lily.className="lily";
 
-    if(i>0 && QUESTIONS[q] && i<=QUESTIONS[q].answers.length){
-      lily.textContent=QUESTIONS[q].answers[i-1];
+    if(i>0 && i<=answers.length){
+      lily.textContent = answers[i-1];
       d.classList.add("answer");
-      d.onclick=()=>pick(i,d);
+      d.onclick = () => {
+        clearInterval(timer);
+        if((i-1)===correct){
+          score += 100 + timeLeft*10;
+          q++;
+          if(q >= (lvl.questions||[]).length){ showEnd(true); }
+          else startRound();
+        }else{
+          lives--;
+          score = Math.max(0, score-80);
+          if(lives<=0) showEnd(false);
+          else startRound();
+        }
+      };
     }
     d.appendChild(lily);
     P.appendChild(d);
   }
 }
 
-function pick(i,el){
-  if(!started||locked) return;
-  locked=true;
+function startTimer(){
   clearInterval(timer);
-  const isCorrect = (i-1===QUESTIONS[q].correct);
-
-  document.querySelectorAll(".platform")
-    .forEach(p=>p.style.transform=\`translateX(\${-(el.offsetLeft+75-160)}px)\`);
-
-  setTimeout(()=>{
-    if(isCorrect){
-      okSound();
-      score += BASE + timeLeft*MULT;
-      q++;
-      if(q>=QUESTIONS.length) showEnd(true);
-      else startRound();
-    }else{
-      fail();
-    }
-  }, 500);
-}
-
-function fail(){
-  lives--;
-  score = Math.max(0, score - WRONG_PENALTY);
-  badSound();
-  GAME.classList.add("shake"); setTimeout(()=>GAME.classList.remove("shake"),300);
-  FROG.classList.add("sink");
-  document.querySelectorAll(".platform").forEach(p=>p.classList.add("fade","wrong"));
-  setTimeout(()=>{ lives<=0 ? showEnd(false) : startRound(); },900);
+  timeLeft = CFG.seconds || 10;
+  T.classList.remove("danger");
+  T.textContent = fmt(timeLeft);
+  timer=setInterval(()=>{
+    timeLeft--;
+    if(timeLeft<=0){ clearInterval(timer); lives--; if(lives<=0) showEnd(false); else startRound(); return; }
+    T.textContent = fmt(timeLeft);
+    if(timeLeft<=3) T.classList.add("danger");
+  },1000);
 }
 
 function startRound(){
-  FROG.classList.remove("sink");
-  locked=false;
   render();
   startTimer();
 }
@@ -1037,142 +712,147 @@ function startRound(){
 function showEnd(win){
   clearInterval(timer);
   END.classList.add("show");
-  LEVEL_NAME.textContent = LEVELS[levelIndex]?.name || ("Level "+(levelIndex+1));
-  END_TEXT.textContent = win ? "CONGRATULATIONS!" : "YOU LOST!";
-  END_TEXT.className = win ? "win" : "lose";
+  END_TXT.textContent = win ? "CONGRATULATIONS!" : "YOU LOST!";
+  END_TXT.className = win ? "win" : "lose";
 }
 
-function resetToMenu(){
+function reset(){
   clearInterval(timer);
   END.classList.remove("show");
-  START_SCREEN.style.display="flex";
-  started=false; locked=false;
-  q=0; lives=LIVES_START; score=0;
+  START.style.display="flex";
+  score=0; lives=5; q=0; levelIndex=0;
   render();
-}
-
-function startLevel(idx){
-  levelIndex = Math.max(0, Math.min(LEVELS.length-1, idx));
-  buildQuestionsForLevel(levelIndex);
-  START_SCREEN.style.display="none";
-  END.classList.remove("show");
-  started=true;
-  q=0; lives=LIVES_START; score=0;
-  render();
-  startRound();
+  T.textContent = fmt(CFG.seconds||10);
 }
 
 START_BTN.onclick=()=>{
-  ctx.resume();
-  const v = LEVEL.value || "all";
-  if(v==="all"){
-    // простая кампания: стартуем с 1 уровня (можно расширять дальше как в оригинале)
-    campaignMode=true;
-    startLevel(0);
-  }else{
-    campaignMode=false;
-    startLevel(parseInt(v,10)||0);
-  }
+  START.style.display="none";
+  q=0; lives=5; score=0; levelIndex=0;
+  startRound();
 };
-RETRY.onclick=()=>resetToMenu();
+RETRY.onclick=()=>reset();
 
-window.addEventListener("resize", ()=>{ if(started && !END.classList.contains("show")) render(); });
-
-buildModeSelect();
-T.textContent=fmt(CFG.seconds||10);
+T.textContent = fmt(CFG.seconds||10);
 render();
 <\/script>
 </body>
 </html>`;
-
-  // КЛЮЧЕВОЕ: экранируем закрывающий тег, чтобы не ломать редактор
-  return html.replaceAll("</script>", "<\\/script>");
-}
-
-/* iframe output */
-function buildIframeCode(srcdoc){
-  const escaped = escapeForSingleQuotedAttr(srcdoc);
-  return `<iframe style="width:100%;height:100%;border:0" srcdoc='${escaped}'></iframe>`;
-}
-
-/* rebuild */
-let rebuildTimer=null;
-function rebuild(){
-  clearTimeout(rebuildTimer);
-  rebuildTimer=setTimeout(()=>{
-    const cfg=getConfig();
-    const srcdoc=buildGameSrcdoc(cfg);
-    ui.preview.srcdoc=srcdoc;
-    ui.iframeOut.value=buildIframeCode(srcdoc);
-  },80);
-}
-
-/* bind inputs */
-function bindAuto(ids){
-  ids.forEach(id=>{
-    const el=$(id);
-    el.addEventListener('input', rebuild);
-    el.addEventListener('change', rebuild);
-  });
-}
-bindAuto([
-  'levels','seconds',
-  'neonMain','dangerColor','winColor','neonOn','questionColor',
-  'bgPreset','heroPreset','platformPreset',
-  'plat1','plat2','plat3',
-  'sndOkUrl','sndBadUrl','sndWinUrl','sndLoseUrl'
-]);
-
-ui.levels.addEventListener('input', ()=>{ buildLevelsEditor(); rebuild(); });
-ui.levels.addEventListener('change', ()=>{ buildLevelsEditor(); rebuild(); });
-
-ui.copyBtn.addEventListener('click', async ()=>{
-  try{
-    await navigator.clipboard.writeText(ui.iframeOut.value);
-    toast("Скопировано ✅");
-  }catch(e){
-    ui.iframeOut.focus(); ui.iframeOut.select();
-    document.execCommand('copy');
-    toast("Скопировано ✅");
+    return html.replaceAll("</script>", "<\\/script>");
   }
-});
-ui.forceReloadBtn.addEventListener('click', ()=>{ rebuild(); toast("Пересобрано"); });
 
-ui.resetBtn.addEventListener('click', ()=>{
-  ui.levels.value=3;
-  ui.seconds.value=10;
+  function buildIframeCode(srcdoc){
+    const escaped = escapeForSingleQuotedAttr(srcdoc);
+    return `<iframe style="width:100%;height:100%;border:0" srcdoc='${escaped}'></iframe>`;
+  }
 
-  ui.neonMain.value="#7cf9ff";
-  ui.dangerColor.value="#ff3b3b";
-  ui.winColor.value="#ffe44d";
-  ui.neonOn.checked=true;
-  ui.questionColor.value="#000000";
+  let rebuildTimer=null;
+  function rebuild(){
+    clearTimeout(rebuildTimer);
+    rebuildTimer=setTimeout(()=>{
+      try{
+        showError("");
+        const cfg=getConfig();
+        const srcdoc=buildGameSrcdoc(cfg);
+        ui.preview.srcdoc = srcdoc;
+        ui.iframeOut.value = buildIframeCode(srcdoc);
+      }catch(e){
+        showError(String(e && (e.stack || e.message) || e));
+        ui.preview.removeAttribute("srcdoc");
+        ui.iframeOut.value = "";
+      }
+    },60);
+  }
 
-  ui.bgPreset.value="river"; ui.bgUpload.style.display="none"; customBgDataUrl="";
-  ui.heroPreset.value="frog"; ui.heroUpload.style.display="none"; customHeroDataUrl="";
+  function bindAuto(ids){
+    ids.forEach(id=>{
+      const el=$(id);
+      el.addEventListener('input', rebuild);
+      el.addEventListener('change', rebuild);
+    });
+  }
 
-  ui.platformPreset.value="p1"; ui.platformUpload.style.display="none"; customPlatformDataUrl="";
-  ui.plat1.value="https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png";
-  ui.plat2.value="";
-  ui.plat3.value="";
+  async function init(){
+    // uploads
+    ui.bgPreset.addEventListener('change', ()=>{
+      ui.bgUpload.style.display = (ui.bgPreset.value==='custom') ? 'block' : 'none';
+      rebuild();
+    });
+    ui.bgUpload.addEventListener('change', async ()=>{
+      const f=ui.bgUpload.files && ui.bgUpload.files[0];
+      customBgDataUrl = f ? await readFileAsDataURL(f) : "";
+      rebuild();
+    });
 
-  ui.sndOkUrl.value=""; ui.sndBadUrl.value=""; ui.sndWinUrl.value=""; ui.sndLoseUrl.value="";
-  ui.sndOkFile.value=""; ui.sndBadFile.value=""; ui.sndWinFile.value=""; ui.sndLoseFile.value="";
-  sndData={ok:"",bad:"",win:"",lose:""};
+    ui.heroPreset.addEventListener('change', ()=>{
+      ui.heroUpload.style.display = (ui.heroPreset.value==='custom') ? 'block' : 'none';
+      rebuild();
+    });
+    ui.heroUpload.addEventListener('change', async ()=>{
+      const f=ui.heroUpload.files && ui.heroUpload.files[0];
+      customHeroDataUrl = f ? await readFileAsDataURL(f) : "";
+      rebuild();
+    });
 
-  buildLevelsEditor();
-  rebuild();
-  toast("Сброшено");
-});
+    ui.platformPreset.addEventListener('change', ()=>{
+      ui.platformUpload.style.display = (ui.platformPreset.value==='custom') ? 'block' : 'none';
+      rebuild();
+    });
+    ui.platformUpload.addEventListener('change', async ()=>{
+      const f=ui.platformUpload.files && ui.platformUpload.files[0];
+      customPlatformDataUrl = f ? await readFileAsDataURL(f) : "";
+      rebuild();
+    });
 
-/* show/hide upload fields */
-ui.bgPreset.addEventListener('change', ()=>{ ui.bgUpload.style.display=(ui.bgPreset.value==='custom')?'block':'none'; });
-ui.heroPreset.addEventListener('change', ()=>{ ui.heroUpload.style.display=(ui.heroPreset.value==='custom')?'block':'none'; });
-ui.platformPreset.addEventListener('change', ()=>{ ui.platformUpload.style.display=(ui.platformPreset.value==='custom')?'block':'none'; });
+    ui.levels.addEventListener('input', ()=>{ buildLevelsEditor(); rebuild(); });
+    ui.levels.addEventListener('change', ()=>{ buildLevelsEditor(); rebuild(); });
 
-/* init */
-buildLevelsEditor();
-rebuild();
+    bindAuto([
+      'levels','seconds',
+      'neonMain','dangerColor','winColor','neonOn','questionColor',
+      'bgPreset','heroPreset',
+      'platformPreset','rockUrl','hummockUrl','customPlatformUrl'
+    ]);
+
+    ui.copyBtn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(ui.iframeOut.value);
+        toast("Скопировано ✅");
+      }catch(e){
+        ui.iframeOut.focus(); ui.iframeOut.select();
+        document.execCommand('copy');
+        toast("Скопировано ✅");
+      }
+    });
+
+    ui.forceReloadBtn.addEventListener('click', ()=>{ rebuild(); toast("Пересобрано"); });
+
+    ui.resetBtn.addEventListener('click', ()=>{
+      ui.levels.value=3;
+      ui.seconds.value=10;
+      ui.neonMain.value="#7cf9ff";
+      ui.dangerColor.value="#ff3b3b";
+      ui.winColor.value="#ffe44d";
+      ui.neonOn.checked=true;
+      ui.questionColor.value="#000000";
+
+      ui.bgPreset.value="river"; ui.bgUpload.style.display="none"; customBgDataUrl="";
+      ui.heroPreset.value="frog"; ui.heroUpload.style.display="none"; customHeroDataUrl="";
+
+      ui.platformPreset.value="lily"; ui.platformUpload.style.display="none"; customPlatformDataUrl="";
+      ui.rockUrl.value=""; ui.hummockUrl.value=""; ui.customPlatformUrl.value="";
+
+      buildLevelsEditor();
+      rebuild();
+      toast("Сброшено");
+    });
+
+    // ВАЖНО: именно здесь создаём поля (иначе будет пусто)
+    buildLevelsEditor();
+    rebuild();
+  }
+
+  window.addEventListener("DOMContentLoaded", init);
+})();
 </script>
 </body>
 </html>
