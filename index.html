@@ -1,1604 +1,1314 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Leap & Learn — Панель</title>
-  <style>
-    :root{
-      --line:rgba(124,249,255,.35);
-      --txt:#eaf6ff;
-    }
-    *{box-sizing:border-box}
-    html,body{
-      height:100%;margin:0;
-      font-family:Arial,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      background:
-        radial-gradient(1200px 900px at 20% 10%, rgba(124,249,255,.14), transparent 55%),
-        radial-gradient(900px 700px at 80% 25%, rgba(255,228,77,.09), transparent 55%),
-        linear-gradient(180deg, #040812, #070c18);
-      color:var(--txt);
-      overflow:hidden;
-    }
-    #APP{
-      height:100%;
-      display:grid;
-      grid-template-columns: 420px 1fr;
-      gap:14px;
-      padding:14px;
-      min-height:0;
-    }
-    @media (max-width:1100px){
-      body{overflow:auto}
-      #APP{grid-template-columns:1fr; height:auto; min-height:100%}
-      #PREVIEW_WRAP{height:66vh}
-    }
-
-    .card{
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      box-shadow:0 0 24px rgba(124,249,255,.12), inset 0 0 18px rgba(124,249,255,.06);
-      overflow:hidden;
-      min-height:0;
-    }
-    .head{
-      padding:12px 14px;
-      border-bottom:1px solid rgba(124,249,255,.22);
-      display:flex;align-items:center;justify-content:space-between; gap:10px;
-      background:linear-gradient(90deg, rgba(124,249,255,.10), transparent);
-    }
-    .title{margin:0;font-weight:900;letter-spacing:.02em;text-shadow:0 0 16px rgba(124,249,255,.25);font-size:16px}
-    .sub{font-size:12px;color:rgba(191,233,255,.9);font-weight:800;opacity:.95}
-    .body{padding:12px 14px;overflow:auto;max-height:100%}
-
-    .grid{display:grid;gap:10px}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(191,233,255,.9);font-weight:900;margin:2px 0 6px}
-
-    input[type="text"], input[type="number"], textarea, select{
-      width:100%;
-      border-radius:14px;
-      border:1px solid rgba(124,249,255,.35);
-      background:rgba(255,255,255,.06);
-      color:var(--txt);
-      padding:10px 10px;
-      outline:none;
-      box-shadow: inset 0 0 14px rgba(124,249,255,.06);
-      font-weight:800;
-    }
-    textarea{
-      min-height:130px;
-      resize:vertical;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      font-size:12px;
-      line-height:1.35;
-    }
-    input[type="color"]{
-      width:100%;height:42px;border-radius:14px;border:1px solid rgba(124,249,255,.35);
-      background:rgba(255,255,255,.06);padding:6px;
-    }
-    .hint{font-size:12px;color:rgba(191,233,255,.85);font-weight:700;line-height:1.35}
-    .small{font-size:11px;opacity:.9}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace}
-    .k{display:inline-block;padding:2px 8px;border-radius:10px;border:1px solid rgba(124,249,255,.45);background:rgba(255,255,255,.06);box-shadow:0 0 12px rgba(124,249,255,.10);font-weight:900}
-
-    .btn{
-      border-radius:14px;border:1px solid rgba(124,249,255,.55);
-      background:rgba(255,255,255,.08);
-      color:var(--txt);
-      padding:10px 12px;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow:0 0 18px rgba(124,249,255,.18), inset 0 0 12px rgba(124,249,255,.08);
-    }
-    .btn:active{transform:translateY(1px)}
-    .btn.primary{background:rgba(124,249,255,.12);border-color:rgba(124,249,255,.9)}
-    .btn.warn{border-color:rgba(255,59,59,.8);background:rgba(255,59,59,.10)}
-    .btn.ok{border-color:rgba(255,228,77,.85);background:rgba(255,228,77,.10)}
-    .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-    .sep{height:1px;background:rgba(124,249,255,.18);margin:12px 0}
-
-    #PREVIEW_WRAP{height:100%;min-height:0}
-    #PREVIEW{width:100%;height:100%;border:0;border-radius:14px;background:#000}
-    #CODE{min-height:170px}
-
-    .levelCard{
-      border-radius:16px;
-      border:1px solid rgba(124,249,255,.28);
-      background:rgba(255,255,255,.04);
-      padding:10px 10px 12px;
-      box-shadow:0 0 14px rgba(124,249,255,.10);
-    }
-    .levelTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  </style>
-</head>
-<body>
-<div id="APP">
-  <!-- LEFT -->
-  <div class="card">
-    <div class="head">
-      <div>
-        <div class="title">Leap & Learn — Панель настроек</div>
-        <div class="sub">Слева настройки • справа предпросмотр игры</div>
-      </div>
-      <div class="k">LIVE • PREVIEW</div>
-    </div>
-
-    <div class="body">
-      <div class="grid">
-        <div class="toolbar">
-          <button class="btn primary" id="BTN_COPY">📋 Копировать iframe игры</button>
-          <button class="btn" id="BTN_COPY_PANEL">📋 Копировать iframe панели</button>
-          <button class="btn warn" id="BTN_RESET">↺ Сброс</button>
-        </div>
-
-        <div class="hint">
-          <span class="k">Формат задач</span> (1 строка = 1 вопрос):
-          <div class="mono small" style="margin-top:6px">
-            Question | A | B | C | correctIndex<br>
-            I ____ ready. | am | is | are | 0
-          </div>
-        </div>
-
-        <div class="sep"></div>
-
-        <!-- VISUALS -->
-        <div class="grid">
-          <div class="title" style="font-size:13px">🎨 Внешний вид</div>
-
-          <div class="row">
-            <div>
-              <label>Фон локации (пресеты)</label>
-              <select id="BG_PRESET">
-                <option value="river">Река</option>
-                <option value="lava" selected>Лава</option>
-                <option value="swamp">Болото</option>
-                <option value="custom">Свой (URL/файл)</option>
-              </select>
-            </div>
-            <div>
-              <label>Свой фон (URL)</label>
-              <input id="BG_URL" type="text" placeholder="https://...png" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Загрузить свой фон (файл)</label>
-              <input id="BG_FILE" type="file" accept="image/*" />
-              <div class="small">Файл встраивается как data:URL → код станет длиннее.</div>
-            </div>
-            <div>
-              <label>Персонаж</label>
-              <select id="CHAR_PRESET">
-                <option value="frog">Лягушка</option>
-                <option value="chameleon" selected>Хамелеон</option>
-                <option value="lizard">Ящерица</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Платформа</label>
-              <select id="PLAT_PRESET">
-                <option value="lily" selected>Лилия</option>
-                <option value="stone">Камень</option>
-                <option value="hummock">Болотная кочка</option>
-              </select>
-            </div>
-            <div>
-              <label>Цвет панелей</label>
-              <input id="PANEL_COLOR" type="color" value="#0b1630" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Цвет таймера / рамки</label>
-              <input id="TIMER_COLOR" type="color" value="#7cf9ff" />
-            </div>
-            <div>
-              <label>Неоновая подсветка</label>
-              <select id="NEON_ON">
-                <option value="1" selected>Включить</option>
-                <option value="0">Выключить</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Цвет старт-экрана</label>
-              <input id="START_OVERLAY" type="color" value="#081022" />
-            </div>
-            <div>
-              <label>Цвет финал-экрана</label>
-              <input id="END_OVERLAY" type="color" value="#081022" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Цвет текста</label>
-              <input id="FONT_COLOR" type="color" value="#eaf6ff" />
-            </div>
-            <div>
-              <label>Размер вопроса (px)</label>
-              <input id="Q_FONT_SIZE" type="number" min="16" max="48" step="1" value="26" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Заголовок игры</label>
-              <input id="GAME_TITLE" type="text" value="Leap & Learn" />
-            </div>
-            <div>
-              <label>Подзаголовок</label>
-              <input id="GAME_SUB" type="text" value="Fast quiz game • platforms, combos and speed" />
-            </div>
-          </div>
-        </div>
-
-        <div class="sep"></div>
-
-        <!-- DIFFICULTY -->
-        <div class="grid">
-          <div class="title" style="font-size:13px">⏱️ Сложность (секунды)</div>
-
-          <div class="row">
-            <div>
-              <label>Пресет сложности</label>
-              <select id="DIFF_PRESET">
-                <option value="classic" selected>Classic (10→7→5)</option>
-                <option value="easy">Easy (12→9→7)</option>
-                <option value="hard">Hard (9→6→4)</option>
-                <option value="custom">Custom</option>
-              </select>
-            </div>
-            <div>
-              <label>Штраф за ошибку</label>
-              <input id="WRONG_PENALTY" type="number" min="0" max="9999" step="1" value="80" />
-            </div>
-          </div>
-
-          <div class="row3">
-            <div><label>T1</label><input id="T1" type="number" min="1" max="99" step="1" value="10" /></div>
-            <div><label>T2</label><input id="T2" type="number" min="1" max="99" step="1" value="7" /></div>
-            <div><label>T3</label><input id="T3" type="number" min="1" max="99" step="1" value="5" /></div>
-          </div>
-
-          <div class="row">
-            <div><label>Жизни</label><input id="LIVES" type="number" min="1" max="12" step="1" value="5" /></div>
-            <div><label>База очков</label><input id="BASE_SCORE" type="number" min="0" max="9999" step="1" value="100" /></div>
-          </div>
-
-          <div class="row">
-            <div><label>Бонус за секунду</label><input id="TIME_MULT" type="number" min="0" max="999" step="1" value="10" /></div>
-            <div class="hint">Таймер краснеет при <span class="k">≤ 3s</span>.</div>
-          </div>
-        </div>
-
-        <div class="sep"></div>
-
-        <!-- AUDIO -->
-        <div class="grid">
-          <div class="title" style="font-size:13px">🔊 Звуки</div>
-          <div class="small">Synth / URL / Upload / Off. (Upload встраивает data:URL → код длиннее.)</div>
-
-          <div class="row">
-            <div>
-              <label>Верный ответ</label>
-              <select id="S_OK_TYPE">
-                <option value="synth" selected>Synth</option>
-                <option value="url">URL</option>
-                <option value="upload">Upload</option>
-                <option value="off">Off</option>
-              </select>
-              <input id="S_OK_URL" type="text" placeholder="https://...mp3" />
-              <input id="S_OK_FILE" type="file" accept="audio/*" />
-              <button class="btn" id="S_OK_TEST">▶ Test</button>
-            </div>
-            <div>
-              <label>Неверный ответ</label>
-              <select id="S_BAD_TYPE">
-                <option value="synth" selected>Synth (water/noise)</option>
-                <option value="url">URL</option>
-                <option value="upload">Upload</option>
-                <option value="off">Off</option>
-              </select>
-              <input id="S_BAD_URL" type="text" placeholder="https://...mp3" />
-              <input id="S_BAD_FILE" type="file" accept="audio/*" />
-              <button class="btn" id="S_BAD_TEST">▶ Test</button>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label>Победа (уровень/финал)</label>
-              <select id="S_WIN_TYPE">
-                <option value="synth" selected>Synth (fanfare)</option>
-                <option value="url">URL</option>
-                <option value="upload">Upload</option>
-                <option value="off">Off</option>
-              </select>
-              <input id="S_WIN_URL" type="text" placeholder="https://...mp3" />
-              <input id="S_WIN_FILE" type="file" accept="audio/*" />
-              <button class="btn" id="S_WIN_TEST">▶ Test</button>
-            </div>
-            <div>
-              <label>Провал (финал)</label>
-              <select id="S_LOSE_TYPE">
-                <option value="synth" selected>Synth (down)</option>
-                <option value="url">URL</option>
-                <option value="upload">Upload</option>
-                <option value="off">Off</option>
-              </select>
-              <input id="S_LOSE_URL" type="text" placeholder="https://...mp3" />
-              <input id="S_LOSE_FILE" type="file" accept="audio/*" />
-              <button class="btn" id="S_LOSE_TEST">▶ Test</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="sep"></div>
-
-        <!-- END TEXTS -->
-        <div class="grid">
-          <div class="title" style="font-size:13px">🏁 Финальные тексты</div>
-          <div class="row">
-            <div><label>Победа</label><input id="TXT_WIN" type="text" value="CONGRATULATIONS!" /></div>
-            <div><label>Поражение</label><input id="TXT_LOSE" type="text" value="YOU LOST!" /></div>
-          </div>
-          <div class="row">
-            <div><label>Total Results</label><input id="TXT_TOTAL" type="text" value="GAME COMPLETED!" /></div>
-            <div><label>Подсказка (кампания)</label><input id="TXT_HINT" type="text" value="All levels cleared — press Finish to see Total Results" /></div>
-          </div>
-        </div>
-
-        <div class="sep"></div>
-
-        <!-- LEVELS -->
-        <div class="grid">
-          <div class="title" style="font-size:13px">📚 Уровни и задания</div>
-          <div class="row">
-            <div>
-              <label>Количество уровней</label>
-              <input id="LEVEL_COUNT" type="number" min="1" max="12" step="1" value="3" />
-              <div class="small">1…12 уровней. Кампания идёт по порядку.</div>
-            </div>
-            <div class="hint">
-              correctIndex: <span class="k">0</span> / <span class="k">1</span> / <span class="k">2</span>
-            </div>
-          </div>
-
-          <div id="LEVELS_WRAP" class="grid"></div>
-
-          <button class="btn ok" id="BTN_REBUILD_LEVELS">🔧 Применить уровни (и обновить предпросмотр)</button>
-        </div>
-
-        <div class="sep"></div>
-
-        <!-- GENERATED CODE -->
-        <div class="grid">
-          <div class="title" style="font-size:13px">🧩 Код iframe игры (для Genially)</div>
-          <textarea id="CODE" class="mono" readonly></textarea>
-          <div class="small">Лучше использовать URL (фон/звуки), иначе код может стать огромным.</div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="card" id="PREVIEW_WRAP">
-    <div class="head">
-      <div>
-        <div class="title">Предпросмотр игры</div>
-        <div class="sub">Это то, что вставится в Genially</div>
-      </div>
-      <div class="toolbar">
-        <button class="btn" id="BTN_REFRESH">↻ Обновить</button>
-        <button class="btn" id="BTN_OPEN_SRC">🧾 Открыть srcdoc</button>
-      </div>
-    </div>
-    <div class="body" style="padding:12px;height:100%">
-      <iframe id="PREVIEW"></iframe>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ===================== PRESETS ===================== */
-const PRESETS = {
-  bg: {
-    river: "https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png",
-    lava:  "https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png",
-    swamp: "https://img.genially.com/67961b32a116fb001568a75e/02b52ad4-9d31-4b21-a305-8fec6e8a4487.png",
-  },
-  character: {
-    frog: "https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png",
-    chameleon: "https://img.genially.com/67961b32a116fb001568a75e/74b56fcf-5354-43dd-9c9a-f50facc9a9bf.png",
-    lizard: "https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png",
-  },
-  platform: {
-    lily: "https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png",
-    stone: "https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png",
-    hummock: "https://img.genially.com/67961b32a116fb001568a75e/c6775617-bde5-43e4-9da8-5332d928807e.png",
-  }
-};
-
-const $ = (id)=>document.getElementById(id);
-const PREVIEW = $("PREVIEW");
-const CODE = $("CODE");
-
-const STATE = {
-  bgCustomDataUrl: "",
-  sounds: { okUpload:"", badUpload:"", winUpload:"", loseUpload:"" },
-  levels: []
-};
-
-/* ===================== DEFAULT LEVELS ===================== */
-function defaultLevelLines(){
-  return [
-`I ____ ready. | am | is | are | 0
-She ____ got a car. | have | has | is have | 1
-They ____ at home. | is | are | be | 1`,
-`I ____ from Kazakhstan. | am | is | are | 0
-She ____ not hungry. | is | are | am | 0`,
-`There ____ two books. | is | are | am | 1
-These ____ my keys. | is | are | am | 1`
-  ];
-}
-
-/* ===================== HELPERS ===================== */
-function clampInt(v,min,max,def){
-  const n=parseInt(v,10);
-  if(!Number.isFinite(n)) return def;
-  return Math.max(min, Math.min(max, n));
-}
-function escAttr(s){
-  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-function escapeForSingleQuotedAttr(s){
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");
-}
-function debounce(fn,ms){
-  let t=null;
-  return (...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),ms);};
-}
-function readFileAsDataURL(file){
-  return new Promise((resolve,reject)=>{
-    const r=new FileReader();
-    r.onload=()=>resolve(String(r.result||""));
-    r.onerror=()=>reject(r.error||new Error("File read error"));
-    r.readAsDataURL(file);
-  });
-}
-
-/* ===================== LEVEL UI ===================== */
-function parseLevelText(text){
-  const lines=String(text||"").split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-  const questions=[];
-  for(const line of lines){
-    const parts=line.split("|").map(x=>x.trim());
-    if(parts.length<5) continue;
-    const q=parts[0];
-    const a=parts[1], b=parts[2], c=parts[3];
-    let ci=parseInt(parts[4],10);
-    if(!Number.isFinite(ci)) ci=0;
-    ci=Math.max(0,Math.min(2,ci));
-    questions.push({text:q,answers:[a,b,c],correct:ci});
-  }
-  return questions;
-}
-function buildLevelsUI(count){
-  const wrap=$("LEVELS_WRAP");
-  wrap.innerHTML="";
-  const lines=defaultLevelLines();
-
-  for(let i=0;i<count;i++){
-    const card=document.createElement("div");
-    card.className="levelCard";
-
-    const top=document.createElement("div");
-    top.className="levelTop";
-
-    const left=document.createElement("div");
-    left.style.flex="1";
-
-    const nameLbl=document.createElement("label");
-    nameLbl.textContent=`Название уровня ${i+1}`;
-    const nameInp=document.createElement("input");
-    nameInp.type="text";
-    nameInp.id=`LVL_NAME_${i}`;
-    nameInp.value=`Level ${i+1}`;
-
-    left.appendChild(nameLbl);
-    left.appendChild(nameInp);
-
-    const right=document.createElement("div");
-    right.style.display="flex";
-    right.style.gap="8px";
-    right.style.alignItems="center";
-
-    const fillBtn=document.createElement("button");
-    fillBtn.type="button";
-    fillBtn.className="btn";
-    fillBtn.textContent="✨ Пример";
-    fillBtn.onclick=()=>{
-      const ta=document.getElementById(`LVL_TXT_${i}`);
-      ta.value=(lines[i]||lines[0]||"").trim();
-      updateAll();
-    };
-
-    right.appendChild(fillBtn);
-    top.appendChild(left);
-    top.appendChild(right);
-
-    const taLbl=document.createElement("label");
-    taLbl.textContent=`Задания уровня ${i+1}`;
-
-    const ta=document.createElement("textarea");
-    ta.id=`LVL_TXT_${i}`;
-    ta.placeholder="Question | A | B | C | correctIndex";
-    ta.value=(lines[i]||"").trim();
-
-    ta.addEventListener("input", debounce(updateAll,250));
-    nameInp.addEventListener("input", debounce(updateAll,250));
-
-    card.appendChild(top);
-    card.appendChild(document.createElement("div")).className="sep";
-    card.appendChild(taLbl);
-    card.appendChild(ta);
-
-    wrap.appendChild(card);
-  }
-}
-function collectLevelsFromUI(){
-  const count=clampInt($("LEVEL_COUNT").value,1,12,3);
-  const levels=[];
-  for(let i=0;i<count;i++){
-    const name=(document.getElementById(`LVL_NAME_${i}`)?.value || `Level ${i+1}`).trim() || `Level ${i+1}`;
-    const txt=(document.getElementById(`LVL_TXT_${i}`)?.value || "");
-    const questions=parseLevelText(txt);
-    if(questions.length===0){
-      questions.push({text:"(Empty level) Add questions in the panel.",answers:["OK","OK","OK"],correct:0});
-    }
-    levels.push({name,questions});
-  }
-  STATE.levels=levels;
-  return levels;
-}
-
-/* ===================== CONFIG ===================== */
-function resolveBgUrl(){
-  const preset=$("BG_PRESET").value;
-  const url=$("BG_URL").value.trim();
-  if(preset==="custom"){
-    if(url) return url;
-    if(STATE.bgCustomDataUrl) return STATE.bgCustomDataUrl;
-    return PRESETS.bg.lava;
-  }
-  return PRESETS.bg[preset] || PRESETS.bg.lava;
-}
-function resolveCharUrl(){
-  const k=$("CHAR_PRESET").value;
-  return PRESETS.character[k] || PRESETS.character.chameleon;
-}
-function resolvePlatUrl(){
-  const k=$("PLAT_PRESET").value;
-  return PRESETS.platform[k] || PRESETS.platform.lily;
-}
-function getDiff(){
-  const preset=$("DIFF_PRESET").value;
-  const map={
-    classic:{t1:10,t2:7,t3:5},
-    easy:{t1:12,t2:9,t3:7},
-    hard:{t1:9,t2:6,t3:4},
-  };
-  if(preset!=="custom"){
-    const d=map[preset] || map.classic;
-    $("T1").value=d.t1; $("T2").value=d.t2; $("T3").value=d.t3;
-    return d;
-  }
-  return {
-    t1:clampInt($("T1").value,1,99,10),
-    t2:clampInt($("T2").value,1,99,7),
-    t3:clampInt($("T3").value,1,99,5),
-  };
-}
-function getSoundConfig(prefix, uploadKey){
-  return {
-    type: $(prefix+"_TYPE").value,
-    url: $(prefix+"_URL").value.trim(),
-    upload: STATE.sounds[uploadKey] || ""
-  };
-}
-function buildConfig(){
-  return {
-    title: $("GAME_TITLE").value.trim() || "Leap & Learn",
-    subtitle: $("GAME_SUB").value.trim() || "",
-    visuals:{
-      bgUrl: resolveBgUrl(),
-      characterUrl: resolveCharUrl(),
-      platformUrl: resolvePlatUrl(),
-      panelColor: $("PANEL_COLOR").value,
-      timerColor: $("TIMER_COLOR").value,
-      neon: $("NEON_ON").value==="1",
-      startOverlay: $("START_OVERLAY").value,
-      endOverlay: $("END_OVERLAY").value,
-      fontColor: $("FONT_COLOR").value,
-      qFontSize: clampInt($("Q_FONT_SIZE").value,16,48,26),
-    },
-    gameplay:{
-      lives: clampInt($("LIVES").value,1,12,5),
-      baseScore: clampInt($("BASE_SCORE").value,0,9999,100),
-      timeMult: clampInt($("TIME_MULT").value,0,999,10),
-      wrongPenalty: clampInt($("WRONG_PENALTY").value,0,9999,80),
-      diff: getDiff(),
-    },
-    texts:{
-      win: $("TXT_WIN").value || "CONGRATULATIONS!",
-      lose: $("TXT_LOSE").value || "YOU LOST!",
-      total: $("TXT_TOTAL").value || "GAME COMPLETED!",
-      hintCampaign: $("TXT_HINT").value || "",
-    },
-    sounds:{
-      ok:   getSoundConfig("S_OK","okUpload"),
-      bad:  getSoundConfig("S_BAD","badUpload"),
-      win:  getSoundConfig("S_WIN","winUpload"),
-      lose: getSoundConfig("S_LOSE","loseUpload"),
-    },
-    levels: collectLevelsFromUI()
-  };
-}
-
-/* ===================== GAME SRC ===================== */
-function buildGameSrcdoc(cfg){
-  const cfgJson=JSON.stringify(cfg);
-
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>${escAttr(cfg.title)}</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Leap and Learn — Editor</title>
 <style>
-:root{
-  --neon-main:${cfg.visuals.timerColor};
-  --danger:#ff3b3b;
-  --win:#ffe44d;
-  --txt:${cfg.visuals.fontColor};
-  --startOverlay:${cfg.visuals.startOverlay};
-  --endOverlay:${cfg.visuals.endOverlay};
-  --neonOn:${cfg.visuals.neon ? 1 : 0};
-}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;background:#0a1730;color:var(--txt)}
-#GAME{position:relative;width:100%;height:100%}
-#GAME.shake{animation:shake .25s}
-@keyframes shake{0%{transform:translate(0)}25%{transform:translate(-4px,3px)}50%{transform:translate(4px,-3px)}75%{transform:translate(-3px,2px)}100%{transform:translate(0)}}
+  :root{
+    --bg:#070912;
+    --panel:#0e1330;
+    --panel2:#0b1027;
+    --text:#eaf0ff;
+    --muted:#a9b4d6;
+    --accent:#7cf9ff;
+    --danger:#ff3b3b;
+    --ok:#39ff88;
+    --shadow: 0 18px 60px rgba(0,0,0,.55);
+    --radius: 18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color:var(--text);
+    background: radial-gradient(1200px 800px at 20% 10%, rgba(124,249,255,.12), transparent 60%),
+                radial-gradient(1200px 800px at 80% 90%, rgba(255,59,59,.10), transparent 60%),
+                linear-gradient(180deg, #050612, #070817);
+    overflow:hidden;
+  }
 
-#BG{position:absolute;inset:0;z-index:0;background:url("${escAttr(cfg.visuals.bgUrl)}") center/cover no-repeat}
+  /* floating neon stars */
+  .stars{position:fixed; inset:0; pointer-events:none; opacity:.9; mix-blend-mode:screen; filter: drop-shadow(0 0 10px rgba(124,249,255,.25));}
+  .star{
+    position:absolute; width:10px; height:10px;
+    background: conic-gradient(from 180deg, rgba(255,255,255,0), rgba(255,255,255,.9), rgba(255,255,255,0));
+    transform: rotate(45deg);
+    border-radius:2px;
+    opacity:.7;
+    animation: drift linear infinite, twinkle ease-in-out infinite;
+  }
+  @keyframes drift{
+    from{transform: translate3d(0,0,0) rotate(45deg)}
+    to{transform: translate3d(var(--dx), var(--dy), 0) rotate(405deg)}
+  }
+  @keyframes twinkle{
+    0%,100%{opacity:.25; filter: drop-shadow(0 0 8px var(--c))}
+    50%{opacity:1; filter: drop-shadow(0 0 18px var(--c))}
+  }
 
-#QUESTION{position:absolute;top:26px;width:100%;text-align:center;font-size:${cfg.visuals.qFontSize}px;z-index:20;color:var(--txt);text-shadow:0 2px 0 rgba(0,0,0,.35);font-weight:900}
-#TIMER{
-  position:absolute;top:70px;left:50%;transform:translateX(-50%);
-  width:80px;height:80px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:#fff;border:2px solid var(--neon-main);
-  box-shadow:0 0 calc(18px * var(--neonOn)) var(--neon-main);
-  z-index:20;font-weight:900;color:#053149;
-}
-#TIMER.danger{
-  border-color:var(--danger);color:var(--danger);
-  box-shadow:0 0 calc(25px * var(--neonOn)) var(--danger);
-  animation:pulse .8s infinite;
-}
-@keyframes pulse{50%{transform:translateX(-50%) scale(1.12)}}
-#LIVES{position:absolute;top:30px;right:30px;font-size:26px;z-index:20}
-#SCORE{position:absolute;top:30px;left:30px;font-size:20px;font-weight:900;z-index:20;color:var(--txt);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 16px;
+    border-bottom:1px solid rgba(124,249,255,.12);
+    background: linear-gradient(180deg, rgba(14,19,48,.75), rgba(8,10,24,.25));
+    backdrop-filter: blur(10px);
+  }
+  header .title{
+    display:flex; gap:10px; align-items:center;
+  }
+  .badge{
+    padding:6px 10px;
+    border-radius:999px;
+    font-weight:700;
+    letter-spacing:.4px;
+    font-size:12px;
+    background: rgba(124,249,255,.12);
+    border:1px solid rgba(124,249,255,.25);
+    color:var(--accent);
+    box-shadow: 0 0 22px rgba(124,249,255,.12);
+  }
+  h1{
+    margin:0;
+    font-size:16px;
+    font-weight:800;
+    letter-spacing:.3px;
+  }
+  .sub{color:var(--muted); font-size:12px}
 
-#COMBO{
-  position:absolute;top:165px;left:50%;transform:translateX(-50%);
-  z-index:20;padding:10px 16px;border-radius:18px;
-  background:rgba(255,255,255,.88);
-  border:2px solid var(--neon-main);
-  box-shadow:0 0 calc(18px * var(--neonOn)) rgba(124,249,255,.65), inset 0 0 14px rgba(124,249,255,.25);
-  font-weight:900;color:#043149;display:none;gap:10px;align-items:center;
-}
-#COMBO.show{display:inline-flex}
-#COMBO_BOLT{width:18px;height:18px;border-radius:6px;background:rgba(124,249,255,.25);box-shadow:0 0 calc(14px * var(--neonOn)) rgba(124,249,255,.75);display:inline-block}
-#COMBO.pulse{animation:comboPulse .55s ease}
-@keyframes comboPulse{0%{transform:translateX(-50%) scale(1)}40%{transform:translateX(-50%) scale(1.12)}100%{transform:translateX(-50%) scale(1)}}
+  .wrap{
+    height: calc(100% - 62px);
+    display:grid;
+    grid-template-columns: 410px 1fr;
+    gap:14px;
+    padding:14px;
+  }
 
-.btn{
-  padding:12px 34px;border-radius:16px;font-weight:900;
-  background:#fff;border:2px solid var(--neon-main);
-  box-shadow:0 0 calc(15px * var(--neonOn)) var(--neon-main);
-  cursor:pointer;color:#043149;
-}
-.btn.dark{
-  background:rgba(255,255,255,.10);
-  color:#eaf6ff;
-  border:2px solid rgba(124,249,255,.55);
-  box-shadow:0 0 calc(16px * var(--neonOn)) rgba(124,249,255,.25);
-}
-#START.hide{display:none}
+  .left, .right{
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(14,19,48,.65), rgba(11,16,39,.35));
+    border:1px solid rgba(124,249,255,.12);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    min-height:0;
+  }
 
-#START_SCREEN{
-  position:absolute;inset:0;z-index:60;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(8,16,34,.92);
-  background:color-mix(in srgb, var(--startOverlay) 92%, transparent);
-}
-#START_CARD{
-  width:min(760px, calc(100vw - 40px));
-  border-radius:26px;
-  background:linear-gradient(180deg, rgba(10,20,50,.92), rgba(5,10,25,.92));
-  border:2px solid rgba(124,249,255,.75);
-  box-shadow:0 0 calc(30px * var(--neonOn)) rgba(124,249,255,.55), inset 0 0 24px rgba(124,249,255,.18);
-  padding:18px 18px 16px;
-  position:relative;overflow:hidden;color:#eaf6ff;
-}
-#START_TOP{display:flex;align-items:center;gap:14px;padding:6px 6px 10px}
-#START_ICON{
-  width:64px;height:64px;flex:0 0 auto;
-  background:url("${escAttr(cfg.visuals.characterUrl)}") no-repeat center/contain;
-  filter:drop-shadow(0 0 calc(14px * var(--neonOn)) rgba(124,249,255,.55));
-}
-#START_TITLE{font-weight:900;font-size:34px;color:#eaf6ff;text-shadow:0 0 calc(18px * var(--neonOn)) rgba(124,249,255,.55);margin:0;line-height:1.05}
-#START_SUB{margin:2px 0 0;color:#bfe9ff;opacity:.9;font-weight:700}
+  .left{
+    display:flex; flex-direction:column;
+  }
+  .left .scroll{
+    padding:12px;
+    overflow:auto;
+    height:100%;
+  }
 
-.panel{
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(124,249,255,.35);
-  border-radius:18px;
-  box-shadow:0 0 calc(12px * var(--neonOn)) rgba(124,249,255,.18);
-  padding:12px 12px 10px;margin-top:10px;
-}
-.panel h3{margin:0 0 8px;font-size:14px;letter-spacing:.08em;text-transform:uppercase;opacity:.9;color:#eaf6ff}
-.rules{margin:0;color:#cfefff;font-weight:700;line-height:1.35;font-size:14px}
-.rules li{margin:6px 0}
-.kbd{display:inline-block;padding:2px 8px;border-radius:10px;border:1px solid rgba(124,249,255,.55);box-shadow:0 0 calc(10px * var(--neonOn)) rgba(124,249,255,.22);background:rgba(255,255,255,.10);font-weight:900;color:#eaf6ff}
+  .section{
+    border:1px solid rgba(124,249,255,.12);
+    background: rgba(7,9,18,.35);
+    border-radius:16px;
+    padding:10px;
+    margin-bottom:10px;
+  }
+  .section h2{
+    margin:0 0 8px 0;
+    font-size:13px;
+    letter-spacing:.2px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .hint{color:var(--muted); font-size:11px; line-height:1.25}
 
-#START_BOTTOM{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
-.badge{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:8px 12px;border-radius:16px;
-  border:1px solid rgba(124,249,255,.35);
-  box-shadow:0 0 calc(12px * var(--neonOn)) rgba(124,249,255,.18);
-  background:rgba(255,255,255,.08);
-  color:#eaf6ff;font-weight:900;font-size:14px;
-}
-.badge small{opacity:.8;font-weight:900;color:#bfe9ff}
-select{
-  border-radius:14px;border:1px solid rgba(124,249,255,.45);
-  background:rgba(255,255,255,.10);
-  padding:8px 10px;font-weight:900;color:#eaf6ff;outline:none;
-}
-select option{color:#0b1630;background:#eaf6ff;font-weight:900}
+  .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+  .grid3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px}
+  label{display:block; font-size:12px; color:var(--muted); margin:0 0 6px}
+  input[type="text"], input[type="number"], textarea, select{
+    width:100%;
+    padding:10px 10px;
+    border-radius:12px;
+    border:1px solid rgba(124,249,255,.16);
+    background: rgba(6,8,18,.6);
+    color: var(--text);
+    outline:none;
+  }
+  textarea{min-height:120px; resize:vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px}
+  input[type="color"]{
+    width:100%;
+    height:42px;
+    border-radius:12px;
+    border:1px solid rgba(124,249,255,.16);
+    background: rgba(6,8,18,.6);
+    padding:6px;
+  }
+  .row{display:flex; gap:10px; align-items:flex-end}
+  .row > div{flex:1}
+  .check{
+    display:flex; gap:10px; align-items:center;
+    padding:10px;
+    border-radius:12px;
+    border:1px solid rgba(124,249,255,.12);
+    background: rgba(6,8,18,.45);
+    color:var(--text);
+  }
+  .check input{transform: scale(1.15)}
+  .btnbar{
+    display:flex; gap:10px; flex-wrap:wrap;
+    margin-top:8px;
+  }
+  button{
+    cursor:pointer;
+    border:none;
+    padding:10px 12px;
+    border-radius:14px;
+    font-weight:800;
+    color:#081018;
+    background: linear-gradient(180deg, rgba(124,249,255,1), rgba(124,249,255,.7));
+    box-shadow: 0 0 25px rgba(124,249,255,.18);
+  }
+  button.secondary{
+    color:var(--text);
+    background: rgba(6,8,18,.55);
+    border:1px solid rgba(124,249,255,.18);
+    box-shadow:none;
+  }
+  button.danger{
+    color:#13060a;
+    background: linear-gradient(180deg, rgba(255,59,59,1), rgba(255,59,59,.65));
+    box-shadow: 0 0 25px rgba(255,59,59,.16);
+  }
+  .small{
+    font-size:11px; color:var(--muted); margin-top:6px; line-height:1.25
+  }
 
-#END{
-  position:absolute;inset:0;z-index:50;
-  background:rgba(8,16,34,.92);
-  background:color-mix(in srgb, var(--endOverlay) 92%, transparent);
-  display:none;align-items:center;justify-content:center;flex-direction:column;
-}
-#END.show{display:flex}
-#END_TEXT{font-size:58px;font-weight:900;margin:0 0 10px;animation:sway 2.5s ease-in-out infinite;text-align:center}
-.win{color:var(--win);text-shadow:0 0 calc(12px * var(--neonOn)) var(--win), 0 0 calc(34px * var(--neonOn)) var(--win);}
-.lose{color:var(--danger);text-shadow:0 0 calc(12px * var(--neonOn)) var(--danger), 0 0 calc(34px * var(--neonOn)) var(--danger);}
-@keyframes sway{0%{transform:rotate(0deg)}25%{transform:rotate(2deg)}50%{transform:rotate(0deg)}75%{transform:rotate(-2deg)}100%{transform:rotate(0deg)}}
+  .right{
+    display:flex; flex-direction:column;
+    min-height:0;
+  }
+  .rightTop{
+    padding:10px 12px;
+    border-bottom:1px solid rgba(124,249,255,.12);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .rightTop .title2{font-weight:900; letter-spacing:.2px}
+  .previewWrap{
+    flex:1;
+    min-height:0;
+    padding:12px;
+  }
+  iframe{
+    width:100%;
+    height:100%;
+    border:1px solid rgba(124,249,255,.16);
+    border-radius:16px;
+    background: rgba(0,0,0,.25);
+  }
 
-#LEVEL_BANNER{
-  margin:0 0 10px;padding:14px 18px;border-radius:20px;
-  background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
-  border:1px solid rgba(255,228,77,.55);
-  box-shadow:0 0 calc(24px * var(--neonOn)) rgba(255,228,77,.35), inset 0 0 18px rgba(255,228,77,.12);
-  color:#fff7cf;font-weight:900;letter-spacing:.06em;text-transform:uppercase;text-align:center;
-}
-#LEVEL_NAME{margin:0 0 10px;color:#bfe9ff;font-weight:900;opacity:.95}
-#HINT_LINE{margin:0 0 16px;color:#cfefff;opacity:.9;font-weight:900;text-align:center}
+  .out{
+    padding:12px;
+    border-top:1px solid rgba(124,249,255,.12);
+    background: rgba(7,9,18,.35);
+  }
+  .out label{margin-bottom:8px}
+  .out textarea{min-height:110px}
 
-#SCORECARD{
-  width:min(620px, calc(100vw - 40px));
-  background:rgba(255,255,255,.10);
-  border:2px solid rgba(124,249,255,.55);
-  box-shadow:0 0 calc(22px * var(--neonOn)) rgba(124,249,255,.45), inset 0 0 16px rgba(124,249,255,.15);
-  border-radius:22px;
-  padding:18px 18px 14px;
-  margin:6px 0 16px;
-  overflow:hidden;
-  color:#eaf6ff;
-}
-#SCOREGRID{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
-.row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.08);border:1px solid rgba(124,249,255,.35);border-radius:16px;padding:12px 14px}
-.label{font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
-.value{font-size:22px;font-weight:900}
-#FINAL_LINE{margin-top:12px;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.10);border:2px solid rgba(124,249,255,.55)}
-#FINAL_LABEL{font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.95}
-#FINAL_SCORE{font-weight:900;font-size:30px}
-#END_BTNS{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .pill{
+    display:inline-flex; gap:8px; align-items:center;
+    padding:8px 10px;
+    border-radius:999px;
+    background: rgba(124,249,255,.10);
+    border:1px solid rgba(124,249,255,.20);
+    color:var(--accent);
+    font-size:12px;
+    font-weight:800;
+  }
 
-#FROG{
-  position:absolute;left:160px;top:50%;
-  width:110px;height:110px;
-  background:url("${escAttr(cfg.visuals.characterUrl)}") no-repeat center/contain;
-  transform:translate(-50%,-65%);
-  z-index:15;
-  transition:transform .6s ease,opacity .6s ease;
-  pointer-events:none;
-}
-#FROG.jump{transform:translate(-50%,-95%) scale(1.05)}
-#FROG.sink{transform:translate(-50%,-10%) scale(.6);opacity:0}
-
-#PLATFORMS{position:absolute;inset:0;z-index:10}
-.platform{position:absolute;width:150px;height:150px;transition:transform .5s,opacity .6s}
-.lily{
-  width:150px;height:150px;
-  background:url("${escAttr(cfg.visuals.platformUrl)}") no-repeat center/contain;
-  display:flex;align-items:center;justify-content:center;
-  font-weight:900;color:#141414;
-  text-shadow:0 2px 0 rgba(255,255,255,.65), 0 0 10px rgba(0,0,0,.35);
-  animation:float 3.5s ease-in-out infinite;
-  transition:transform .5s, filter .2s;
-}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
-.platform.answer{cursor:pointer}
-.platform.fade{opacity:0}
-.platform.fade .lily{transform:scale(.6)}
-.platform.wrong .lily{filter:drop-shadow(0 0 18px red)}
-@keyframes wobble{0%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(1px) rotate(-3deg)}50%{transform:translateY(0) rotate(3deg)}75%{transform:translateY(1px) rotate(-2deg)}100%{transform:translateY(0) rotate(0deg)}}
-.platform.wobble .lily{animation:float 3.5s ease-in-out infinite, wobble .35s ease-in-out 0s 3}
-
-#FX{position:absolute;inset:0;pointer-events:none;z-index:200}
-.splash{position:absolute;width:90px;height:34px;background:rgba(255,255,255,.92);border-radius:50%;animation:splash .45s forwards}
-@keyframes splash{to{transform:scale(2.2);opacity:0}}
-.ripple{position:absolute;border:3px solid rgba(255,255,255,.92);border-radius:50%;animation:ripple 1.45s forwards}
-@keyframes ripple{to{transform:scale(2.2);opacity:0}}
-.bubble{position:absolute;border-radius:50%;background:rgba(255,255,255,.88);animation:bubble 1.7s forwards}
-@keyframes bubble{to{transform:translate(var(--dx),var(--dy));opacity:0}}
-.confetti{position:absolute;width:10px;height:14px;border-radius:4px;opacity:.95;animation:confFall 2.25s ease-in forwards}
-@keyframes confFall{0%{transform:translate3d(0,0,0) rotate(0deg);opacity:1}100%{transform:translate3d(var(--dx), calc(100vh + 140px), 0) rotate(720deg);opacity:0}}
-.spark{position:absolute;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.95);animation:spark 760ms ease-out forwards}
-@keyframes spark{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.25);opacity:0}}
+  .toast{
+    position:fixed; left:50%; bottom:14px; transform:translateX(-50%);
+    padding:10px 12px;
+    border-radius:999px;
+    background: rgba(6,8,18,.75);
+    border:1px solid rgba(124,249,255,.20);
+    color:var(--text);
+    box-shadow: var(--shadow);
+    opacity:0; pointer-events:none;
+    transition:.22s;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px)}
 </style>
 </head>
 <body>
-<div id="GAME">
-  <div id="BG"></div>
-  <div id="SCORE">⭐ 0</div>
-  <div id="QUESTION"></div>
-  <div id="TIMER">00:10</div>
-  <div id="COMBO"><span id="COMBO_BOLT"></span><span id="COMBO_TXT">COMBO x1.0</span></div>
-  <div id="LIVES"></div>
+<div class="stars" id="stars"></div>
 
-  <div id="START" class="btn hide">▶ Start</div>
+<header>
+  <div class="title">
+    <span class="badge">EDITOR</span>
+    <div>
+      <h1>Leap and Learn</h1>
+      <div class="sub">Редактор для Genially + живой предпросмотр + копирование iframe (srcdoc)</div>
+    </div>
+  </div>
+  <div class="pill">GitHub Pages → Genially</div>
+</header>
 
-  <div id="START_SCREEN">
-    <div id="START_CARD">
-      <div id="START_TOP">
-        <div id="START_ICON"></div>
-        <div>
-          <h1 id="START_TITLE"></h1>
-          <div id="START_SUB"></div>
+<div class="wrap">
+  <aside class="left">
+    <div class="scroll">
+
+      <div class="section">
+        <h2>Базовые</h2>
+        <div class="grid2">
+          <div>
+            <label>Количество уровней</label>
+            <input id="levels" type="number" min="1" max="30" value="5">
+          </div>
+          <div>
+            <label>Сложность: секунд на уровень</label>
+            <input id="seconds" type="number" min="3" max="120" value="10">
+          </div>
+        </div>
+        <div class="small">Задания берутся по порядку: 1 строка = 1 уровень (лишние строки игнорируются, недостающие — повторяются).</div>
+      </div>
+
+      <div class="section">
+        <h2>Задания по уровням</h2>
+        <label>Окно для заданий (каждая строка — отдельное задание)</label>
+        <textarea id="tasks">Choose the correct article: ___ apple
+Find the verb: She ___ to school.
+Pick the plural: child → ___
+Select preposition: I am ___ the river.
+Correct spelling: chameleon / camaleon?</textarea>
+        <div class="small">Игра в демо-режиме делает 3 варианта ответа автоматически (1 правильный + 2 случайных). Можно менять текст заданий как хочешь.</div>
+      </div>
+
+      <div class="section">
+        <h2>Экраны (старт / финиш)</h2>
+        <div class="grid2">
+          <div>
+            <label>Цвет стартового экрана</label>
+            <input id="startColor" type="color" value="#061c2a">
+          </div>
+          <div>
+            <label>Цвет конечного экрана</label>
+            <input id="endColor" type="color" value="#1a0720">
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:10px">
+          <div>
+            <label>Текст победы</label>
+            <input id="winText" type="text" value="Победа! Ты прошёл(а) все уровни!">
+          </div>
+          <div>
+            <label>Текст провала</label>
+            <input id="loseText" type="text" value="Упс… Попробуй ещё раз!">
+          </div>
         </div>
       </div>
 
-      <div class="panel">
-        <h3>How to Play</h3>
-        <ul class="rules">
-          <li>Pick the correct answer — move forward.</li>
-          <li>Timer adapts: <span class="kbd">T1 → T2 → T3</span>.</li>
-          <li>Combos increase your score multiplier; a mistake breaks the combo and adds a penalty.</li>
-          <li>Choose a level (or all levels) and press <span class="kbd">START</span>.</li>
-        </ul>
+      <div class="section">
+        <h2>Панели / таймер / неон</h2>
+        <div class="grid3">
+          <div>
+            <label>Цвет панелей</label>
+            <input id="panelColor" type="color" value="#0e2a4a">
+          </div>
+          <div>
+            <label>Цвет таймера</label>
+            <input id="timerColor" type="color" value="#7cf9ff">
+          </div>
+          <div>
+            <label>Таймер (критич. цвет)</label>
+            <input id="timerDanger" type="color" value="#ff3b3b">
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:10px">
+          <div class="check">
+            <input id="neon" type="checkbox" checked>
+            <div>
+              <div style="font-weight:900">Неоновая подсветка</div>
+              <div class="hint">Добавляет glow к панелям/таймеру</div>
+            </div>
+          </div>
+          <div>
+            <label>Порог “красного” таймера (сек.)</label>
+            <input id="dangerAt" type="number" min="1" max="30" value="3">
+          </div>
+        </div>
       </div>
 
-      <div id="START_BOTTOM">
-        <div class="badge">
-          <span>Mode:</span>
-          <select id="LEVEL">
-            <option value="all" selected>All Levels</option>
+      <div class="section">
+        <h2>Шрифт</h2>
+        <div class="grid3">
+          <div>
+            <label>Цвет текста</label>
+            <input id="fontColor" type="color" value="#eaf0ff">
+          </div>
+          <div>
+            <label>Размер шрифта (px)</label>
+            <input id="fontSize" type="number" min="12" max="40" value="18">
+          </div>
+          <div>
+            <label>Шрифт</label>
+            <select id="fontFamily">
+              <option value="Arial, sans-serif">Arial</option>
+              <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+              <option value="Verdana, sans-serif">Verdana</option>
+              <option value="'Comic Sans MS', cursive">Comic Sans</option>
+              <option value="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">System</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Локация / персонаж / платформа</h2>
+        <div class="grid2">
+          <div>
+            <label>Фон (локация)</label>
+            <select id="bgPreset">
+              <option value="river">Река</option>
+              <option value="lava">Лава</option>
+              <option value="swamp">Болото</option>
+              <option value="custom">Загрузить свой</option>
+            </select>
+            <input id="bgUpload" type="file" accept="image/*" style="margin-top:8px; display:none">
+            <div class="small">Если “Загрузить свой” — выбери файл, он встраивается как dataURL.</div>
+          </div>
+          <div>
+            <label>Персонаж</label>
+            <select id="heroPreset">
+              <option value="frog">Лягушка</option>
+              <option value="chameleon">Хамелеон</option>
+              <option value="lizard">Ящерица</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:10px">
+          <label>Платформа</label>
+          <select id="platformPreset">
+            <option value="lily">Лилия (SVG)</option>
+            <option value="rock">Камень (SVG)</option>
+            <option value="log">Бревно (SVG)</option>
           </select>
-          <small>campaign or single</small>
+          <div class="small">Сделал 3 платформы встроенными (SVG), чтобы работало без ссылок. Если дашь свои ссылки на платформы — я заменю.</div>
         </div>
-
-        <div class="badge">
-          <span>Difficulty:</span>
-          <select id="DIFF"><option value="custom" selected>Custom</option></select>
-          <small>from panel</small>
-        </div>
-
-        <button id="START_BTN" class="btn">▶ START</button>
       </div>
+
+      <div class="section">
+        <h2>Звуки</h2>
+        <div class="grid2">
+          <div>
+            <label>Правильный ответ (URL или upload)</label>
+            <input id="sndOkUrl" type="text" placeholder="https://... или оставь пустым">
+            <input id="sndOkFile" type="file" accept="audio/*" style="margin-top:8px">
+          </div>
+          <div>
+            <label>Неправильный ответ (URL или upload)</label>
+            <input id="sndBadUrl" type="text" placeholder="https://... или оставь пустым">
+            <input id="sndBadFile" type="file" accept="audio/*" style="margin-top:8px">
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:10px">
+          <div>
+            <label>Победа (URL или upload)</label>
+            <input id="sndWinUrl" type="text" placeholder="https://... или оставь пустым">
+            <input id="sndWinFile" type="file" accept="audio/*" style="margin-top:8px">
+          </div>
+          <div>
+            <label>Провал (URL или upload)</label>
+            <input id="sndLoseUrl" type="text" placeholder="https://... или оставь пустым">
+            <input id="sndLoseFile" type="file" accept="audio/*" style="margin-top:8px">
+          </div>
+        </div>
+        <div class="small">Если URL пустой и файл не выбран — звук просто не проигрывается.</div>
+      </div>
+
+      <div class="section">
+        <h2>Действия</h2>
+        <div class="btnbar">
+          <button id="copyBtn">Копировать iframe игры</button>
+          <button class="secondary" id="resetBtn">Сбросить (к демо)</button>
+          <button class="danger" id="forceReloadBtn">Пересобрать предпросмотр</button>
+        </div>
+        <div class="small">Копируй iframe из поля снизу и вставляй в Genially (как embed/iframe).</div>
+      </div>
+
+    </div>
+  </aside>
+
+  <section class="right">
+    <div class="rightTop">
+      <div class="title2">Предпросмотр</div>
+      <div class="sub">обновляется автоматически</div>
+    </div>
+    <div class="previewWrap">
+      <iframe id="preview" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+    </div>
+
+    <div class="out">
+      <label>Готовый код iframe (вставь в Genially)</label>
+      <textarea id="iframeOut" readonly></textarea>
+      <div class="small">Если Genially ругается на кавычки — просто вставляй целиком как есть (там srcdoc в одинарных кавычках).</div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast">Скопировано ✅</div>
+
+<script>
+/* =========================
+   Neon drifting stars BG
+========================= */
+(function makeStars(){
+  const root = document.getElementById('stars');
+  const N = 28;
+  const colors = ['#7cf9ff','#ff3b3b','#39ff88','#b56bff','#ffd36b'];
+  const rand = (a,b)=>a+Math.random()*(b-a);
+  for(let i=0;i<N;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    s.style.setProperty('--c', c);
+    s.style.left = rand(0,100)+'%';
+    s.style.top  = rand(0,100)+'%';
+    const dx = rand(-220,220)+'px';
+    const dy = rand(-160,160)+'px';
+    s.style.setProperty('--dx', dx);
+    s.style.setProperty('--dy', dy);
+    const dur = rand(8,18);
+    const dur2= rand(1.4,3.2);
+    s.style.animationDuration = `${dur}s, ${dur2}s`;
+    s.style.animationDelay = `${rand(-dur,0)}s, ${rand(0,1)}s`;
+    const size = rand(10,22);
+    s.style.width = size+'px';
+    s.style.height= size+'px';
+    s.style.filter = `drop-shadow(0 0 10px ${c})`;
+    root.appendChild(s);
+  }
+})();
+
+/* =========================
+   Assets provided by user
+========================= */
+const PRESET_BACKGROUNDS = {
+  river: "https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png",
+  lava:  "https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png",
+  swamp: "https://img.genially.com/67961b32a116fb001568a75e/02b52ad4-9d31-4b21-a305-8fec6e8a4487.png"
+};
+const PRESET_HERO = {
+  frog: "https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png",
+  chameleon: "https://img.genially.com/67961b32a116fb001568a75e/74b56fcf-5354-43dd-9c9a-f50facc9a9bf.png",
+  lizard: "https://img.genially.com/67961b32a116fb001568a75e/0feda2a1-485a-4654-8640-bf1adcc9f9ec.png"
+};
+
+/* Platforms as inline SVG data URIs (so it ALWAYS works) */
+function svgDataUri(svg){
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.trim());
+}
+const PRESET_PLATFORM = {
+  lily: svgDataUri(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="260" height="140" viewBox="0 0 260 140">
+      <defs>
+        <radialGradient id="g" cx="40%" cy="35%" r="70%">
+          <stop offset="0" stop-color="#9dff7a"/>
+          <stop offset="1" stop-color="#0b8b45"/>
+        </radialGradient>
+        <filter id="s" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity=".35"/>
+        </filter>
+      </defs>
+      <path filter="url(#s)" d="M30 85c10-40 60-70 110-70 60 0 100 40 90 80-10 40-70 40-115 40S20 125 30 85Z" fill="url(#g)" stroke="#0a5a2f" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M150 35c-8 12-20 22-35 30 18 4 37 1 55-8-10-6-16-12-20-22Z" fill="#c7ffb0" opacity=".6"/>
+      <path d="M190 45c-18 2-36 12-52 28 22 2 44-5 64-20-4-3-8-6-12-8Z" fill="#c7ffb0" opacity=".35"/>
+    </svg>
+  `),
+  rock: svgDataUri(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="260" height="140" viewBox="0 0 260 140">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#d5d9e6"/>
+          <stop offset="1" stop-color="#646c86"/>
+        </linearGradient>
+        <filter id="s" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="10" stdDeviation="7" flood-color="#000" flood-opacity=".35"/>
+        </filter>
+      </defs>
+      <path filter="url(#s)" d="M35 92c5-35 40-65 85-70 50-6 95 12 118 42 20 26 14 55-10 65-35 14-78 10-120 6-42-4-78-14-73-43Z" fill="url(#g)" stroke="#3e465d" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M70 80c8-20 28-35 55-38 10-1 22 0 34 2-12 6-22 14-30 24-24-6-44-2-59 12Z" fill="#ffffff" opacity=".25"/>
+    </svg>
+  `),
+  log: svgDataUri(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="260" height="140" viewBox="0 0 260 140">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffcf8a"/>
+          <stop offset="1" stop-color="#8a4a1f"/>
+        </linearGradient>
+        <filter id="s" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="10" stdDeviation="7" flood-color="#000" flood-opacity=".35"/>
+        </filter>
+      </defs>
+      <rect filter="url(#s)" x="22" y="52" width="216" height="64" rx="28" fill="url(#g)" stroke="#5a2f14" stroke-width="6"/>
+      <circle cx="56" cy="84" r="22" fill="#a05a2c" opacity=".55"/>
+      <circle cx="56" cy="84" r="10" fill="#6b3516" opacity=".6"/>
+      <path d="M88 74h120" stroke="#6b3516" stroke-width="6" opacity=".35" stroke-linecap="round"/>
+      <path d="M98 92h120" stroke="#6b3516" stroke-width="6" opacity=".25" stroke-linecap="round"/>
+    </svg>
+  `)
+};
+
+/* =========================
+   UI refs
+========================= */
+const $ = (id)=>document.getElementById(id);
+
+const ui = {
+  levels: $('levels'),
+  seconds: $('seconds'),
+  tasks: $('tasks'),
+  startColor: $('startColor'),
+  endColor: $('endColor'),
+  winText: $('winText'),
+  loseText: $('loseText'),
+  panelColor: $('panelColor'),
+  timerColor: $('timerColor'),
+  timerDanger: $('timerDanger'),
+  neon: $('neon'),
+  dangerAt: $('dangerAt'),
+  fontColor: $('fontColor'),
+  fontSize: $('fontSize'),
+  fontFamily: $('fontFamily'),
+  bgPreset: $('bgPreset'),
+  bgUpload: $('bgUpload'),
+  heroPreset: $('heroPreset'),
+  platformPreset: $('platformPreset'),
+  sndOkUrl: $('sndOkUrl'),
+  sndBadUrl: $('sndBadUrl'),
+  sndWinUrl: $('sndWinUrl'),
+  sndLoseUrl: $('sndLoseUrl'),
+  sndOkFile: $('sndOkFile'),
+  sndBadFile: $('sndBadFile'),
+  sndWinFile: $('sndWinFile'),
+  sndLoseFile: $('sndLoseFile'),
+  preview: $('preview'),
+  iframeOut: $('iframeOut'),
+  copyBtn: $('copyBtn'),
+  resetBtn: $('resetBtn'),
+  forceReloadBtn: $('forceReloadBtn'),
+  toast: $('toast')
+};
+
+let customBgDataUrl = "";
+let sndData = { ok:"", bad:"", win:"", lose:"" };
+
+function toast(msg){
+  ui.toast.textContent = msg;
+  ui.toast.classList.add('show');
+  setTimeout(()=>ui.toast.classList.remove('show'), 1000);
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const fr=new FileReader();
+    fr.onload=()=>resolve(fr.result);
+    fr.onerror=()=>reject(fr.error);
+    fr.readAsDataURL(file);
+  });
+}
+
+async function handleSoundFile(which, fileInput){
+  const f = fileInput.files && fileInput.files[0];
+  if(!f){ sndData[which] = ""; rebuild(); return; }
+  const dataUrl = await readFileAsDataURL(f);
+  sndData[which] = dataUrl;
+  rebuild();
+}
+
+ui.bgPreset.addEventListener('change', ()=>{
+  ui.bgUpload.style.display = (ui.bgPreset.value==='custom') ? 'block' : 'none';
+  rebuild();
+});
+ui.bgUpload.addEventListener('change', async ()=>{
+  const f = ui.bgUpload.files && ui.bgUpload.files[0];
+  if(!f){ customBgDataUrl=""; rebuild(); return; }
+  customBgDataUrl = await readFileAsDataURL(f);
+  rebuild();
+});
+
+ui.sndOkFile.addEventListener('change', ()=>handleSoundFile('ok', ui.sndOkFile));
+ui.sndBadFile.addEventListener('change', ()=>handleSoundFile('bad', ui.sndBadFile));
+ui.sndWinFile.addEventListener('change', ()=>handleSoundFile('win', ui.sndWinFile));
+ui.sndLoseFile.addEventListener('change', ()=>handleSoundFile('lose', ui.sndLoseFile));
+
+function getConfig(){
+  const levels = clampInt(ui.levels.value, 1, 30, 5);
+  const seconds = clampInt(ui.seconds.value, 3, 120, 10);
+  const dangerAt = clampInt(ui.dangerAt.value, 1, 30, 3);
+
+  const tasks = ui.tasks.value
+    .split(/\r?\n/)
+    .map(s=>s.trim())
+    .filter(Boolean);
+
+  const bgPreset = ui.bgPreset.value;
+  const bgUrl = (bgPreset==='custom')
+    ? (customBgDataUrl || PRESET_BACKGROUNDS.river)
+    : PRESET_BACKGROUNDS[bgPreset];
+
+  const heroUrl = PRESET_HERO[ui.heroPreset.value];
+  const platformUrl = PRESET_PLATFORM[ui.platformPreset.value];
+
+  const sounds = {
+    ok:   ui.sndOkUrl.value.trim()   || sndData.ok || "",
+    bad:  ui.sndBadUrl.value.trim()  || sndData.bad || "",
+    win:  ui.sndWinUrl.value.trim()  || sndData.win || "",
+    lose: ui.sndLoseUrl.value.trim() || sndData.lose || ""
+  };
+
+  return {
+    title: "Leap and Learn",
+    levels,
+    seconds,
+    dangerAt,
+    tasks,
+    colors:{
+      start: ui.startColor.value,
+      end: ui.endColor.value,
+      panel: ui.panelColor.value,
+      timer: ui.timerColor.value,
+      timerDanger: ui.timerDanger.value,
+      font: ui.fontColor.value
+    },
+    neon: !!ui.neon.checked,
+    font:{
+      size: clampInt(ui.fontSize.value, 12, 40, 18),
+      family: ui.fontFamily.value
+    },
+    texts:{
+      win: ui.winText.value || "Победа!",
+      lose: ui.loseText.value || "Попробуй ещё раз!"
+    },
+    assets:{
+      bg: bgUrl,
+      hero: heroUrl,
+      platform: platformUrl
+    },
+    sounds
+  };
+}
+
+function clampInt(v,min,max,def){
+  const n = parseInt(v,10);
+  if(Number.isNaN(n)) return def;
+  return Math.max(min, Math.min(max, n));
+}
+
+function escapeForSingleQuotedAttr(s){
+  // for iframe srcdoc='...'
+  // convert & first to avoid double-escaping
+  return s
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/'/g,'&#39;');
+}
+
+/* =========================
+   GAME TEMPLATE (srcdoc)
+========================= */
+function buildGameSrcdoc(cfg){
+  const cfgJson = JSON.stringify(cfg);
+
+  return `<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>${cfg.title}</title>
+<style>
+  :root{
+    --start:${cfg.colors.start};
+    --end:${cfg.colors.end};
+    --panel:${cfg.colors.panel};
+    --timer:${cfg.colors.timer};
+    --danger:${cfg.colors.timerDanger};
+    --font:${cfg.colors.font};
+    --neon:${cfg.neon ? 1 : 0};
+    --fs:${cfg.font.size}px;
+  }
+  html,body{margin:0;height:100%;width:100%;overflow:hidden;font-family:${cfg.font.family};}
+  #APP{position:relative;width:100%;height:100%; background:#000;}
+  .bg{
+    position:absolute; inset:0;
+    background: url('${cfg.assets.bg}') center/cover no-repeat;
+    filter:saturate(1.05) contrast(1.05);
+  }
+  .veil{position:absolute; inset:0; background: radial-gradient(900px 700px at 30% 20%, rgba(255,255,255,.12), transparent 60%),
+                                     linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.35));}
+  .panel{
+    position:absolute; left:50%; transform:translateX(-50%);
+    width:min(920px, calc(100% - 24px));
+    border-radius:18px;
+    background: color-mix(in srgb, var(--panel) 82%, rgba(0,0,0,.2));
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow: 0 18px 60px rgba(0,0,0,.55);
+    color:var(--font);
+  }
+  .neonGlow{
+    box-shadow: 0 18px 60px rgba(0,0,0,.55), 0 0 26px rgba(124,249,255,.22);
+    border-color: rgba(124,249,255,.22);
+  }
+  .hud{
+    top:12px;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .chip{
+    display:flex; gap:10px; align-items:center;
+    padding:10px 12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.16);
+    background: rgba(0,0,0,.18);
+    font-weight:900;
+    letter-spacing:.2px;
+    font-size:14px;
+  }
+  .timer{
+    color:var(--timer);
+    text-shadow: calc(var(--neon)*0px) calc(var(--neon)*0px) calc(var(--neon)*14px) rgba(124,249,255,.65);
+  }
+  .timer.danger{
+    color:var(--danger);
+    text-shadow: calc(var(--neon)*0px) calc(var(--neon)*0px) calc(var(--neon)*16px) rgba(255,59,59,.7);
+  }
+
+  .stage{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .start, .end{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card{
+    width:min(880px, calc(100% - 26px));
+    border-radius:22px;
+    padding:18px;
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow: 0 18px 60px rgba(0,0,0,.6);
+    color:var(--font);
+  }
+  .start .card{background: linear-gradient(180deg, color-mix(in srgb, var(--start) 82%, rgba(0,0,0,.2)), rgba(0,0,0,.35));}
+  .end .card{background: linear-gradient(180deg, color-mix(in srgb, var(--end) 82%, rgba(0,0,0,.2)), rgba(0,0,0,.40));}
+
+  .h{
+    font-size: calc(var(--fs) * 1.4);
+    font-weight:1000;
+    letter-spacing:.3px;
+    margin:0 0 8px;
+    text-shadow: 0 0 18px rgba(0,0,0,.35);
+  }
+  .p{margin:0 0 14px; opacity:.92; font-size:var(--fs); line-height:1.2}
+  .btn{
+    cursor:pointer;
+    border:none;
+    padding:12px 14px;
+    border-radius:16px;
+    font-weight:1000;
+    font-size: var(--fs);
+    background: rgba(124,249,255,.92);
+    color:#071018;
+    box-shadow: 0 0 24px rgba(124,249,255,.22);
+  }
+  .btn:active{transform: translateY(1px)}
+
+  /* gameplay layout */
+  .gamePanel{
+    bottom:12px;
+    padding:12px;
+    display:grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap:12px;
+    align-items:stretch;
+  }
+  .qbox{
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.16);
+    background: rgba(0,0,0,.18);
+    padding:12px;
+  }
+  .qtext{
+    font-size: calc(var(--fs) * 1.08);
+    font-weight:1000;
+    margin:0 0 10px;
+    color:var(--font);
+    text-shadow: 0 0 18px rgba(0,0,0,.35);
+  }
+  .answers{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+  }
+  .ans{
+    cursor:pointer;
+    user-select:none;
+    padding:12px 12px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.14);
+    font-weight:900;
+    font-size: var(--fs);
+    transition:.12s transform, .12s filter;
+  }
+  .ans:hover{transform: translateY(-1px); filter:brightness(1.05)}
+  .ans.good{
+    border-color: rgba(57,255,136,.55);
+    box-shadow: 0 0 18px rgba(57,255,136,.16);
+  }
+  .ans.bad{
+    border-color: rgba(255,59,59,.55);
+    box-shadow: 0 0 18px rgba(255,59,59,.14);
+  }
+
+  /* world + character */
+  .world{
+    position:absolute; inset:0;
+    pointer-events:none;
+  }
+  .platforms{
+    position:absolute; left:50%; top:50%;
+    transform: translate(-50%,-50%);
+    width:min(980px, 100%);
+    height:min(520px, 100%);
+  }
+  .plat{
+    position:absolute;
+    width: 220px; height:120px;
+    background: url('${cfg.assets.platform}') center/contain no-repeat;
+    filter: drop-shadow(0 16px 18px rgba(0,0,0,.35));
+    opacity:.98;
+  }
+  .hero{
+    position:absolute;
+    width: 120px; height:120px;
+    background: url('${cfg.assets.hero}') center/contain no-repeat;
+    transform: translate(-50%,-50%);
+    filter: drop-shadow(0 16px 18px rgba(0,0,0,.38));
+    transition: left .35s cubic-bezier(.2,.9,.2,1.05), top .35s cubic-bezier(.2,.9,.2,1.05);
+  }
+  .pop{animation: pop .24s ease-out}
+  @keyframes pop{
+    0%{transform:translate(-50%,-50%) scale(.92)}
+    100%{transform:translate(-50%,-50%) scale(1)}
+  }
+  .shake{animation: shake .28s}
+  @keyframes shake{
+    0%{transform:translate(-50%,-50%)}
+    25%{transform:translate(-50%,-50%) translate(-4px,2px)}
+    50%{transform:translate(-50%,-50%) translate(4px,-2px)}
+    75%{transform:translate(-50%,-50%) translate(-3px,2px)}
+    100%{transform:translate(-50%,-50%)}
+  }
+
+  /* small FX */
+  .spark{
+    position:absolute;
+    width:10px; height:10px;
+    border-radius:2px;
+    background: rgba(124,249,255,.9);
+    box-shadow: 0 0 16px rgba(124,249,255,.7);
+    transform: rotate(45deg);
+    opacity:0;
+    pointer-events:none;
+    animation: spark .55s ease-out forwards;
+  }
+  @keyframes spark{
+    0%{opacity:0; transform:translate(-50%,-50%) rotate(45deg) scale(.6)}
+    20%{opacity:1}
+    100%{opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(140deg) scale(1.25)}
+  }
+
+  .hide{display:none !important}
+</style>
+</head>
+<body>
+<div id="APP">
+  <div class="bg"></div>
+  <div class="veil"></div>
+
+  <div class="start" id="START">
+    <div class="card ${cfg.neon ? "neonGlow":""}">
+      <div class="h">Leap and Learn</div>
+      <div class="p">Нажми “Старт”. На каждом уровне выбери правильный вариант до окончания таймера.</div>
+      <button class="btn" id="startBtn">Старт ▶</button>
+      <div class="p" style="opacity:.8;margin-top:10px;font-size:calc(var(--fs)*.92)">Уровней: <b id="lvlTotal"></b> • Время: <b id="secTotal"></b> сек.</div>
     </div>
   </div>
 
-  <div id="END">
-    <div id="END_TEXT"></div>
-    <div id="LEVEL_BANNER">LEVEL COMPLETE</div>
-    <div id="LEVEL_NAME">Level 1</div>
-    <div id="HINT_LINE"></div>
-
-    <div id="SCORECARD">
-      <div id="SCOREGRID">
-        <div class="row"><div class="label">Questions</div><div id="STAT_Q" class="value">0/0</div></div>
-        <div class="row"><div class="label">Lives</div><div id="STAT_L" class="value">❤️0</div></div>
-        <div class="row"><div class="label">Base</div><div id="STAT_B" class="value">⭐ 0</div></div>
-        <div class="row"><div class="label">Time Bonus</div><div id="STAT_T" class="value">⭐ 0</div></div>
-        <div class="row"><div class="label">Combo Bonus</div><div id="STAT_C" class="value">⭐ 0</div></div>
-        <div class="row"><div class="label">Penalties</div><div id="STAT_P" class="value">⭐ 0</div></div>
-      </div>
-      <div id="FINAL_LINE">
-        <div id="FINAL_LABEL">Total Score</div>
-        <div id="FINAL_SCORE">⭐ Score: 0</div>
-      </div>
-    </div>
-
-    <div id="END_BTNS">
-      <button id="NEXT_LEVEL" class="btn">⏭ Next Level</button>
-      <button id="FINISH" class="btn dark">🏁 Finish</button>
-      <button id="RETRY" class="btn">🔁 Play again</button>
+  <div class="end hide" id="END">
+    <div class="card ${cfg.neon ? "neonGlow":""}">
+      <div class="h" id="endTitle">Конец</div>
+      <div class="p" id="endText"></div>
+      <button class="btn" id="restartBtn">Сыграть ещё раз ↻</button>
     </div>
   </div>
 
-  <div id="FX"></div>
-  <div id="FROG"></div>
-  <div id="PLATFORMS"></div>
+  <div class="world hide" id="WORLD">
+    <div class="panel hud ${cfg.neon ? "neonGlow":""}">
+      <div class="chip">Уровень: <span id="lvl">1</span>/<span id="lvlMax">1</span></div>
+      <div class="chip timer" id="timerChip">⏱ <span id="t">10</span></div>
+      <div class="chip">Очки: <span id="score">0</span></div>
+    </div>
+
+    <div class="platforms" id="platforms">
+      <!-- platforms -->
+      <div class="plat" id="p1"></div>
+      <div class="plat" id="p2"></div>
+      <div class="plat" id="p3"></div>
+      <div class="plat" id="p4"></div>
+      <div class="plat" id="p5"></div>
+      <div class="hero" id="hero"></div>
+    </div>
+
+    <div class="panel gamePanel ${cfg.neon ? "neonGlow":""}">
+      <div class="qbox">
+        <div class="qtext" id="qtext">…</div>
+        <div class="answers" id="answers"></div>
+      </div>
+      <div class="qbox">
+        <div class="qtext" style="margin-bottom:8px">Подсказка</div>
+        <div class="p" id="tip" style="margin:0; opacity:.92; font-size:var(--fs)">Выбирай ответ быстро — таймер горит красным за ${cfg.dangerAt} сек. до конца.</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-const CFG=${cfgJson};
+  const CFG = ${cfgJson};
 
-const LEVELS=(CFG.levels||[]).map(l=>({
-  name:l.name||"Level",
-  questions:(l.questions||[]).map(q=>({
-    text:q.text||"",
-    answers:Array.isArray(q.answers)?q.answers.slice(0,3):["A","B","C"],
-    correct:Math.max(0,Math.min(2,(q.correct|0)))
-  }))
-}));
+  const $ = (id)=>document.getElementById(id);
+  const START=$('START'), END=$('END'), WORLD=$('WORLD');
+  const lvlEl=$('lvl'), lvlMaxEl=$('lvlMax'), tEl=$('t'), timerChip=$('timerChip'), scoreEl=$('score');
+  const qtext=$('qtext'), answers=$('answers');
+  const hero=$('hero');
+  const plats=[ $('p1'),$('p2'),$('p3'),$('p4'),$('p5') ];
 
-const BASE=(CFG.gameplay?.baseScore|0)||100;
-const MULT=(CFG.gameplay?.timeMult|0)||10;
-const WRONG_PENALTY=(CFG.gameplay?.wrongPenalty|0)||80;
-const LIVES_START=(CFG.gameplay?.lives|0)||5;
-const DIFF_PRESETS={custom:CFG.gameplay?.diff||{t1:10,t2:7,t3:5}};
-
-const QUESTION=document.getElementById("QUESTION");
-const TIMER=document.getElementById("TIMER");
-const LIVES=document.getElementById("LIVES");
-const SCORE=document.getElementById("SCORE");
-const PLATFORMS=document.getElementById("PLATFORMS");
-const FX=document.getElementById("FX");
-const GAME=document.getElementById("GAME");
-const FROG=document.getElementById("FROG");
-const START_SCREEN=document.getElementById("START_SCREEN");
-const START_BTN=document.getElementById("START_BTN");
-const LEVEL=document.getElementById("LEVEL");
-
-const COMBO_UI=document.getElementById("COMBO");
-const COMBO_TXT=document.getElementById("COMBO_TXT");
-
-const END=document.getElementById("END");
-const END_TEXT=document.getElementById("END_TEXT");
-const FINAL_SCORE=document.getElementById("FINAL_SCORE");
-const RETRY=document.getElementById("RETRY");
-const FINISH=document.getElementById("FINISH");
-const NEXT_LEVEL=document.getElementById("NEXT_LEVEL");
-const LEVEL_BANNER=document.getElementById("LEVEL_BANNER");
-const LEVEL_NAME=document.getElementById("LEVEL_NAME");
-const HINT_LINE=document.getElementById("HINT_LINE");
-
-const STAT_Q=document.getElementById("STAT_Q");
-const STAT_L=document.getElementById("STAT_L");
-const STAT_B=document.getElementById("STAT_B");
-const STAT_T=document.getElementById("STAT_T");
-const STAT_C=document.getElementById("STAT_C");
-const STAT_P=document.getElementById("STAT_P");
-
-document.getElementById("START_TITLE").textContent=CFG.title||"Leap & Learn";
-document.getElementById("START_SUB").textContent=CFG.subtitle||"";
-
-(function fillLevelSelect(){
-  LEVEL.innerHTML='<option value="all" selected>All Levels</option>';
-  LEVELS.forEach((l,idx)=>{
-    const o=document.createElement("option");
-    o.value=String(idx);
-    o.textContent=l.name||("Level "+(idx+1));
-    LEVEL.appendChild(o);
-  });
-})();
-
-let QUESTIONS=[], q=0, lives=LIVES_START, score=0, started=false, locked=false;
-let timer=null, timeLeft=0;
-let baseSum=0, timeBonusSum=0, comboBonusSum=0, penaltySum=0;
-let correctCount=0, combo=0, maxCombo=0;
-let diffKey="custom";
-let levelIndex=0, campaignMode=false, campaignCompleted=false, finishStage=0;
-let grandScore=0, grandBase=0, grandTime=0, grandCombo=0, grandPenalty=0;
-let grandDone=0, grandTotal=0;
-
-const hasWebAudio=!!(window.AudioContext||window.webkitAudioContext);
-const ctx=hasWebAudio?new (AudioContext||webkitAudioContext)():null;
-
-function playByCfg(scfg, synthFn){
-  try{
-    if(!scfg || scfg.type==="off") return;
-    if(scfg.type==="synth"){ synthFn && synthFn(); return; }
-    const src=(scfg.type==="upload") ? (scfg.upload||"") : (scfg.url||"");
-    if(!src) return;
-    const a=new Audio(src); a.volume=0.9;
-    a.play().catch(()=>{});
-  }catch(e){}
-}
-
-function okSoundSynth(){
-  if(!ctx) return;
-  const t=ctx.currentTime;
-  [523,659,784].forEach((f,i)=>{
-    const o=ctx.createOscillator(),g=ctx.createGain();
-    o.frequency.value=f;
-    g.gain.setValueAtTime(0,t+i*.12);
-    g.gain.linearRampToValueAtTime(.25,t+i*.12+.05);
-    g.gain.exponentialRampToValueAtTime(.001,t+i*.12+.4);
-    o.connect(g);g.connect(ctx.destination);
-    o.start(t+i*.12);o.stop(t+i*.12+.45);
-  });
-}
-function waterFailSoundSynth(){
-  if(!ctx) return;
-  const b=ctx.createBuffer(1,ctx.sampleRate*.9,ctx.sampleRate);
-  const d=b.getChannelData(0);
-  for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
-  const s=ctx.createBufferSource(),g=ctx.createGain();
-  g.gain.value=.6; s.buffer=b; s.connect(g); g.connect(ctx.destination); s.start();
-}
-function loseFinalSoundSynth(){
-  if(!ctx) return;
-  const o=ctx.createOscillator(),g=ctx.createGain();
-  o.type="sawtooth";
-  o.frequency.setValueAtTime(220,ctx.currentTime);
-  o.frequency.exponentialRampToValueAtTime(70,ctx.currentTime+1.3);
-  g.gain.setValueAtTime(.4,ctx.currentTime);
-  g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+1.3);
-  o.connect(g);g.connect(ctx.destination);
-  o.start();o.stop(ctx.currentTime+1.35);
-}
-function fanfareSoundSynth(strength=1){
-  if(!ctx) return;
-  const t=ctx.currentTime;
-  const master=ctx.createGain();
-  master.gain.setValueAtTime(0.0,t);
-  master.gain.linearRampToValueAtTime(0.95*strength,t+0.05);
-  master.gain.exponentialRampToValueAtTime(0.001,t+2.8);
-  master.connect(ctx.destination);
-  function tone(freq, start, dur, type="sawtooth", gain=0.34){
-    const o=ctx.createOscillator(), g=ctx.createGain();
-    o.type=type; o.frequency.value=freq;
-    g.gain.setValueAtTime(0, t+start);
-    g.gain.linearRampToValueAtTime(gain*strength, t+start+0.03);
-    g.gain.exponentialRampToValueAtTime(0.001, t+start+dur);
-    o.connect(g); g.connect(master);
-    o.start(t+start); o.stop(t+start+dur+0.02);
-  }
-  const C5=523.25,E5=659.25,G5=783.99,C6=1046.5,E6=1318.5;
-  [C5,E5,G5].forEach(f=>tone(f,0.00,0.70,"sawtooth",0.30));
-  [E5,G5,C6].forEach(f=>tone(f,0.55,0.80,"sawtooth",0.28));
-  [G5,C6,E6].forEach(f=>tone(f,1.15,1.05,"sawtooth",0.25));
-}
-
-function playOk(){ playByCfg(CFG.sounds?.ok, okSoundSynth); }
-function playBad(){ playByCfg(CFG.sounds?.bad, waterFailSoundSynth); }
-function playWin(){ playByCfg(CFG.sounds?.win, ()=>fanfareSoundSynth(1.0)); }
-function playLose(){ playByCfg(CFG.sounds?.lose, loseFinalSoundSynth); }
-function playTotal(){ playByCfg(CFG.sounds?.win, ()=>fanfareSoundSynth(1.25)); }
-
-function waterFX(bubbles=false){
-  const x=160, y=innerHeight/2+64;
-
-  const s=document.createElement("div");
-  s.className="splash";
-  s.style.left=(x-45)+"px";
-  s.style.top=(y-17)+"px";
-  FX.appendChild(s);
-  setTimeout(()=>s.remove(),520);
-
-  for(let i=0;i<3;i++){
-    const r=document.createElement("div");
-    r.className="ripple";
-    const size=64+i*40;
-    r.style.width=r.style.height=size+"px";
-    r.style.left=(x-size/2)+"px";
-    r.style.top=(y-size/2)+"px";
-    FX.appendChild(r);
-    setTimeout(()=>r.remove(),1550);
+  const snd = {
+    ok:   CFG.sounds.ok   ? new Audio(CFG.sounds.ok) : null,
+    bad:  CFG.sounds.bad  ? new Audio(CFG.sounds.bad) : null,
+    win:  CFG.sounds.win  ? new Audio(CFG.sounds.win) : null,
+    lose: CFG.sounds.lose ? new Audio(CFG.sounds.lose) : null,
+  };
+  function play(a){
+    try{
+      if(!a) return;
+      a.currentTime = 0;
+      a.play().catch(()=>{});
+    }catch(e){}
   }
 
-  if(bubbles){
-    for(let i=0;i<20;i++){
-      const b=document.createElement("div");
-      b.className="bubble";
-      const ss=6+Math.random()*12;
-      b.style.width=b.style.height=ss+"px";
-      b.style.left=(x + Math.random()*140 - 70)+"px";
-      b.style.top=(y + Math.random()*34 - 17)+"px";
-      b.style.setProperty("--dx",(Math.random()*140-70)+"px");
-      b.style.setProperty("--dy",(-140-Math.random()*120)+"px");
-      FX.appendChild(b);
-      setTimeout(()=>b.remove(),1750);
+  const totalLevels = Math.max(1, Math.min(30, CFG.levels|0));
+  const secondsPer = Math.max(3, Math.min(120, CFG.seconds|0));
+  const dangerAt = Math.max(1, Math.min(30, CFG.dangerAt|0));
+
+  $('lvlTotal').textContent = totalLevels;
+  $('secTotal').textContent = secondsPer;
+  lvlMaxEl.textContent = totalLevels;
+
+  const tasks = (CFG.tasks && CFG.tasks.length) ? CFG.tasks : ["Level task 1","Level task 2","Level task 3"];
+  let level=1, score=0, timeLeft=secondsPer, timer=null, locked=false;
+
+  function layoutPlatforms(){
+    // deterministic "zig-zag" layout
+    const W = Math.min(980, window.innerWidth);
+    const H = Math.min(520, window.innerHeight);
+    const cx = 50, cy = 50;
+    const xs = [18, 58, 28, 68, 42];
+    const ys = [68, 54, 38, 26, 18];
+
+    plats.forEach((p,i)=>{
+      p.style.left = xs[i] + '%';
+      p.style.top  = ys[i] + '%';
+    });
+
+    // put hero on first platform
+    moveHeroTo(0, true);
+  }
+
+  function moveHeroTo(i, instant=false){
+    const p = plats[i];
+    const rect = p.getBoundingClientRect();
+    const host = $('platforms').getBoundingClientRect();
+
+    const x = (rect.left - host.left) + rect.width/2;
+    const y = (rect.top - host.top)  + rect.height/2 - 50;
+
+    if(instant){
+      hero.style.transition = 'none';
+      hero.style.left = x+'px';
+      hero.style.top  = y+'px';
+      void hero.offsetWidth;
+      hero.style.transition = '';
+    }else{
+      hero.classList.remove('pop'); void hero.offsetWidth; hero.classList.add('pop');
+      hero.style.left = x+'px';
+      hero.style.top  = y+'px';
     }
   }
-}
-function confettiBurst(power=1){
-  const count=Math.floor(180*power);
-  for(let i=0;i<count;i++){
-    const c=document.createElement("div");
-    c.className="confetti";
-    const x=Math.random()*innerWidth;
-    c.style.left=x+"px";
-    c.style.top=(-30 - Math.random()*200)+"px";
-    c.style.setProperty("--dx",(Math.random()*420-210)+"px");
-    c.style.background = \`hsla(\${Math.random()*360}, 98%, 62%, .99)\`;
-    FX.appendChild(c);
-    setTimeout(()=>c.remove(),2700);
+
+  function mkAnswers(task){
+    // Demo generator:
+    // 1 correct = last word or blank placeholder
+    // plus 2 distractors (simple mutations)
+    const base = (task.includes("___") ? task.split("___")[1].trim() : task.split(/[:?]/).pop().trim()) || "answer";
+    const correct = base.split(/\s+/).slice(0,2).join(' ') || base;
+
+    const d1 = correct.split('').reverse().join('').slice(0, Math.max(3, correct.length));
+    const d2 = (correct + "s").replace(/\s+/g,' ');
+
+    const opts = shuffle([correct, d1, d2]).slice(0,3);
+    const correctIndex = opts.indexOf(correct);
+
+    answers.innerHTML='';
+    opts.forEach((txt, idx)=>{
+      const b=document.createElement('div');
+      b.className='ans';
+      b.textContent = txt;
+      b.onclick = ()=>choose(idx===correctIndex, b);
+      answers.appendChild(b);
+    });
   }
-}
-function sparkBurst(cx,cy, power=1){
-  const n=Math.floor(64*power);
-  for(let i=0;i<n;i++){
-    const sp=document.createElement("div");
-    sp.className="spark";
-    sp.style.left=(cx-4)+"px";
-    sp.style.top=(cy-4)+"px";
-    sp.style.setProperty("--dx",(Math.random()*520-260)+"px");
-    sp.style.setProperty("--dy",(Math.random()*-360-40)+"px");
-    sp.style.background = \`hsla(\${Math.random()*360}, 98%, 72%, .99)\`;
-    FX.appendChild(sp);
-    setTimeout(()=>sp.remove(),1100);
-  }
-}
-function frogJump(){FROG.classList.add("jump");setTimeout(()=>FROG.classList.remove("jump"),300)}
-function cameraShake(){GAME.classList.add("shake");setTimeout(()=>GAME.classList.remove("shake"),300)}
-function fmt(s){ return "00:"+String(s).padStart(2,"0"); }
 
-function shuffle(arr){
-  const a=arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-function randomizeQuestion(qObj){
-  const packs=qObj.answers.map((txt,idx)=>({txt,idx}));
-  const shuffled=shuffle(packs);
-  const newAnswers=shuffled.map(x=>x.txt);
-  const newCorrect=shuffled.findIndex(x=>x.idx===qObj.correct);
-  return {text:qObj.text,answers:newAnswers,correct:newCorrect};
-}
-function totalQuestionsInAllLevels(){
-  return LEVELS.reduce((s,l)=>s+(l.questions?.length||0),0);
-}
-function getRoundTime(){
-  const d=DIFF_PRESETS[diffKey] || {t1:10,t2:7,t3:5};
-  if(correctCount<3) return d.t1;
-  if(correctCount<6) return d.t2;
-  return d.t3;
-}
-function comboMultiplier(){
-  const m=1+combo*0.12;
-  return Math.min(2.0, Math.round(m*10)/10);
-}
-function updateComboUI(){
-  if(combo<=0){ COMBO_UI.classList.remove("show","pulse"); return; }
-  COMBO_UI.classList.add("show","pulse");
-  setTimeout(()=>COMBO_UI.classList.remove("pulse"), 560);
-  COMBO_TXT.textContent=\`COMBO x\${comboMultiplier().toFixed(1)}\`;
-}
-function startTimer(){
-  clearInterval(timer);
-  timeLeft=getRoundTime();
-  TIMER.classList.remove("danger");
-  TIMER.textContent=fmt(timeLeft);
-  timer=setInterval(()=>{
-    timeLeft--;
-    if(timeLeft<=0){ clearInterval(timer); fail("time"); return; }
-    TIMER.textContent=fmt(timeLeft);
-    if(timeLeft<=3) TIMER.classList.add("danger");
-  },1000);
-}
-function buildQuestionsForLevel(idx){
-  const lvl=LEVELS[idx] || LEVELS[0];
-  const randomized=(lvl.questions||[]).map(q=>randomizeQuestion(q));
-  QUESTIONS=shuffle(randomized);
-}
-
-function render(){
-  locked=!started;
-  PLATFORMS.innerHTML="";
-  FROG.classList.remove("sink");
-
-  QUESTION.textContent=QUESTIONS[q]?.text || "";
-  LIVES.textContent="❤️".repeat(lives);
-  SCORE.textContent="⭐ "+score;
-
-  updateComboUI();
-
-  const STEP=190, y=innerHeight/2;
-  const count=Math.ceil((innerWidth-160)/STEP)+4;
-
-  for(let i=0;i<count;i++){
-    const d=document.createElement("div");
-    d.className="platform";
-    d.style.left=160+STEP*i-75+"px";
-    d.style.top=y-75+"px";
-
-    const lily=document.createElement("div");
-    lily.className="lily";
-
-    if(i>0 && QUESTIONS[q] && i<=QUESTIONS[q].answers.length){
-      lily.textContent=QUESTIONS[q].answers[i-1];
-      d.classList.add("answer");
-      d.onclick=()=>pick(i,d);
+  function shuffle(arr){
+    const a=arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
     }
-    d.appendChild(lily);
-    PLATFORMS.appendChild(d);
+    return a;
   }
-}
 
-function pick(i,el){
-  if(!started||locked) return;
-  locked=true;
-  clearInterval(timer);
-  frogJump();
+  function setQuestion(){
+    const task = tasks[(level-1) % tasks.length] || ("Level "+level);
+    qtext.textContent = task;
+    mkAnswers(task);
+  }
 
-  document.querySelectorAll(".platform")
-    .forEach(p=>p.style.transform=\`translateX(\${-(el.offsetLeft+75-160)}px)\`);
+  function startLevel(){
+    locked=false;
+    timeLeft = secondsPer;
+    tEl.textContent = timeLeft;
+    timerChip.classList.remove('danger');
+    lvlEl.textContent = level;
+    setQuestion();
+    moveHeroTo(Math.min(level-1, 4), level===1);
+    clearInterval(timer);
+    timer = setInterval(()=>{
+      timeLeft--;
+      tEl.textContent = timeLeft;
+      if(timeLeft<=dangerAt) timerChip.classList.add('danger');
+      if(timeLeft<=0){
+        clearInterval(timer);
+        fail();
+      }
+    }, 1000);
+  }
 
-  setTimeout(()=>{
-    const isCorrect=(i-1===QUESTIONS[q].correct);
+  function sparkAt(el, color){
+    const r = el.getBoundingClientRect();
+    for(let i=0;i<10;i++){
+      const s=document.createElement('div');
+      s.className='spark';
+      s.style.left = (r.left + r.width/2) + 'px';
+      s.style.top  = (r.top + r.height/2) + 'px';
+      s.style.background = color;
+      s.style.boxShadow = '0 0 16px ' + color;
+      s.style.setProperty('--dx', (Math.random()*160-80)+'px');
+      s.style.setProperty('--dy', (Math.random()*120-60)+'px');
+      document.body.appendChild(s);
+      setTimeout(()=>s.remove(), 600);
+    }
+  }
+
+  function choose(isCorrect, btn){
+    if(locked) return;
+    locked=true;
     if(isCorrect){
-      playOk();
-      waterFX(false);
+      btn.classList.add('good');
+      play(snd.ok);
+      sparkAt(btn, 'rgba(57,255,136,.95)');
+      score += 10;
+      scoreEl.textContent = score;
+      clearInterval(timer);
 
-      const basePts=BASE;
-      const timePts=timeLeft*MULT;
+      // next
+      setTimeout(()=>{
+        level++;
+        if(level>totalLevels){
+          win();
+        }else{
+          startLevel();
+        }
+      }, 420);
 
-      baseSum+=basePts;
-      timeBonusSum+=timePts;
-
-      combo++; maxCombo=Math.max(maxCombo,combo);
-      const mult=comboMultiplier();
-      const comboBonus=Math.round((basePts+timePts)*(mult-1));
-      comboBonusSum+=comboBonus;
-
-      score+=basePts+timePts+comboBonus;
-      correctCount++;
-
-      sparkBurst(innerWidth/2, innerHeight*0.35, 0.9);
-
-      q++;
-      if(q>=QUESTIONS.length) showEnd(true);
-      else startRound();
     }else{
-      fail("wrong");
+      btn.classList.add('bad');
+      play(snd.bad);
+      sparkAt(btn, 'rgba(255,59,59,.95)');
+      hero.classList.remove('shake'); void hero.offsetWidth; hero.classList.add('shake');
+      clearInterval(timer);
+      setTimeout(()=>fail(), 520);
     }
-  },500);
-}
-
-function fail(reason){
-  lives--;
-  if(combo>0) combo=0;
-  updateComboUI();
-
-  const penalty=WRONG_PENALTY;
-  penaltySum+=penalty;
-  score=Math.max(0, score-penalty);
-
-  playBad();
-  waterFX(true);
-  cameraShake();
-  FROG.classList.add("sink");
-
-  document.querySelectorAll(".platform").forEach(p=>{
-    p.classList.add("fade","wrong","wobble");
-    setTimeout(()=>p.classList.remove("wobble"),900);
-  });
-
-  setTimeout(()=>{ lives<=0 ? showEnd(false) : startRound(); },900);
-}
-
-function startRound(){
-  locked=false;
-  render();
-  startTimer();
-}
-
-function fillLevelTable(){
-  const done=Math.min(q, QUESTIONS.length);
-  STAT_Q.textContent=\`\${done}/\${QUESTIONS.length}\`;
-  STAT_L.textContent="❤️"+lives;
-  STAT_B.textContent="⭐ "+baseSum;
-  STAT_T.textContent="⭐ "+timeBonusSum;
-  STAT_C.textContent="⭐ "+comboBonusSum;
-  STAT_P.textContent="⭐ "+penaltySum;
-  FINAL_SCORE.textContent="⭐ Score: "+score;
-}
-
-function pushLevelToGrand(){
-  grandScore+=score;
-  grandBase+=baseSum;
-  grandTime+=timeBonusSum;
-  grandCombo+=comboBonusSum;
-  grandPenalty+=penaltySum;
-  grandDone+=Math.min(q, QUESTIONS.length);
-}
-
-function showTotalResults(){
-  LEVEL_BANNER.textContent="TOTAL RESULTS";
-  LEVEL_NAME.textContent="Game Completed";
-  HINT_LINE.textContent="";
-
-  END_TEXT.textContent=(CFG.texts?.total || "GAME COMPLETED!");
-  END_TEXT.className="win";
-
-  STAT_Q.textContent=\`\${grandDone}/\${grandTotal}\`;
-  STAT_L.textContent="❤️"+lives;
-  STAT_B.textContent="⭐ "+grandBase;
-  STAT_T.textContent="⭐ "+grandTime;
-  STAT_C.textContent="⭐ "+grandCombo;
-  STAT_P.textContent="⭐ "+grandPenalty;
-  FINAL_SCORE.textContent="⭐ Score: "+grandScore;
-
-  NEXT_LEVEL.style.display="none";
-  FINISH.textContent="🏠 Back to Menu";
-
-  playTotal();
-  confettiBurst(1.8);
-  sparkBurst(innerWidth/2, innerHeight*0.22, 1.7);
-}
-
-function showEnd(win){
-  clearInterval(timer);
-  END.classList.add("show");
-
-  const lvlName=(LEVELS[levelIndex]?.name)||\`Level \${levelIndex+1}\`;
-  LEVEL_NAME.textContent=campaignMode ? \`\${lvlName} (Campaign)\` : lvlName;
-
-  finishStage=0;
-  FINISH.textContent="🏁 Finish";
-
-  const last=(levelIndex>=LEVELS.length-1);
-
-  if(win){
-    END_TEXT.textContent=(CFG.texts?.win || "CONGRATULATIONS!");
-    END_TEXT.className="win";
-    LEVEL_BANNER.textContent="LEVEL COMPLETE";
-
-    playWin();
-    confettiBurst(1.2);
-    sparkBurst(innerWidth/2, innerHeight*0.22, 1.2);
-
-    if(campaignMode && last){
-      campaignCompleted=true;
-      HINT_LINE.textContent=(CFG.texts?.hintCampaign || "");
-      NEXT_LEVEL.style.display="none";
-    }else{
-      campaignCompleted=false;
-      HINT_LINE.textContent="";
-      NEXT_LEVEL.style.display=(last ? "none" : "inline-block");
-    }
-  }else{
-    END_TEXT.textContent=(CFG.texts?.lose || "YOU LOST!");
-    END_TEXT.className="lose";
-    LEVEL_BANNER.textContent="TRY AGAIN";
-    HINT_LINE.textContent="";
-    campaignCompleted=false;
-    NEXT_LEVEL.style.display="none";
-    playLose();
   }
 
-  fillLevelTable();
-}
-
-function resetState(){
-  q=0; lives=LIVES_START; score=0; started=false; locked=false;
-  baseSum=0; timeBonusSum=0; comboBonusSum=0; penaltySum=0;
-  correctCount=0; combo=0; maxCombo=0;
-  clearInterval(timer);
-  END.classList.remove("show");
-  END_TEXT.className="";
-  COMBO_UI.classList.remove("show","pulse");
-  TIMER.classList.remove("danger");
-  finishStage=0;
-  campaignCompleted=false;
-  HINT_LINE.textContent="";
-  FINISH.textContent="🏁 Finish";
-  TIMER.textContent=fmt(getRoundTime());
-}
-
-function startLevel(idx){
-  levelIndex=Math.max(0, Math.min(LEVELS.length-1, idx));
-  buildQuestionsForLevel(levelIndex);
-  resetState();
-  START_SCREEN.style.display="none";
-  started=true;
-  render();
-  startRound();
-}
-
-function startCampaign(){
-  campaignMode=true;
-  levelIndex=0;
-  grandScore=0; grandBase=0; grandTime=0; grandCombo=0; grandPenalty=0;
-  grandDone=0;
-  grandTotal=totalQuestionsInAllLevels();
-  startLevel(0);
-}
-
-START_BTN.onclick=()=>{
-  if(ctx) ctx.resume().catch(()=>{});
-  const v=(LEVEL.value||"all");
-  if(v==="all") startCampaign();
-  else startLevel(parseInt(v,10)||0);
-};
-
-RETRY.onclick=()=>{
-  resetState();
-  campaignMode=false;
-  START_SCREEN.style.display="flex";
-  render();
-};
-
-NEXT_LEVEL.onclick=()=>{
-  if(ctx) ctx.resume().catch(()=>{});
-  if(campaignMode) pushLevelToGrand();
-  const next=levelIndex+1;
-  if(next>=LEVELS.length) return;
-  startLevel(next);
-};
-
-FINISH.onclick=()=>{
-  if(ctx) ctx.resume().catch(()=>{});
-  if(campaignMode && campaignCompleted && finishStage===0){
-    pushLevelToGrand();
-    finishStage=1;
-    showTotalResults();
-    return;
+  function showEnd(ok){
+    WORLD.classList.add('hide');
+    END.classList.remove('hide');
+    $('endTitle').textContent = ok ? 'Готово!' : 'Не получилось';
+    $('endText').textContent = ok ? CFG.texts.win : CFG.texts.lose;
   }
-  resetState();
-  campaignMode=false;
-  START_SCREEN.style.display="flex";
-  render();
-};
 
-window.addEventListener("resize", ()=>{ if(started && !END.classList.contains("show")) render(); });
+  function win(){
+    play(snd.win);
+    showEnd(true);
+  }
+  function fail(){
+    play(snd.lose);
+    showEnd(false);
+  }
 
-TIMER.textContent=fmt(getRoundTime());
-render();
-</script>
+  $('startBtn').onclick = ()=>{
+    START.classList.add('hide');
+    END.classList.add('hide');
+    WORLD.classList.remove('hide');
+    level=1; score=0; scoreEl.textContent=0;
+    layoutPlatforms();
+    startLevel();
+  };
+  $('restartBtn').onclick = ()=>{
+    END.classList.add('hide');
+    START.classList.remove('hide');
+  };
+
+  window.addEventListener('resize', ()=>layoutPlatforms());
+  // show start
+  START.classList.remove('hide');
+<\/script>
 </body>
 </html>`;
 }
 
-/* ===================== UPDATE ===================== */
-function updateAll(){
-  const cnt=clampInt($("LEVEL_COUNT").value,1,12,3);
-  const current=document.querySelectorAll("[id^='LVL_TXT_']").length;
-  if(current!==cnt) buildLevelsUI(cnt);
-
-  const cfg=buildConfig();
-  const srcdoc=buildGameSrcdoc(cfg);
-  PREVIEW.srcdoc=srcdoc;
-
-  const iframeCode = `<iframe style="width:100%;height:100%;border:0" srcdoc='${escapeForSingleQuotedAttr(srcdoc)}'></iframe>`;
-  CODE.value=iframeCode;
+/* =========================
+   Build preview + iframe
+========================= */
+function buildIframeCode(srcdoc){
+  const escaped = escapeForSingleQuotedAttr(srcdoc);
+  // width/height 100% for Genially
+  return `<iframe style="width:100%;height:100%;border:0" srcdoc='${escaped}'></iframe>`;
 }
 
-/* ===================== PANEL SOUND TEST ===================== */
-async function panelSoundTest(which){
-  const type=$(which+"_TYPE").value;
-  const url=$(which+"_URL").value.trim();
-  const uploadKey=({S_OK:"okUpload",S_BAD:"badUpload",S_WIN:"winUpload",S_LOSE:"loseUpload"})[which];
-  const has=!!(window.AudioContext||window.webkitAudioContext);
-  const c=has?new (AudioContext||webkitAudioContext)():null;
+let rebuildTimer = null;
+function rebuild(){
+  clearTimeout(rebuildTimer);
+  rebuildTimer = setTimeout(()=>{
+    const cfg = getConfig();
+    const srcdoc = buildGameSrcdoc(cfg);
+    ui.preview.srcdoc = srcdoc;
 
-  function ok(){ if(!c) return; const t=c.currentTime; [523,659,784].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(); o.frequency.value=f; g.gain.setValueAtTime(0,t+i*.12); g.gain.linearRampToValueAtTime(.25,t+i*.12+.05); g.gain.exponentialRampToValueAtTime(.001,t+i*.12+.4); o.connect(g);g.connect(c.destination); o.start(t+i*.12);o.stop(t+i*.12+.45); }); }
-  function bad(){ if(!c) return; const b=c.createBuffer(1,c.sampleRate*.9,c.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length); const s=c.createBufferSource(),g=c.createGain(); g.gain.value=.6; s.buffer=b; s.connect(g); g.connect(c.destination); s.start(); }
-  function lose(){ if(!c) return; const o=c.createOscillator(),g=c.createGain(); o.type="sawtooth"; o.frequency.setValueAtTime(220,c.currentTime); o.frequency.exponentialRampToValueAtTime(70,c.currentTime+1.2); g.gain.setValueAtTime(.35,c.currentTime); g.gain.exponentialRampToValueAtTime(.001,c.currentTime+1.2); o.connect(g);g.connect(c.destination); o.start();o.stop(c.currentTime+1.25); }
-  function win(){ if(!c) return; const t=c.currentTime; const master=c.createGain(); master.gain.setValueAtTime(0.0,t); master.gain.linearRampToValueAtTime(0.95,t+0.05); master.gain.exponentialRampToValueAtTime(0.001,t+2.2); master.connect(c.destination); const C5=523.25,E5=659.25,G5=783.99,C6=1046.5; [C5,E5,G5].forEach((f,i)=>{ const o=c.createOscillator(),g=c.createGain(); o.type="sawtooth"; o.frequency.value=f; g.gain.setValueAtTime(0,t+i*0.08); g.gain.linearRampToValueAtTime(.26,t+i*0.08+0.03); g.gain.exponentialRampToValueAtTime(0.001,t+i*0.08+0.6); o.connect(g); g.connect(master); o.start(t+i*0.08); o.stop(t+i*0.08+0.62); }); const o2=c.createOscillator(),g2=c.createGain(); o2.type="triangle"; o2.frequency.value=C6; g2.gain.setValueAtTime(0,t+0.35); g2.gain.linearRampToValueAtTime(.22,t+0.38); g2.gain.exponentialRampToValueAtTime(0.001,t+1.1); o2.connect(g2); g2.connect(master); o2.start(t+0.35); o2.stop(t+1.12); }
+    const iframeCode = buildIframeCode(srcdoc);
+    ui.iframeOut.value = iframeCode;
+  }, 60);
+}
 
+function bindAuto(){
+  const ids = [
+    'levels','seconds','tasks','startColor','endColor','winText','loseText',
+    'panelColor','timerColor','timerDanger','neon','dangerAt','fontColor','fontSize','fontFamily',
+    'bgPreset','heroPreset','platformPreset',
+    'sndOkUrl','sndBadUrl','sndWinUrl','sndLoseUrl'
+  ];
+  ids.forEach(id=>{
+    $(id).addEventListener('input', rebuild);
+    $(id).addEventListener('change', rebuild);
+  });
+}
+bindAuto();
+
+/* Buttons */
+ui.copyBtn.addEventListener('click', async ()=>{
   try{
-    if(type==="off") return;
-    if(type==="synth"){
-      if(which==="S_OK") ok();
-      if(which==="S_BAD") bad();
-      if(which==="S_WIN") win();
-      if(which==="S_LOSE") lose();
-      return;
-    }
-    const src=(type==="upload") ? (STATE.sounds[uploadKey]||"") : url;
-    if(!src) return;
-    const a=new Audio(src); a.volume=0.95;
-    await a.play();
-  }catch(e){}
-}
-
-/* ===================== EVENTS ===================== */
-$("BTN_REBUILD_LEVELS").onclick=()=>updateAll();
-$("LEVEL_COUNT").addEventListener("input", debounce(()=>{ buildLevelsUI(clampInt($("LEVEL_COUNT").value,1,12,3)); updateAll(); },120));
-
-["BG_PRESET","CHAR_PRESET","PLAT_PRESET","NEON_ON","DIFF_PRESET","S_OK_TYPE","S_BAD_TYPE","S_WIN_TYPE","S_LOSE_TYPE"].forEach(id=>{
-  $(id).addEventListener("change", updateAll);
-});
-["BG_URL","GAME_TITLE","GAME_SUB","TXT_WIN","TXT_LOSE","TXT_TOTAL","TXT_HINT"].forEach(id=>{
-  $(id).addEventListener("input", debounce(updateAll,200));
-});
-["PANEL_COLOR","TIMER_COLOR","START_OVERLAY","END_OVERLAY","FONT_COLOR"].forEach(id=>{
-  $(id).addEventListener("input", updateAll);
-});
-["Q_FONT_SIZE","T1","T2","T3","WRONG_PENALTY","LIVES","BASE_SCORE","TIME_MULT"].forEach(id=>{
-  $(id).addEventListener("input", debounce(()=>{ $("DIFF_PRESET").value="custom"; updateAll(); },200));
-});
-["S_OK_URL","S_BAD_URL","S_WIN_URL","S_LOSE_URL"].forEach(id=>{
-  $(id).addEventListener("input", debounce(updateAll,250));
+    await navigator.clipboard.writeText(ui.iframeOut.value);
+    toast('Скопировано ✅');
+  }catch(e){
+    // fallback
+    ui.iframeOut.focus();
+    ui.iframeOut.select();
+    document.execCommand('copy');
+    toast('Скопировано ✅');
+  }
 });
 
-$("BG_FILE").addEventListener("change", async (e)=>{
-  const f=e.target.files?.[0]; if(!f) return;
-  STATE.bgCustomDataUrl=await readFileAsDataURL(f);
-  $("BG_PRESET").value="custom";
-  $("BG_URL").value="";
-  updateAll();
+ui.forceReloadBtn.addEventListener('click', ()=>{
+  // full rebuild now
+  const cfg = getConfig();
+  const srcdoc = buildGameSrcdoc(cfg);
+  ui.preview.srcdoc = srcdoc;
+  ui.iframeOut.value = buildIframeCode(srcdoc);
+  toast('Предпросмотр пересобран');
 });
 
-$("S_OK_FILE").addEventListener("change", async (e)=>{ const f=e.target.files?.[0]; if(!f) return; STATE.sounds.okUpload=await readFileAsDataURL(f); $("S_OK_TYPE").value="upload"; updateAll(); });
-$("S_BAD_FILE").addEventListener("change", async (e)=>{ const f=e.target.files?.[0]; if(!f) return; STATE.sounds.badUpload=await readFileAsDataURL(f); $("S_BAD_TYPE").value="upload"; updateAll(); });
-$("S_WIN_FILE").addEventListener("change", async (e)=>{ const f=e.target.files?.[0]; if(!f) return; STATE.sounds.winUpload=await readFileAsDataURL(f); $("S_WIN_TYPE").value="upload"; updateAll(); });
-$("S_LOSE_FILE").addEventListener("change", async (e)=>{ const f=e.target.files?.[0]; if(!f) return; STATE.sounds.loseUpload=await readFileAsDataURL(f); $("S_LOSE_TYPE").value="upload"; updateAll(); });
+ui.resetBtn.addEventListener('click', ()=>{
+  ui.levels.value = 5;
+  ui.seconds.value = 10;
+  ui.tasks.value = [
+    "Choose the correct article: ___ apple",
+    "Find the verb: She ___ to school.",
+    "Pick the plural: child → ___",
+    "Select preposition: I am ___ the river.",
+    "Correct spelling: chameleon / camaleon?"
+  ].join("\\n");
 
-$("S_OK_TEST").onclick=()=>panelSoundTest("S_OK");
-$("S_BAD_TEST").onclick=()=>panelSoundTest("S_BAD");
-$("S_WIN_TEST").onclick=()=>panelSoundTest("S_WIN");
-$("S_LOSE_TEST").onclick=()=>panelSoundTest("S_LOSE");
+  ui.startColor.value="#061c2a";
+  ui.endColor.value="#1a0720";
+  ui.winText.value="Победа! Ты прошёл(а) все уровни!";
+  ui.loseText.value="Упс… Попробуй ещё раз!";
 
-$("BTN_REFRESH").onclick=()=>updateAll();
+  ui.panelColor.value="#0e2a4a";
+  ui.timerColor.value="#7cf9ff";
+  ui.timerDanger.value="#ff3b3b";
+  ui.neon.checked=true;
+  ui.dangerAt.value=3;
 
-$("BTN_OPEN_SRC").onclick=()=>{
-  const w=window.open("", "_blank");
-  if(!w) return;
-  w.document.open();
-  w.document.write("<pre style='white-space:pre-wrap;word-break:break-word;font:12px ui-monospace,monospace; padding:16px; background:#0b1020; color:#eaf6ff;'>" + escAttr(PREVIEW.srcdoc||"") + "</pre>");
-  w.document.close();
-};
+  ui.fontColor.value="#eaf0ff";
+  ui.fontSize.value=18;
+  ui.fontFamily.value="Arial, sans-serif";
 
-$("BTN_COPY").onclick=async ()=>{
-  try{ await navigator.clipboard.writeText(CODE.value); }
-  catch(e){ CODE.focus(); CODE.select(); document.execCommand("copy"); }
-};
+  ui.bgPreset.value="river";
+  ui.bgUpload.style.display="none";
+  customBgDataUrl="";
 
-$("BTN_COPY_PANEL").onclick=async ()=>{
-  const hintUrl="https://YOUR-USERNAME.github.io/Leap-and-Learn-Panel/";
-  const panelIframe=`<iframe style="width:100%;height:720px;border:0" src="${hintUrl}"></iframe>`;
-  try{ await navigator.clipboard.writeText(panelIframe); }catch(e){}
-  alert("Скопирован шаблон. Замени YOUR-USERNAME и путь на реальный GitHub Pages URL:\n\n"+panelIframe);
-};
+  ui.heroPreset.value="frog";
+  ui.platformPreset.value="lily";
 
-$("BTN_RESET").onclick=()=>location.reload();
+  ui.sndOkUrl.value="";
+  ui.sndBadUrl.value="";
+  ui.sndWinUrl.value="";
+  ui.sndLoseUrl.value="";
+  ui.sndOkFile.value="";
+  ui.sndBadFile.value="";
+  ui.sndWinFile.value="";
+  ui.sndLoseFile.value="";
+  sndData = { ok:"", bad:"", win:"", lose:"" };
 
-/* ===================== INIT ===================== */
-(function init(){
-  buildLevelsUI(clampInt($("LEVEL_COUNT").value,1,12,3));
-  $("DIFF_PRESET").value="classic";
-  getDiff();
-  updateAll();
-})();
+  rebuild();
+  toast('Сброшено к демо');
+});
+
+/* initial */
+rebuild();
 </script>
 </body>
 </html>
