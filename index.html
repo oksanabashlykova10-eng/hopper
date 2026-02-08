@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Leap & Learn Editor - Ultimate</title>
+<title>Leap & Learn Editor - Final Fix</title>
 <style>
   :root { --primary: #7cf9ff; --dark: #0a1730; --panel: #142342; --text: #eaf6ff; --accent: #4dff88; }
   body { margin:0; display:flex; height:100vh; background: #050b1a; color: var(--text); font-family: 'Segoe UI', sans-serif; overflow:hidden; }
@@ -115,7 +115,7 @@
       </div>
     </div>
 
-    <!-- FONTS TAB (NEW) -->
+    <!-- FONTS TAB -->
     <div id="tab-fonts" style="display:none">
       <div class="group">
         <h3>❓ Текст Вопроса</h3>
@@ -192,7 +192,7 @@
         </div>
       </div>
       <div class="group">
-        <h3>🔊 Звуки</h3>
+        <h3>🔊 Звуки (Опционально)</h3>
         <label>Правильный ответ (URL)</label><input type="text" id="audWin">
         <label>Ошибка (URL)</label><input type="text" id="audFail">
         <label>Финал: Победа (URL)</label><input type="text" id="audFinalWin">
@@ -260,7 +260,7 @@ function renderLevels(){
 function addLevel(){levels.push({name:"New Level",q:"",a:""});renderLevels();upd();}
 function remLevel(i){if(confirm("Del?")){levels.splice(i,1);renderLevels();upd();}}
 
-/* GENERATOR */
+/* GENERATOR - FIXED CLOSING TAGS */
 function getGameHTML(){
   const g=(id)=>document.getElementById(id).value;
   const bg=g('bgSelect')==='custom'?g('bgCustom'):ASSETS.bg[g('bgSelect')];
@@ -272,11 +272,12 @@ function getGameHTML(){
     const qs=l.q.split('\n').filter(x=>x.trim()), as=l.a.split('\n').filter(x=>x.trim());
     return { name:l.name, questions: qs.map((txt,i)=>{
        const ans = (as[i]||"True|False").split('|').map(x=>x.trim());
-       return {text:txt, answers:ans, correct:0}; // Engine will shuffle answers but track correct index 0
+       return {text:txt, answers:ans, correct:0}; 
     })};
   });
 
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  // GAME CSS
+  const css = `
 <style>
 :root{
   --neon:${g('colNeon')};
@@ -357,14 +358,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial;back
 .platform.wrong .lily{filter:drop-shadow(0 0 18px red)}
 .wobble .lily{animation:wobble .35s ease-in-out 3}
 @keyframes wobble{0%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(1px) rotate(-3deg)}50%{transform:translateY(0) rotate(3deg)}75%{transform:translateY(1px) rotate(-2deg)}100%{transform:translateY(0) rotate(0deg)}}
-</style>
-</head><body>
-<div id="GAME"><div id="BG"></div><div id="SCORE">⭐ 0</div><div id="TIMER">00:00</div><div id="QUESTION"><span id="QUESTION_TXT"></span></div><div id="COMBO">COMBO x1.0</div><div id="LIVES"></div>
-<div id="START_SCREEN"><div id="START_CARD"><div style="display:flex;gap:14px;align-items:center"><div id="START_ICON"></div><div><h1 style="margin:0;font-size:34px">Leap & Learn</h1></div></div>
-<div style="background:rgba(255,255,255,.08);border:1px solid var(--neon);border-radius:18px;padding:12px;margin:10px 0"><ul style="margin:0;padding-left:20px;line-height:1.4"><li>Select the correct answer.</li><li>Watch the timer!</li></ul></div>
-<div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center"><button id="START_BTN" class="btn">▶ START</button></div></div></div>
-<div id="END"><div id="END_TEXT"></div><div id="LEVEL_BANNER" style="color:#fff;margin-bottom:10px;font-size:20px">LEVEL DONE</div><button id="NEXT_LEVEL" class="btn">⏭ Next</button><button id="RETRY" class="btn" style="display:none">🔁 Retry</button></div>
-<div id="FROG_WRAP"><div id="FROG"></div></div><div id="PLATFORMS"></div></div>
+</style>`;
+
+  // GAME JS
+  const js = `
 <script>
 const LEVELS=${JSON.stringify(parsedLevels)};
 const CFG={t1:${g('t1')},t2:${g('t2')},t3:${g('t3')},win:"${g('audWin')}",fail:"${g('audFail')}",fWin:"${g('audFinalWin')}",fLose:"${g('audFinalLose')}",txtWin:"${g('txtWin')}",txtLose:"${g('txtLose')}"};
@@ -374,9 +371,9 @@ const ctx=new(AudioContext||webkitAudioContext)();
 function sfx(t){
  if(t==='win'&&CFG.win)new Audio(CFG.win).play().catch(()=>{});
  else if(t==='fail'&&CFG.fail)new Audio(CFG.fail).play().catch(()=>{});
- else if(t==='win'){ // synth fallback
+ else if(t==='win'){ 
    const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=523;g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(.2,ctx.currentTime+.05);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.5);
- } else if(t==='fail'){ // synth fallback
+ } else if(t==='fail'){ 
    const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.value=150;g.gain.value=.3;o.frequency.linearRampToValueAtTime(50,ctx.currentTime+.3);g.gain.linearRampToValueAtTime(0,ctx.currentTime+.3);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.3);
  }
 }
@@ -394,9 +391,7 @@ function render(){
   const STEP=190, y=window.innerHeight/2 + 76;
   const count=Math.ceil((window.innerWidth-160)/STEP)+2;
   
-  // Real answers
   let ansPool = QUESTIONS[q].answers.map((txt,i)=>({txt, correct:(i===QUESTIONS[q].correct)}));
-  // Shuffle answers
   for(let i=ansPool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ansPool[i],ansPool[j]]=[ansPool[j],ansPool[i]];}
   
   for(let i=0;i<count;i++){
@@ -404,7 +399,6 @@ function render(){
     d.style.left=160+STEP*i-75+"px"; d.style.top=y-75+"px";
     const lily=document.createElement("div");lily.className="lily";
     
-    // If this platform should have an answer (we map first 3 visible plats to answers if avail)
     if(i>=1 && i<=ansPool.length){
        const ans = ansPool[i-1];
        lily.textContent = ans.txt;
@@ -419,7 +413,7 @@ function pick(isCorrect,el){
   if(!started)return;
   clearInterval(timer);
   document.getElementById('FROG').classList.add("jump"); setTimeout(()=>document.getElementById('FROG').classList.remove("jump"),300);
-  const offset = el.offsetLeft + 75 - 160; // 160 is frog pos
+  const offset = el.offsetLeft + 75 - 160; 
   document.querySelectorAll(".platform").forEach(p=>p.style.transform=\`translateX(\${-offset}px)\`);
   
   setTimeout(()=>{
@@ -446,7 +440,7 @@ function startRound(){
     timeLeft--;
     if(timeLeft<=3)document.getElementById('TIMER').classList.add('danger');
     document.getElementById('TIMER').textContent="00:"+String(timeLeft).padStart(2,'0');
-    if(timeLeft<=0){clearInterval(timer);pick(false,document.querySelector('.platform'));} // fail
+    if(timeLeft<=0){clearInterval(timer);pick(false,document.querySelector('.platform'));} 
   },1000);
 }
 
@@ -482,10 +476,20 @@ window.onmessage=(e)=>{
   if(e.data==='rules'){started=false;document.getElementById('START_SCREEN').style.display="flex";document.getElementById('END').classList.remove("show");}
   if(e.data==='game'){startGame(0);}
 };
-</script></body></html>`;
+<` + `/script>`;
+
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">${css}</head><body>
+<div id="GAME"><div id="BG"></div><div id="SCORE">⭐ 0</div><div id="TIMER">00:00</div><div id="QUESTION"><span id="QUESTION_TXT"></span></div><div id="COMBO">COMBO x1.0</div><div id="LIVES"></div>
+<div id="START_SCREEN"><div id="START_CARD"><div style="display:flex;gap:14px;align-items:center"><div id="START_ICON"></div><div><h1 style="margin:0;font-size:34px">Leap & Learn</h1></div></div>
+<div style="background:rgba(255,255,255,.08);border:1px solid var(--neon);border-radius:18px;padding:12px;margin:10px 0"><ul style="margin:0;padding-left:20px;line-height:1.4"><li>Select the correct answer.</li><li>Watch the timer!</li></ul></div>
+<div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center"><button id="START_BTN" class="btn">▶ START</button></div></div></div>
+<div id="END"><div id="END_TEXT"></div><div id="LEVEL_BANNER" style="color:#fff;margin-bottom:10px;font-size:20px">LEVEL DONE</div><button id="NEXT_LEVEL" class="btn">⏭ Next</button><button id="RETRY" class="btn" style="display:none">🔁 Retry</button></div>
+<div id="FROG_WRAP"><div id="FROG"></div></div><div id="PLATFORMS"></div></div>
+${js}
+</body></html>`;
 }
 
-/* EDITOR PREVIEW & UTILS */
+/* EDITOR UTILS */
 let updTimer;
 function upd(){ clearTimeout(updTimer); updTimer=setTimeout(updatePreview,500); }
 function updatePreview(){
