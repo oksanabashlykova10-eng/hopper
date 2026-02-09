@@ -2,128 +2,106 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Leap & Learn: Ultimate Editor</title>
+<title>Leap & Learn: Ultimate Editor Fixed</title>
 <style>
-  /* --- СТИЛИ РЕДАКТОРА (ТВОЙ ИНТЕРФЕЙС) --- */
-  :root { --primary: #7cf9ff; --dark: #0a1730; --panel: #142342; --text: #eaf6ff; --accent: #4dff88; }
-  body { margin:0; display:flex; height:100vh; background: #050b1a; color: var(--text); font-family: 'Segoe UI', sans-serif; overflow:hidden; }
+  /* --- СТИЛИ РЕДАКТОРА (ТЕМНЫЙ UI) --- */
+  :root { --accent: #7cf9ff; --bg: #050b1a; --panel: #142342; --text: #eaf6ff; --green: #4dff88; }
+  body { margin:0; display:flex; height:100vh; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow:hidden; }
   
-  /* БОКОВАЯ ПАНЕЛЬ */
-  #EDITOR { width: 480px; min-width: 480px; background: var(--dark); border-right: 1px solid #333; display:flex; flex-direction:column; z-index:10; box-shadow: 4px 0 15px rgba(0,0,0,0.3); }
-  #EDITOR_HEADER { padding:15px; background:var(--panel); border-bottom:1px solid #333; display:flex; align-items:center; justify-content:space-between; }
-  #EDITOR_HEADER h2 { margin:0; font-size:18px; color:var(--primary); letter-spacing: 1px; }
+  /* ЛЕВАЯ ПАНЕЛЬ */
+  #EDITOR { width: 480px; min-width: 480px; background: #0a1730; border-right: 1px solid #333; display:flex; flex-direction:column; z-index:20; box-shadow: 5px 0 20px rgba(0,0,0,0.5); }
+  .head-bar { padding:15px 20px; background:var(--panel); border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; }
+  h2 { margin:0; font-size:16px; color:var(--accent); letter-spacing:1px; text-transform:uppercase; }
   
-  #TABS { display:flex; background:#000; flex-wrap:wrap; border-bottom: 1px solid #333; }
-  .tab { flex:1; min-width:60px; padding:12px 5px; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; opacity:0.6; transition:0.2s; border-bottom:2px solid transparent; text-transform:uppercase; }
-  .tab:hover { opacity:1; background:rgba(255,255,255,0.05); }
-  .tab.active { opacity:1; border-bottom-color:var(--primary); background:rgba(124,249,255,0.1); color: var(--primary); }
+  /* ТАБЫ */
+  .tabs { display:flex; background:#000; }
+  .tab { flex:1; padding:15px 0; text-align:center; font-size:11px; font-weight:bold; cursor:pointer; opacity:0.5; transition:0.3s; border-bottom:3px solid transparent; color:#fff; text-transform:uppercase; }
+  .tab:hover { opacity:0.8; background:rgba(255,255,255,0.05); }
+  .tab.active { opacity:1; border-bottom-color:var(--accent); background:rgba(124,249,255,0.1); color:var(--accent); }
   
-  #CONTENT { flex:1; overflow-y:auto; padding:20px; scrollbar-width:thin; scrollbar-color: #334155 #0a1730; }
-  .group { background:var(--panel); border:1px solid #2a3b5a; border-radius:8px; padding:15px; margin-bottom:15px; position:relative; }
-  .group h3 { margin:0 0 15px 0; font-size:12px; text-transform:uppercase; color:var(--primary); border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; }
+  /* КОНТЕНТ */
+  .content-area { flex:1; overflow-y:auto; padding:20px; }
+  .group { background:var(--panel); border:1px solid #2a3b5a; border-radius:8px; padding:15px; margin-bottom:15px; }
+  .group h3 { margin:0 0 12px 0; font-size:12px; color:var(--accent); border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px; text-transform:uppercase; }
   
-  .row { display:flex; gap:10px; align-items:center; margin-bottom:10px; }
-  label { display:block; font-size:11px; color:#aaa; margin-bottom:4px; }
-  input, select, textarea { width:100%; box-sizing:border-box; background:#050b1a; border:1px solid #334155; color:#fff; padding:8px; border-radius:4px; font-family:monospace; font-size:12px; }
-  input:focus, textarea:focus { border-color:var(--primary); outline:none; }
-  input[type="color"] { height:35px; padding:0; cursor:pointer; }
-  textarea { resize:vertical; min-height:60px; }
+  label { display:block; font-size:11px; color:#aaa; margin-bottom:5px; margin-top:10px; }
+  input, select, textarea { width:100%; box-sizing:border-box; background:#050b1a; border:1px solid #334155; color:#fff; padding:8px; border-radius:4px; font-size:13px; font-family:monospace; }
+  input:focus { border-color:var(--accent); outline:none; }
+  input[type="color"] { height:35px; padding:2px; cursor:pointer; }
+  
+  .btn { width:100%; padding:10px; background:var(--accent); color:#000; border:none; border-radius:4px; cursor:pointer; font-weight:bold; margin-top:10px; transition:0.2s; }
+  .btn:hover { filter:brightness(1.1); }
+  .btn-copy { width:auto; padding:5px 15px; background:#fff; font-size:11px; }
+  .btn-del { background:#ff3b3b; color:#fff; width:30px; margin:0; }
 
-  .btn { width:100%; padding:10px; background:var(--primary); color:#000; border:none; border-radius:4px; cursor:pointer; font-weight:bold; text-transform:uppercase; font-size:12px; transition:0.2s; }
-  .btn:hover { filter:brightness(1.1); box-shadow: 0 0 10px rgba(124,249,255,0.3); }
-  .btn-copy { background:#fff; width:auto; padding:5px 15px; font-size:10px; }
-  .btn-del { background:#ff3b3b; color:#fff; width:auto; padding:5px 10px; margin-left:10px; }
-  .btn-add { background:var(--accent); margin-top:10px; }
-
-  /* ПРЕВЬЮ */
-  #PREVIEW { flex:1; background:#000; position:relative; display:flex; flex-direction:column; }
-  iframe { border:none; width:100%; flex:1; }
+  /* ПРАВАЯ ЧАСТЬ (ПРЕВЬЮ) */
+  #PREVIEW { flex:1; background:#000; position:relative; }
+  iframe { width:100%; height:100%; border:none; }
   
-  /* МОДАЛКА УРОВНЕЙ */
-  #MODAL { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:1000; align-items:center; justify-content:center; }
-  .modal-box { width:90%; max-width:800px; height:80vh; background:var(--panel); border:2px solid var(--primary); border-radius:10px; padding:20px; display:flex; flex-direction:column; }
+  /* МОДАЛКА */
+  #MODAL { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:100; align-items:center; justify-content:center; }
+  .modal-box { width:800px; height:80%; background:var(--panel); border:2px solid var(--accent); padding:30px; display:flex; flex-direction:column; border-radius:10px; }
   .cols { display:flex; gap:20px; flex:1; height:100%; }
   .col { flex:1; display:flex; flex-direction:column; }
-  .col h4 { color:var(--primary); margin:0 0 10px 0; }
-  .col textarea { flex:1; font-size:13px; line-height:1.5; }
+  textarea { flex:1; resize:none; line-height:1.5; }
 </style>
 </head>
 <body>
 
 <div id="EDITOR">
-  <div id="EDITOR_HEADER">
-    <h2>LEAP & LEARN: PRO</h2>
-    <button class="btn btn-copy" onclick="copyCode()">КОПИРОВАТЬ КОД</button>
+  <div class="head-bar">
+    <h2>Leap Editor</h2>
+    <button class="btn btn-copy" onclick="copyCode()">📋 КОПИРОВАТЬ КОД</button>
+  </div>
+  
+  <div class="tabs">
+    <div class="tab active" onclick="setTab('main', this)">Главная</div>
+    <div class="tab" onclick="setTab('hero', this)">Визуал</div>
+    <div class="tab" onclick="setTab('lvls', this)">Уровни</div>
   </div>
 
-  <div id="TABS">
-    <div class="tab active" onclick="tab('main')">ГЛАВНАЯ</div>
-    <div class="tab" onclick="tab('hero')">ГЕРОЙ</div>
-    <div class="tab" onclick="tab('levels')">УРОВНИ</div>
-    <div class="tab" onclick="tab('style')">СТИЛЬ</div>
-  </div>
-
-  <div id="CONTENT">
+  <div class="content-area">
     <div id="t-main" class="pane">
       <div class="group">
-        <h3>Геймплей</h3>
+        <h3>Настройки игры</h3>
         <label>Время на вопрос (сек)</label>
         <input type="number" id="g_time" value="15" oninput="upd()">
-        <label>Количество жизней</label>
+        <label>Жизни</label>
         <input type="number" id="g_lives" value="3" oninput="upd()">
       </div>
       <div class="group">
-        <h3>Звуки (URL .mp3)</h3>
+        <h3>Звуки (URL mp3)</h3>
         <label>Правильный ответ</label>
         <input type="text" id="s_ok" oninput="upd()">
         <label>Ошибка</label>
         <input type="text" id="s_no" oninput="upd()">
-        <label>Победа (Финал)</label>
+        <label>Победа</label>
         <input type="text" id="s_win" oninput="upd()">
       </div>
     </div>
 
     <div id="t-hero" class="pane" style="display:none">
       <div class="group">
-        <h3>Фон и Платформы</h3>
-        <label>Фон игры (URL)</label>
+        <h3>Персонаж и мир</h3>
+        <label>Фон (URL)</label>
         <input type="text" id="bg_url" value="https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png" oninput="upd()">
+        <label>Герой (URL)</label>
+        <input type="text" id="h_url" value="https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png" oninput="upd()">
         <label>Платформа (URL)</label>
-        <input type="text" id="plat_url" value="https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png" oninput="upd()">
+        <input type="text" id="p_url" value="https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png" oninput="upd()">
       </div>
       <div class="group">
-        <h3>Персонаж</h3>
-        <label>Картинка героя (URL)</label>
-        <input type="text" id="hero_url" value="https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png" oninput="upd()">
-      </div>
-    </div>
-
-    <div id="t-levels" class="pane" style="display:none">
-      <div id="lvls_list"></div>
-      <button class="btn btn-add" onclick="addLvl()">+ ДОБАВИТЬ УРОВЕНЬ</button>
-    </div>
-
-    <div id="t-style" class="pane" style="display:none">
-      <div class="group">
-        <h3>Цвета интерфейса</h3>
-        <div class="row">
-          <input type="color" id="c_ui" value="#7cf9ff" oninput="upd()">
-          <label>Основной неон</label>
-        </div>
-        <div class="row">
-          <input type="color" id="c_bg" value="#050b1a" oninput="upd()">
-          <label>Фон экранов</label>
-        </div>
-        <div class="row">
-          <input type="color" id="c_font" value="#ffffff" oninput="upd()">
-          <label>Цвет текста</label>
-        </div>
-      </div>
-      <div class="group">
-        <h3>Текст</h3>
-        <label>Размер вопроса (px)</label>
+        <h3>Цвета</h3>
+        <label>Цвет неона</label>
+        <input type="color" id="c_ui" value="#7cf9ff" oninput="upd()">
+        <label>Размер текста вопроса</label>
         <input type="number" id="f_size" value="32" oninput="upd()">
       </div>
+    </div>
+
+    <div id="t-lvls" class="pane" style="display:none">
+      <div id="lvl-list"></div>
+      <button class="btn" style="background:var(--green); color:#000" onclick="addLvl()">+ ДОБАВИТЬ УРОВЕНЬ</button>
     </div>
   </div>
 </div>
@@ -134,109 +112,92 @@
 
 <div id="MODAL">
   <div class="modal-box">
-    <h2 style="margin:0 0 15px 0; color:var(--primary)">Редактирование уровня</h2>
+    <h2 style="margin-bottom:15px; color:var(--accent)">Редактор уровня</h2>
     <div class="cols">
       <div class="col">
-        <h4>Вопросы (1 строка = 1 вопрос)</h4>
-        <textarea id="m_q" placeholder="2 + 2 =&#10;Столица Франции?"></textarea>
+        <label>Вопросы (один на строку)</label>
+        <textarea id="m_q"></textarea>
       </div>
       <div class="col">
-        <h4>Ответы (Верный|Неверный|Неверный)</h4>
-        <textarea id="m_a" placeholder="4|5|1&#10;Париж|Лондон|Берлин"></textarea>
+        <label>Ответы (Правильный|Неверный|Неверный)</label>
+        <textarea id="m_a"></textarea>
       </div>
     </div>
-    <div class="row" style="margin-top:20px; justify-content:flex-end;">
-      <button class="btn" style="width:200px" onclick="saveLvl()">СОХРАНИТЬ</button>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+      <button class="btn" style="background:#555; width:150px" onclick="document.getElementById('MODAL').style.display='none'">ОТМЕНА</button>
+      <button class="btn" style="width:150px" onclick="saveLvl()">СОХРАНИТЬ</button>
     </div>
   </div>
 </div>
 
 <script>
-// --- ЛОГИКА РЕДАКТОРА ---
+// --- JS РЕДАКТОРА ---
 let levels = [
-  { name: "Уровень 1", q: ["Сколько будет 2 + 2?", "Корень из 9?"], a: ["4|5|22", "3|9|81"] }
+  {name:"Уровень 1", q:["2 + 2 = ?", "Столица Франции?"], a:["4|5|10", "Париж|Рим|Берлин"]}
 ];
-let curLvlIdx = 0;
+let actLvl = 0;
 
-function tab(id){
-  document.querySelectorAll('.pane').forEach(e=>e.style.display='none');
-  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-  document.getElementById('t-'+id).style.display='block';
-  event.currentTarget.classList.add('active');
+function setTab(name, el){
+  document.querySelectorAll('.pane').forEach(x=>x.style.display='none');
+  document.getElementById('t-'+name).style.display='block';
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
 }
 
-function addLvl(){
-  levels.push({ name: "Уровень "+(levels.length+1), q:[], a:[] });
-  renderLvls();
+function renderLvl(){
+  const list = document.getElementById('lvl-list');
+  list.innerHTML = '';
+  levels.forEach((l, i)=>{
+    const div = document.createElement('div');
+    div.className = 'group';
+    div.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <b>${l.name}</b>
+        <div style="display:flex; gap:5px">
+          <button class="btn" style="margin:0; width:auto; padding:5px 10px; font-size:10px" onclick="editLvl(${i})">✏️</button>
+          <button class="btn btn-del" onclick="delLvl(${i})">✕</button>
+        </div>
+      </div>
+      <div style="font-size:10px; margin-top:5px; opacity:0.6">${l.q.length} вопросов</div>
+    `;
+    list.appendChild(div);
+  });
   upd();
 }
 
-function renderLvls(){
-  const c = document.getElementById('lvls_list');
-  c.innerHTML = "";
-  levels.forEach((l, i)=>{
-    const d = document.createElement('div');
-    d.className = 'group';
-    d.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:bold; color:#fff">${l.name}</span>
-        <div>
-           <button class="btn btn-copy" onclick="editLvl(${i})">✏️ ЗАДАНИЯ</button>
-           <button class="btn btn-del" onclick="delLvl(${i})">✕</button>
-        </div>
-      </div>
-      <div style="margin-top:5px; font-size:10px; opacity:0.7">Вопросов: ${l.q.length}</div>
-    `;
-    c.appendChild(d);
-  });
-}
-
-function delLvl(i){
-  if(confirm("Удалить этот уровень?")) {
-    levels.splice(i, 1);
-    renderLvls();
-    upd();
-  }
-}
-
+function addLvl(){ levels.push({name:"Уровень "+(levels.length+1), q:["?"], a:["Wait|No|No"]}); renderLvl(); }
+function delLvl(i){ if(levels.length>1 && confirm("Удалить?")) { levels.splice(i,1); renderLvl(); } }
 function editLvl(i){
-  curLvlIdx = i;
+  actLvl = i;
   document.getElementById('m_q').value = levels[i].q.join('\n');
   document.getElementById('m_a').value = levels[i].a.join('\n');
   document.getElementById('MODAL').style.display = 'flex';
 }
-
 function saveLvl(){
-  levels[curLvlIdx].q = document.getElementById('m_q').value.split('\n').filter(l=>l.trim()!=='');
-  levels[curLvlIdx].a = document.getElementById('m_a').value.split('\n').filter(l=>l.trim()!=='');
+  levels[actLvl].q = document.getElementById('m_q').value.split('\n').filter(x=>x.trim());
+  levels[actLvl].a = document.getElementById('m_a').value.split('\n').filter(x=>x.trim());
   document.getElementById('MODAL').style.display = 'none';
-  renderLvls();
-  upd();
+  renderLvl();
 }
-
 function copyCode(){
-  const html = getGameHTML();
-  navigator.clipboard.writeText(html).then(()=>alert("Код игры скопирован в буфер!"));
+  const code = getGameCode();
+  navigator.clipboard.writeText(code).then(()=>alert("Код скопирован!"));
 }
 
-// ГЕНЕРАЦИЯ КОДА ИГРЫ
 function upd(){
-  const html = getGameHTML();
-  document.getElementById('gameFrame').srcdoc = html;
+  document.getElementById('gameFrame').srcdoc = getGameCode();
 }
 
-function getGameHTML(){
-  // Сбор данных из инпутов
+// --- ГЕНЕРАТОР ИГРЫ (САМОЕ ВАЖНОЕ) ---
+function getGameCode(){
   const cfg = {
     bg: document.getElementById('bg_url').value,
-    hero: document.getElementById('hero_url').value,
-    plat: document.getElementById('plat_url').value,
-    colorUI: document.getElementById('c_ui').value,
-    colorBG: document.getElementById('c_bg').value,
-    colorFont: document.getElementById('c_font').value,
-    fontSize: document.getElementById('f_size').value,
-    time: parseInt(document.getElementById('g_time').value) || 15,
-    lives: parseInt(document.getElementById('g_lives').value) || 3,
+    hero: document.getElementById('h_url').value,
+    plat: document.getElementById('p_url').value,
+    color: document.getElementById('c_ui').value,
+    fsize: document.getElementById('f_size').value,
+    time: document.getElementById('g_time').value,
+    lives: document.getElementById('g_lives').value,
     sfx: {
       ok: document.getElementById('s_ok').value,
       no: document.getElementById('s_no').value,
@@ -245,309 +206,249 @@ function getGameHTML(){
     levels: levels
   };
 
-  // ВОТ ЗДЕСЬ НАЧИНАЕТСЯ САМА ИГРА (ВНУТРЕННИЙ ДВИЖОК)
-  return `
-<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <style>
-  :root { --main: ${cfg.colorUI}; --bg: ${cfg.colorBG}; --txt: ${cfg.colorFont}; }
-  body { margin:0; overflow:hidden; font-family:'Segoe UI', sans-serif; background:var(--bg); color:var(--txt); user-select:none; }
+  :root { --main: ${cfg.color}; }
+  body { margin:0; overflow:hidden; font-family:'Segoe UI', sans-serif; background:#000; color:#fff; user-select:none; }
   
-  /* СЛОИ */
-  #WORLD { position:absolute; inset:0; background:url('${cfg.bg}') center/cover no-repeat; z-index:1; }
-  #UI { position:absolute; inset:0; z-index:10; pointer-events:none; }
-  #OVERLAY { position:absolute; inset:0; z-index:100; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.9); transition: opacity 0.5s; }
-  #FX_CANVAS { position:absolute; inset:0; z-index:999; pointer-events:none; }
-
-  /* HUD */
-  .hud-bar { position:absolute; top:20px; left:20px; display:flex; gap:15px; pointer-events:auto; }
-  .stat { background:rgba(0,0,0,0.6); padding:10px 20px; border:2px solid var(--main); border-radius:30px; font-weight:bold; font-size:20px; box-shadow: 0 0 15px var(--main); display:flex; align-items:center; gap:10px; }
+  #GAME { position:absolute; inset:0; background:url('${cfg.bg}') center/cover no-repeat; }
   
-  /* ИГРОВЫЕ ОБЪЕКТЫ */
-  #HERO { position:absolute; bottom:20%; left:10%; width:120px; height:120px; background:url('${cfg.hero}') center/contain no-repeat; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index:5; }
-  #QUESTION { position:absolute; top:20%; width:100%; text-align:center; font-size:${cfg.fontSize}px; font-weight:900; text-shadow: 0 4px 8px #000; pointer-events:auto; padding:0 50px; box-sizing:border-box; }
+  /* ИНТЕРФЕЙС */
+  .hud { position:absolute; top:20px; left:20px; display:flex; gap:15px; z-index:10; }
+  .hud-box { background:rgba(0,0,0,0.7); padding:10px 20px; border:2px solid var(--main); border-radius:20px; font-weight:bold; font-size:20px; box-shadow: 0 0 10px var(--main); }
   
-  #PLATFORMS { position:absolute; bottom:20%; left:0; width:100%; display:flex; justify-content:center; gap:50px; pointer-events:auto; z-index:4; }
-  .plat { 
-    width:160px; height:100px; 
-    background:url('${cfg.plat}') center/contain no-repeat; 
-    display:flex; align-items:center; justify-content:center; 
-    cursor:pointer; font-weight:bold; color:#000; font-size:18px; 
-    padding-top:20px; text-align:center; transition: transform 0.2s;
-    text-shadow: none;
-  }
-  .plat:hover { transform: translateY(-5px) scale(1.1); }
-  .plat:active { transform: scale(0.95); }
+  #Q_BOX { position:absolute; top:15%; width:100%; text-align:center; font-size:${cfg.fsize}px; font-weight:900; text-shadow:0 4px 10px #000; padding:0 40px; box-sizing:border-box; z-index:5; }
+  
+  /* ИГРОВОЕ ПОЛЕ */
+  #HERO { position:absolute; bottom:20%; left:10%; width:120px; height:120px; background:url('${cfg.hero}') center/contain no-repeat; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index:5; }
+  #PLATS { position:absolute; bottom:20%; width:100%; display:flex; justify-content:center; gap:60px; z-index:4; }
+  .plat { width:150px; height:100px; background:url('${cfg.plat}') center/contain no-repeat; display:flex; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:18px; cursor:pointer; padding-top:15px; transition:0.2s; text-align:center; }
+  .plat:hover { transform:scale(1.1) translateY(-10px); }
+  
+  /* ОКНА И ТАБЛИЦЫ */
+  .screen { position:fixed; inset:0; background:rgba(0,0,0,0.92); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition:0.5s; }
+  .screen.active { opacity:1; pointer-events:auto; }
+  
+  .card { background:#142342; border:3px solid var(--main); padding:40px; border-radius:20px; text-align:center; width:500px; box-shadow: 0 0 50px rgba(124,249,255,0.2); position:relative; z-index:101; }
+  h1 { color:var(--main); margin:0 0 20px 0; font-size:36px; text-transform:uppercase; }
+  
+  /* ТАБЛИЦА СЧЕТА */
+  .stats-table { width:100%; margin:20px 0; background:rgba(0,0,0,0.3); border-radius:10px; padding:15px; }
+  .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-size:18px; }
+  .row.total { border-top:2px solid var(--main); border-bottom:none; margin-top:10px; padding-top:15px; color:var(--main); font-weight:bold; font-size:24px; }
+  
+  .btn { background:var(--main); color:#000; padding:15px 40px; border:none; border-radius:10px; font-size:20px; font-weight:bold; cursor:pointer; margin-top:20px; transition:0.3s; text-transform:uppercase; }
+  .btn:hover { transform:scale(1.05); box-shadow:0 0 20px var(--main); }
 
-  /* ТАБЛИЦЫ И КНОПКИ */
-  .card { background:rgba(20, 30, 50, 0.9); border:2px solid var(--main); border-radius:20px; padding:40px; text-align:center; box-shadow: 0 0 50px var(--main); max-width:500px; width:90%; position:relative; pointer-events:auto; }
-  h1 { margin:0 0 20px 0; font-size:40px; color:var(--main); text-shadow: 0 0 10px var(--main); }
-  .btn-big { background:var(--main); color:#000; border:none; padding:15px 40px; font-size:24px; font-weight:900; border-radius:10px; cursor:pointer; margin-top:30px; text-transform:uppercase; box-shadow: 0 0 20px var(--main); transition:0.3s; }
-  .btn-big:hover { transform: scale(1.05); background:#fff; }
-
-  /* ТАБЛИЦА РЕЗУЛЬТАТОВ */
-  .score-table { width:100%; margin-top:20px; font-size:20px; }
-  .score-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.2); }
-  .score-row.total { border-top:2px solid var(--main); border-bottom:none; font-weight:bold; color:var(--main); font-size:26px; margin-top:15px; padding-top:15px; }
-
-  /* АНИМАЦИИ */
-  @keyframes shake { 0%{transform:translateX(0)} 25%{transform:translateX(-5px)} 50%{transform:translateX(5px)} 100%{transform:translateX(0)} }
-  .shaking { animation: shake 0.3s; }
+  /* ЭФФЕКТЫ */
+  #FX { position:fixed; inset:0; pointer-events:none; z-index:9999; } /* САМЫЙ ВЕРХНИЙ СЛОЙ */
+  .shake { animation: shake 0.4s; }
+  @keyframes shake { 0%{transform:translate(0)} 25%{transform:translate(-5px, 5px)} 50%{transform:translate(5px, -5px)} 100%{transform:translate(0)} }
 </style>
 </head>
 <body>
 
-<div id="WORLD">
+<div id="GAME">
+  <div class="hud">
+    <div class="hud-box">❤️ <span id="ui_lives">0</span></div>
+    <div class="hud-box">⏱️ <span id="ui_time">0</span></div>
+    <div class="hud-box">⭐ <span id="ui_score">0</span></div>
+  </div>
+  <div id="Q_BOX"></div>
   <div id="HERO"></div>
-  <div id="PLATFORMS"></div>
+  <div id="PLATS"></div>
 </div>
 
-<div id="UI">
-  <div class="hud-bar">
-    <div class="stat">❤️ <span id="val_lives">0</span></div>
-    <div class="stat">⏱️ <span id="val_time">0</span></div>
-    <div class="stat">⭐ <span id="val_score">0</span></div>
+<div id="S_START" class="screen active">
+  <div class="card">
+    <h1>Leap & Learn</h1>
+    <p>Отвечай правильно, чтобы прыгать дальше!</p>
+    <button class="btn" onclick="Game.init()">ИГРАТЬ</button>
   </div>
-  <div id="QUESTION"></div>
 </div>
 
-<div id="OVERLAY">
-  <div id="SCREEN_START" class="card">
-    <h1>LEAP & LEARN</h1>
-    <p>Пройди все уровни, отвечая правильно!</p>
-    <button class="btn-big" onclick="game.start()">ИГРАТЬ</button>
-  </div>
-  
-  <div id="SCREEN_LEVEL" class="card" style="display:none">
+<div id="S_LEVEL" class="screen">
+  <div class="card">
     <h1>УРОВЕНЬ ПРОЙДЕН!</h1>
-    <div id="level_stats" class="score-table"></div>
-    <button class="btn-big" onclick="game.nextLevel()">ДАЛЕЕ</button>
-  </div>
-
-  <div id="SCREEN_END" class="card" style="display:none">
-    <h1 id="end_title"></h1>
-    <div id="end_stats" class="score-table"></div>
-    <button class="btn-big" onclick="location.reload()">ЗАНОВО</button>
+    <div class="stats-table" id="lvl_stats"></div>
+    <button class="btn" onclick="Game.nextLevel()">ДАЛЕЕ</button>
   </div>
 </div>
 
-<canvas id="FX_CANVAS"></canvas>
+<div id="S_END" class="screen">
+  <div class="card">
+    <h1 id="end_msg"></h1>
+    <div class="stats-table" id="end_stats"></div>
+    <button class="btn" onclick="location.reload()">ЗАНОВО</button>
+  </div>
+</div>
+
+<canvas id="FX"></canvas>
 
 <script>
-/* --- ДВИЖОК ИГРЫ --- */
-const DATA = ${JSON.stringify(cfg)};
-const AUD = {
-  ok: new Audio(DATA.sfx.ok),
-  no: new Audio(DATA.sfx.no),
-  win: new Audio(DATA.sfx.win)
-};
+const CFG = ${JSON.stringify(cfg)};
+const AUD = { ok: new Audio(CFG.sfx.ok), no: new Audio(CFG.sfx.no), win: new Audio(CFG.sfx.win) };
 
-// СИСТЕМА ЧАСТИЦ (ФЕЙЕРВЕРКИ)
-const cvs = document.getElementById('FX_CANVAS');
+// --- ДВИЖОК САЛЮТА (НА ВЕСЬ ЭКРАН) ---
+const cvs = document.getElementById('FX');
 const ctx = cvs.getContext('2d');
 let particles = [];
-
 function resize(){ cvs.width = window.innerWidth; cvs.height = window.innerHeight; }
-window.onresize = resize;
-resize();
+window.onresize = resize; resize();
 
-class Particle {
-  constructor(x, y, color){
-    this.x = x; this.y = y;
-    this.vx = (Math.random()-0.5)*10;
-    this.vy = (Math.random()-0.5)*10;
-    this.life = 1;
-    this.color = color;
+function boom(x, y, amt=30){
+  const colors = ['#f00','#0f0','#00f','#ff0','#0ff','#f0f','#fff'];
+  for(let i=0; i<amt; i++){
+    particles.push({
+      x, y, 
+      vx: (Math.random()-0.5)*10, 
+      vy: (Math.random()-0.5)*10,
+      life: 1, 
+      color: colors[Math.floor(Math.random()*colors.length)]
+    });
   }
-  upd(){
-    this.x += this.vx; this.y += this.vy;
-    this.vy += 0.1; // Гравитация
-    this.life -= 0.02;
-  }
-  draw(){
-    ctx.globalAlpha = this.life;
-    ctx.fillStyle = this.color;
-    ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI*2); ctx.fill();
-  }
-}
-
-function boom(x, y){
-  const colors = ['#f00', '#0f0', '#00f', '#ff0', '#0ff', '#f0f'];
-  const c = colors[Math.floor(Math.random()*colors.length)];
-  for(let i=0; i<30; i++) particles.push(new Particle(x, y, c));
 }
 
 function loop(){
-  ctx.clearRect(0,0,cvs.width, cvs.height);
-  particles.forEach((p,i) => {
-    p.upd(); p.draw();
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+  for(let i=particles.length-1; i>=0; i--){
+    let p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life -= 0.02;
+    ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
     if(p.life<=0) particles.splice(i,1);
-  });
+  }
   requestAnimationFrame(loop);
 }
 loop();
 
-// ЛОГИКА ИГРЫ
-const game = {
-  lvlIdx: 0,
-  qIdx: 0,
-  score: 0,
-  lives: DATA.lives,
-  timer: null,
-  timeLeft: 0,
-  lvlScore: 0, // Очки за текущий уровень
+// --- ИГРОВАЯ ЛОГИКА ---
+const Game = {
+  lvl: 0, q: 0, score: 0, lives: 3, time: 0, timer: null,
+  lvlScore: 0, // Очки чисто за этот уровень
 
-  start(){
-    document.getElementById('SCREEN_START').style.display = 'none';
-    document.getElementById('OVERLAY').style.opacity = 0;
-    setTimeout(()=>document.getElementById('OVERLAY').style.display='none', 500);
-    this.lvlIdx = 0;
-    this.score = 0;
-    this.lives = DATA.lives;
-    this.startLevel();
+  init(){
+    document.getElementById('S_START').classList.remove('active');
+    this.lvl = 0; this.score = 0; this.lives = parseInt(CFG.lives);
+    this.startLvl();
   },
 
-  startLevel(){
-    this.qIdx = 0;
-    this.lvlScore = 0;
-    this.loadQuestion();
+  startLvl(){
+    this.q = 0; this.lvlScore = 0;
+    this.nextQ();
   },
 
-  loadQuestion(){
+  nextQ(){
     clearInterval(this.timer);
-    const lvl = DATA.levels[this.lvlIdx];
-    if(!lvl) return this.endGame(true);
+    const lData = CFG.levels[this.lvl];
+    if(!lData) return this.endGame(true);
 
-    // Обновляем UI
-    document.getElementById('val_lives').innerText = this.lives;
-    document.getElementById('val_score').innerText = this.score;
-    
-    // Текст вопроса
-    document.getElementById('QUESTION').innerText = lvl.q[this.qIdx];
-    
-    // Платформы
-    const pBox = document.getElementById('PLATFORMS');
-    pBox.innerHTML = '';
-    const rawA = lvl.a[this.qIdx].split('|');
-    const ans = rawA.map((txt, i) => ({ txt, ok: i===0 }));
-    // Перемешиваем
-    ans.sort(() => Math.random() - 0.5);
+    // UI
+    document.getElementById('ui_lives').innerText = this.lives;
+    document.getElementById('ui_score').innerText = this.score;
+    document.getElementById('Q_BOX').innerText = lData.q[this.q];
 
-    ans.forEach(a => {
+    // ПЛАТФОРМЫ
+    const box = document.getElementById('PLATS'); box.innerHTML = '';
+    const raw = lData.a[this.q].split('|');
+    const opts = raw.map((t,i)=>({t, ok:i===0})).sort(()=>Math.random()-0.5);
+    
+    opts.forEach(o => {
       const el = document.createElement('div');
-      el.className = 'plat';
-      el.innerText = a.txt;
-      el.onclick = (e) => this.check(a.ok, e.clientX, e.clientY);
-      pBox.appendChild(el);
+      el.className = 'plat'; el.innerText = o.t;
+      el.onclick = (e) => this.check(o.ok, e.clientX, e.clientY);
+      box.appendChild(el);
     });
 
-    // Таймер
-    this.timeLeft = DATA.time;
-    document.getElementById('val_time').innerText = this.timeLeft;
+    // ТАЙМЕР
+    this.time = parseInt(CFG.time);
+    document.getElementById('ui_time').innerText = this.time;
     this.timer = setInterval(()=>{
-      this.timeLeft--;
-      document.getElementById('val_time').innerText = this.timeLeft;
-      if(this.timeLeft <= 0) this.check(false);
+      this.time--;
+      document.getElementById('ui_time').innerText = this.time;
+      if(this.time<=0) this.check(false);
     }, 1000);
   },
 
   check(isOk, x, y){
     clearInterval(this.timer);
     if(isOk){
-      // Верно
-      if(x && y) boom(x, y); // Салют в месте клика
       if(AUD.ok) AUD.ok.play();
+      if(x) boom(x,y); // Маленький салют при клике
       
-      const timeBonus = this.timeLeft * 10;
-      const turnScore = 100 + timeBonus;
-      this.lvlScore += turnScore;
-      this.score += turnScore;
+      const pts = 100 + (this.time * 10);
+      this.lvlScore += pts; 
+      this.score += pts;
       
-      this.qIdx++;
-      if(this.qIdx >= DATA.levels[this.lvlIdx].q.length) {
-        this.showLevelEnd();
-      } else {
-        setTimeout(()=>this.loadQuestion(), 1000);
-      }
+      this.q++;
+      if(this.q >= CFG.levels[this.lvl].q.length) this.finishLvl();
+      else this.nextQ();
+      
     } else {
-      // Ошибка
       if(AUD.no) AUD.no.play();
-      document.body.classList.add('shaking');
-      setTimeout(()=>document.body.classList.remove('shaking'), 300);
-      
+      document.body.classList.add('shake');
+      setTimeout(()=>document.body.classList.remove('shake'), 400);
       this.lives--;
-      document.getElementById('val_lives').innerText = this.lives;
-      
-      if(this.lives <= 0) this.endGame(false);
-      else setTimeout(()=>this.loadQuestion(), 1000);
+      document.getElementById('ui_lives').innerText = this.lives;
+      if(this.lives<=0) this.endGame(false);
+      else this.nextQ();
     }
   },
 
-  showLevelEnd(){
-    const overlay = document.getElementById('OVERLAY');
-    overlay.style.display = 'flex';
-    setTimeout(()=>overlay.style.opacity = 1, 10);
-    
-    document.getElementById('SCREEN_LEVEL').style.display = 'block';
-    
-    const lifeBonus = this.lives * 50;
-    const totalLvl = this.lvlScore + lifeBonus;
-    this.score += lifeBonus; // Добавляем бонус к общему счету
+  finishLvl(){
+    // Подсчет бонусов
+    const lifeBonus = this.lives * 100;
+    const total = this.lvlScore + lifeBonus;
+    this.score += lifeBonus;
 
-    // Рисуем таблицу
-    document.getElementById('level_stats').innerHTML = \`
-      <div class="score-row"><span>За ответы:</span> <span>\${this.lvlScore}</span></div>
-      <div class="score-row"><span>Бонус жизней:</span> <span>\${lifeBonus}</span></div>
-      <div class="score-row total"><span>ИТОГО:</span> <span>\${totalLvl}</span></div>
+    const div = document.getElementById('lvl_stats');
+    div.innerHTML = \`
+      <div class="row"><span>Очки за ответы:</span> <span>\${this.lvlScore}</span></div>
+      <div class="row"><span>Бонус жизней:</span> <span>+\${lifeBonus}</span></div>
+      <div class="row total"><span>ИТОГО:</span> <span>\${total}</span></div>
     \`;
 
-    // Запускаем много салютов
-    let fw = setInterval(()=>boom(Math.random()*cvs.width, Math.random()*cvs.height*0.5), 300);
-    setTimeout(()=>clearInterval(fw), 3000);
+    document.getElementById('S_LEVEL').classList.add('active');
+    
+    // Большой салют
+    let fw = setInterval(()=>boom(Math.random()*cvs.width, Math.random()*cvs.height*0.6), 200);
+    setTimeout(()=>clearInterval(fw), 2500);
   },
 
   nextLevel(){
-    document.getElementById('SCREEN_LEVEL').style.display = 'none';
-    document.getElementById('OVERLAY').style.opacity = 0;
-    setTimeout(()=>document.getElementById('OVERLAY').style.display='none', 500);
-    
-    this.lvlIdx++;
-    if(this.lvlIdx >= DATA.levels.length) this.endGame(true);
-    else this.startLevel();
+    document.getElementById('S_LEVEL').classList.remove('active');
+    this.lvl++;
+    if(this.lvl >= CFG.levels.length) this.endGame(true);
+    else this.startLvl();
   },
 
   endGame(win){
-    const overlay = document.getElementById('OVERLAY');
-    overlay.style.display = 'flex';
-    setTimeout(()=>overlay.style.opacity = 1, 10);
+    document.getElementById('S_LEVEL').classList.remove('active');
+    document.getElementById('S_END').classList.add('active');
     
-    document.getElementById('SCREEN_END').style.display = 'block';
-    document.getElementById('end_title').innerText = win ? "ПОБЕДА!" : "ИГРА ОКОНЧЕНА";
-    document.getElementById('end_title').style.color = win ? "#ffd700" : "#ff3b3b";
+    document.getElementById('end_msg').innerText = win ? "ПОБЕДА!" : "GAME OVER";
+    document.getElementById('end_msg').style.color = win ? "#ffe44d" : "#ff3b3b";
     
     document.getElementById('end_stats').innerHTML = \`
-      <div class="score-row"><span>Уровень:</span> <span>\${this.lvlIdx + (win?1:0)} / \${DATA.levels.length}</span></div>
-      <div class="score-row total"><span>ФИНАЛЬНЫЙ СЧЕТ:</span> <span>\${this.score}</span></div>
+      <div class="row"><span>Пройдено уровней:</span> <span>\${this.lvl + (win?0:1)} / \${CFG.levels.length}</span></div>
+      <div class="row total"><span>ФИНАЛЬНЫЙ СЧЕТ:</span> <span>\${this.score}</span></div>
     \`;
 
     if(win){
       if(AUD.win) AUD.win.play();
-      setInterval(()=>boom(Math.random()*cvs.width, Math.random()*cvs.height), 500);
+      setInterval(()=>boom(Math.random()*cvs.width, Math.random()*cvs.height), 400);
     }
   }
 };
-</script>
+<\/script>
 </body>
-</html>
-  `;
+</html>`;
 }
 
-// Инициализация при старте
-renderLvls();
-upd();
+renderLvl();
 </script>
-
 </body>
 </html>
