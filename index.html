@@ -1,296 +1,193 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Leap & Learn Ultimate Editor</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Leap & Learn Original</title>
     <style>
-        :root { --bg: #111a2e; --panel: #1a253d; --accent: #48e2fe; --text: #e2e8f0; --border: #2d3a5a; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #0b0f1a; color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        :root { --neon-main:#7cf9ff; --danger:#ff3b3b; --win:#ffe44d; }
+        html,body { margin:0; width:100%; height:100%; overflow:hidden; font-family:Arial; background:#0a1730; }
         
-        /* СИДЕБАР ПО СКРИНШОТАМ */
-        aside { width: 420px; background: var(--panel); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .header { padding: 15px; display: flex; align-items: center; gap: 10px; background: var(--bg); color: var(--accent); font-weight: bold; }
-        .tabs { display: flex; background: var(--bg); border-bottom: 1px solid var(--border); }
-        .tab-btn { flex: 1; padding: 12px 5px; background: none; border: none; color: #707a91; cursor: pointer; font-size: 11px; font-weight: bold; border-bottom: 2px solid transparent; }
-        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        #GAME { position:relative; width:100%; height:100%; }
+        #BG { position:absolute; inset:0; z-index:0; background:url("https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png") center/cover no-repeat; }
         
-        .content { flex: 1; overflow-y: auto; padding: 20px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 6px; box-sizing: border-box; }
-        textarea { height: 150px; font-family: monospace; font-size: 12px; }
+        /* UI */
+        #SCORE { position:absolute; top:30px; left:30px; font-size:20px; font-weight:900; z-index:20; color:#fff; text-shadow:0 2px 0 rgba(0,0,0,.35); }
+        #TIMER { position:absolute; top:26px; left:120px; height:38px; border-radius:18px; display:flex; align-items:center; justify-content:center; gap:10px; padding:0 14px; background:rgba(255,255,255,.95); border:2px solid var(--neon-main); box-shadow:0 0 18px rgba(124,249,255,.65); z-index:20; font-weight:900; color:#053149; }
+        #TIMER.danger { border-color:var(--danger); color:var(--danger); box-shadow:0 0 25px var(--danger); animation:timerPulse .8s infinite; }
+        @keyframes timerPulse { 50% { transform:scale(1.07); } }
+        
+        #QUESTION { position:absolute; top:18px; width:100%; display:flex; justify-content:center; z-index:20; }
+        #QUESTION_TXT { font-size:40px; font-weight:900; color:#0b1630; padding:10px 18px; border-radius:18px; background:rgba(255,255,255,.72); border:1px solid rgba(124,249,255,.40); box-shadow:0 0 18px rgba(124,249,255,.25); }
 
-        .asset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
-        .asset-box { border: 2px solid transparent; border-radius: 6px; cursor: pointer; height: 60px; background: #000; overflow: hidden; }
-        .asset-box.active { border-color: var(--accent); }
-        .asset-box img { width: 100%; height: 100%; object-fit: cover; }
+        /* COMBO */
+        #COMBO { position:absolute; top:165px; left:50%; transform:translateX(-50%); z-index:20; padding:10px 16px; border-radius:18px; background:rgba(255,255,255,.88); border:2px solid var(--neon-main); font-weight:900; color:#043149; display:none; gap:10px; align-items:center; }
+        #COMBO.show { display:inline-flex; }
+        #COMBO.pulse { animation:comboPulse .55s ease; }
+        @keyframes comboPulse { 0% { transform:translateX(-50%) scale(.92); opacity:0; } 100% { transform:translateX(-50%) scale(1); opacity:1; } }
 
-        /* ПРЕДПРОСМОТР */
-        main { flex: 1; display: flex; flex-direction: column; background: #0b0f1a; }
-        .toolbar { padding: 10px; display: flex; justify-content: center; gap: 15px; background: #0b0f1a; }
-        .view-btn { padding: 8px 20px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; font-size: 12px; }
-        .btn-rules { background: #5eead4; color: #000; }
-        .btn-game { background: #312e81; color: #fff; opacity: 0.5; }
-        .btn-game.active { opacity: 1; box-shadow: 0 0 10px #818cf8; }
-        iframe { flex: 1; border: none; }
+        /* FROG & LILIES (Твоя оригинальная анимация) */
+        @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(6px); } }
+        
+        #FROG_WRAP { position:absolute; left:150px; top:55%; width:110px; height:110px; z-index:15; animation:float 3.5s ease-in-out infinite; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        #FROG { width:110px; height:110px; background:url("https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png") no-repeat center/contain; }
+        #FROG.jump { animation: jumpAnim 0.6s; }
+        @keyframes jumpAnim { 50% { transform: scale(1.2) translateY(-50px); } }
 
-        .lvl-card { background: #111a2e; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .btn-copy { width: calc(100% - 40px); margin: 20px; background: #22c55e; color: #fff; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .lily { width:150px; height:150px; background:url("https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png") no-repeat center/contain; display:flex; align-items:center; justify-content:center; font-weight:900; animation:float 3.5s ease-in-out infinite; }
+        
+        #PLATFORMS { position:absolute; bottom:15%; width:100%; display:flex; justify-content:center; gap:30px; z-index:10; }
+        .platform { cursor:pointer; transition: 0.3s; }
+
+        /* SCREENS */
+        #START_SCREEN, #END { position:absolute; inset:0; z-index:100; background:rgba(8,16,34,.95); display:flex; align-items:center; justify-content:center; flex-direction:column; color:white; }
+        .btn { padding:15px 40px; border-radius:20px; border:2px solid var(--neon-main); background:white; color:#043149; font-weight:900; cursor:pointer; font-size:20px; margin-top:20px; }
     </style>
 </head>
 <body>
 
-<aside>
-    <div class="header"><i class="fas fa-frog"></i> Leap & Learn Editor</div>
-    <div class="tabs">
-        <button class="tab-btn active" onclick="setTab('visual')">ВИЗУАЛ</button>
-        <button class="tab-btn" onclick="setTab('fonts')">ШРИФТЫ</button>
-        <button class="tab-btn" onclick="setTab('texts')">ТЕКСТЫ</button>
-        <button class="tab-btn" onclick="setTab('gameplay')">ГЕЙМПЛЕЙ</button>
-        <button class="tab-btn" onclick="setTab('levels')">УРОВНИ</button>
+<div id="GAME">
+    <div id="BG"></div>
+    <div id="SCORE">⭐ 0</div>
+    <div id="TIMER"><span id="TIMER_TXT">00:10</span></div>
+    <div id="QUESTION"><span id="QUESTION_TXT"></span></div>
+    <div id="COMBO"><span id="COMBO_TXT">COMBO x1.0</span></div>
+    
+    <div id="FROG_WRAP"><div id="FROG"></div></div>
+    <div id="PLATFORMS"></div>
+
+    <div id="START_SCREEN">
+        <h1>Leap & Learn</h1>
+        <p>Прыгай по лилиям, отвечая правильно!</p>
+        <button class="btn" onclick="startGame()">START GAME</button>
     </div>
 
-    <div id="tab-visual" class="content">
-        <label>Локация (Фон)</label>
-        <div class="asset-grid" id="bg-grid"></div>
-        <input type="text" id="c-bg" placeholder="Своя ссылка на фон..." oninput="update()">
-        
-        <label style="margin-top:20px">Персонаж</label>
-        <div class="asset-grid" id="char-grid"></div>
-        <input type="text" id="c-char" placeholder="Своя ссылка на героя..." oninput="update()">
-
-        <label style="margin-top:20px">Платформа</label>
-        <div class="asset-grid" id="plat-grid"></div>
-        <input type="text" id="c-plat" placeholder="Своя ссылка на платформу..." oninput="update()">
+    <div id="END" style="display:none">
+        <h1 id="END_STATUS">LEVEL COMPLETE!</h1>
+        <div id="STATS" style="text-align:center; margin:20px 0;"></div>
+        <button id="NEXT_BTN" class="btn">NEXT LEVEL</button>
     </div>
-
-    <div id="tab-fonts" class="content" style="display:none">
-        <h4 style="color:var(--accent)">? ВОПРОС</h4>
-        <div style="display:flex; gap:10px; margin-bottom:15px">
-            <div style="flex:1"><label>Цвет</label><input type="color" id="f-q-clr" value="#000000" onchange="update()"></div>
-            <div style="flex:1"><label>Размер</label><input type="number" id="f-q-size" value="40" oninput="update()"></div>
-        </div>
-        <label>Шрифт</label>
-        <select id="f-family" onchange="update()">
-            <option value="Arial">Arial</option>
-            <option value="'Montserrat', sans-serif">Montserrat</option>
-        </select>
-
-        <h4 style="color:var(--accent); margin-top:30px">☘️ ОТВЕТЫ</h4>
-        <div style="display:flex; gap:10px">
-            <div style="flex:1"><label>Цвет</label><input type="color" id="f-a-clr" value="#000000" onchange="update()"></div>
-            <div style="flex:1"><label>Размер</label><input type="number" id="f-a-size" value="18" oninput="update()"></div>
-        </div>
-    </div>
-
-    <div id="tab-texts" class="content" style="display:none">
-        <div class="form-group"><label>Заголовок Победы</label><input type="text" id="t-win-h" value="CONGRATULATIONS!" oninput="update()"></div>
-        <div class="form-group"><label>Подзаголовок Победы</label><input type="text" id="t-win-s" value="LEVEL COMPLETE" oninput="update()"></div>
-        <div class="form-group"><label>Заголовок Проигрыша</label><input type="text" id="t-lose" value="YOU LOST!" oninput="update()"></div>
-    </div>
-
-    <div id="tab-levels" class="content" style="display:none">
-        <div id="lvl-list"></div>
-        <button onclick="addLevel()" style="width:100%; padding:10px; background:#2d3a5a; border:none; color:white; cursor:pointer">+ ДОБАВИТЬ УРОВЕНЬ</button>
-    </div>
-
-    <button class="btn-copy" onclick="copyCode()">📋 КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
-</aside>
-
-<main>
-    <div class="toolbar">
-        <button class="view-btn btn-rules" onclick="setView('rules')">👁 Правила</button>
-        <button class="view-btn btn-game" id="g-btn" onclick="setView('game')">🎮 Игра</button>
-    </div>
-    <iframe id="preview"></iframe>
-</main>
+</div>
 
 <script>
-    const ASSETS = {
-        bg: ['https://img.genially.com/67961b32a116fb001568a75e/c0c9010f-c3dd-42c1-b7c1-65024fa3aec6.png', 'https://img.genially.com/67961b32a116fb001568a75e/fa2ab459-fec9-4ccd-97e3-254427b4ade0.png'],
-        char: ['https://img.genially.com/67961b32a116fb001568a75e/3074df22-5c73-4ad2-b0b2-491c6fc247f3.png', 'https://img.genially.com/67961b32a116fb001568a75e/74b56fcf-5354-43dd-9c9a-f50facc9a9bf.png'],
-        plat: ['https://img.genially.com/67961b32a116fb001568a75e/ed6c6e82-953b-43d4-947d-e46227b760f0.png', 'https://img.genially.com/67961b32a116fb001568a75e/bad37c6d-f04c-45c0-b954-807d79ec3a95.png']
-    };
+    const LEVELS = [
+        { name: "Level 1", qs: [
+            {t: "I ____ ready.", a: ["am", "is", "are"], c: 0},
+            {t: "She ____ got a car.", a: ["has", "have", "is"], c: 0}
+        ]},
+        { name: "Level 2", qs: [
+            {t: "They ____ friends.", a: ["are", "is", "am"], c: 0},
+            {t: "It ____ a cat.", a: ["is", "are", "am"], c: 0}
+        ]}
+    ];
 
-    let state = {
-        bg: ASSETS.bg[0], char: ASSETS.char[0], plat: ASSETS.plat[0],
-        view: 'rules',
-        font: { family: 'Arial', qClr: '#000000', qSize: 40, aClr: '#000000', aSize: 18 },
-        texts: { winH: "CONGRATULATIONS!", winS: "LEVEL COMPLETE", loseH: "YOU LOST!" },
-        levels: [{ name: "Level 1", qs: "I ___ a new bike.\nShe ___ got a brother.", as: "have got | has got | is got\nhas | have | is" }]
-    };
+    let cLvl = 0, cQ = 0, score = 0, combo = 1, timeLeft = 10, timer;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function init() {
-        ['bg', 'char', 'plat'].forEach(k => renderGrid(k));
-        renderLevels();
-        update();
+    function playJumpSound() {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.frequency.setValueAtTime(150, ctx.currentTime);
+        o.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.1);
+        g.gain.fadeOut = 0.1;
+        o.connect(g); g.connect(ctx.destination);
+        o.start(); o.stop(ctx.currentTime + 0.1);
     }
 
-    function renderGrid(key) {
-        const container = document.getElementById(key + '-grid');
-        container.innerHTML = ASSETS[key].map(url => `<div class="asset-box ${state[key] === url ? 'active' : ''}" onclick="selectAsset('${key}', '${url}')"><img src="${url}"></div>`).join('');
+    function startGame() {
+        document.getElementById('START_SCREEN').style.display = 'none';
+        loadQuestion();
     }
 
-    function selectAsset(key, url) { state[key] = url; document.getElementById('c-'+key).value = ''; renderGrid(key); update(); }
+    function loadQuestion() {
+        const lvl = LEVELS[cLvl];
+        if (cQ >= lvl.qs.length) return showEndScreen(true);
 
-    function renderLevels() {
-        const list = document.getElementById('lvl-list');
-        list.innerHTML = state.levels.map((l, i) => `
-            <div class="lvl-card">
-                <input type="text" value="${l.name}" oninput="state.levels[${i}].name=this.value;update()" style="margin-bottom:10px; font-weight:bold">
-                <div style="display:flex; gap:10px">
-                    <div style="flex:1"><label>Вопросы</label><textarea oninput="state.levels[${i}].qs=this.value;update()">${l.qs}</textarea></div>
-                    <div style="flex:1"><label>Ответы</label><textarea oninput="state.levels[${i}].as=this.value;update()">${l.as}</textarea></div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function addLevel() { state.levels.push({ name: "New Level", qs: "", as: "" }); renderLevels(); }
-
-    function setTab(name) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(name.toLowerCase())));
-        document.querySelectorAll('.content').forEach(c => c.style.display = c.id === 'tab-'+name ? 'block' : 'none');
-    }
-
-    function setView(v) { state.view = v; document.getElementById('g-btn').classList.toggle('active', v === 'game'); update(); }
-
-    function update() {
-        ['bg', 'char', 'plat'].forEach(k => { if(document.getElementById('c-'+k).value) state[k] = document.getElementById('c-'+k).value; });
-        state.font = { family: document.getElementById('f-family').value, qClr: document.getElementById('f-q-clr').value, qSize: document.getElementById('f-q-size').value, aClr: document.getElementById('f-a-clr').value, aSize: document.getElementById('f-a-size').value };
-        state.texts = { winH: document.getElementById('t-win-h').value, winS: document.getElementById('t-win-s').value, loseH: document.getElementById('t-lose').value };
-        document.getElementById('preview').srcdoc = generateGame(state);
-    }
-
-    function copyCode() { navigator.clipboard.writeText(generateGame(state, true)).then(() => alert("Код скопирован!")); }
-
-    function generateGame(s, forceGame = false) {
-        const lvlJson = JSON.stringify(s.levels.map(l => ({
-            qs: l.qs.split('\n').filter(t => t.trim()),
-            as: l.as.split('\n').filter(t => t.trim()).map(line => line.split('|').map(a => a.trim()))
-        })));
-
-        return `
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { margin:0; overflow:hidden; font-family: ${s.font.family}; background:#000; }
-        #game { position:relative; width:100vw; height:100vh; background:url('${s.bg}') center/cover; }
-        .overlay { position:absolute; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:100; color:white; text-align:center; }
-        .modal { background:rgba(255,255,255,0.1); backdrop-filter:blur(15px); border:2px solid #48e2fe; border-radius:25px; padding:40px; box-shadow:0 0 30px #48e2fe; }
+        const q = lvl.qs[cQ];
+        document.getElementById('QUESTION_TXT').innerText = q.t;
         
-        #q-box { position:absolute; top:50px; width:100%; text-align:center; }
-        #q-txt { background:white; color:${s.font.qClr}; font-size:${s.font.qSize}px; padding:15px 40px; border-radius:20px; font-weight:900; box-shadow:0 8px 0 #ccc; }
-        
-        #hud { position:absolute; top:20px; width:100%; display:flex; justify-content:space-between; padding:0 30px; box-sizing:border-box; }
-        .stat { background:rgba(0,0,0,0.5); padding:10px 20px; border-radius:20px; color:white; font-weight:bold; border:1px solid #48e2fe; }
+        const pDiv = document.getElementById('PLATFORMS');
+        pDiv.innerHTML = '';
+        q.a.forEach((text, i) => {
+            const p = document.createElement('div');
+            p.className = 'platform';
+            p.innerHTML = `<div class="lily">${text}</div>`;
+            p.onclick = (e) => checkAnswer(i === q.c, e.currentTarget);
+            pDiv.appendChild(p);
+        });
+        resetTimer();
+    }
 
-        #hero { position:absolute; bottom:15%; left:5%; width:120px; height:120px; background:url('${s.char}') center/contain no-repeat; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); z-index:10; }
-        
-        #plats { position:absolute; bottom:15%; width:100%; display:flex; justify-content:center; gap:30px; }
-        .plat { width:150px; height:150px; background:url('${s.plat}') center/contain no-repeat; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; }
-        .ans-txt { color:${s.font.aClr}; font-size:${s.font.aSize}px; font-weight:bold; background:rgba(255,255,255,0.8); padding:5px 10px; border-radius:5px; }
-        
-        .btn { background:white; color:black; border:none; padding:15px 40px; border-radius:30px; font-weight:900; cursor:pointer; margin-top:20px; font-size:20px; }
-    </style>
-</head>
-<body>
-    <div id="game">
-        <div id="hud">
-            <div class="stat">⭐ <span id="sc">0</span></div>
-            <div class="stat" id="tm">00:10</div>
-            <div class="stat" id="hp">❤️❤️❤️❤️❤️</div>
-        </div>
-        <div id="q-box"><div id="q-txt"></div></div>
-        <div id="hero"></div>
-        <div id="plats"></div>
-
-        <div class="overlay" id="screen-rules" style="display:${s.view === 'rules' && !forceGame ? 'flex' : 'none'}">
-            <div class="modal">
-                <img src="${s.char}" width="100">
-                <h1>Leap & Learn</h1>
-                <p>Select the correct answer to jump!</p>
-                <button class="btn" onclick="start()">START</button>
-            </div>
-        </div>
-
-        <div class="overlay" id="screen-win" style="display:none">
-            <div class="modal">
-                <h1 id="win-h">${s.texts.winH}</h1>
-                <h2 id="win-s">${s.texts.winS}</h2>
-                <button class="btn" id="next-btn">NEXT LEVEL</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const conf = { lvls: ${lvlJson}, hp: 5 };
-        let cLvl = 0, cQ = 0, score = 0, hp = conf.hp, timer;
-        const sndHop = new Audio('https://www.soundjay.com/button/sounds/button-37.mp3');
-
-        function start() { document.getElementById('screen-rules').style.display='none'; loadQ(); }
-
-        function loadQ() {
-            const l = conf.lvls[cLvl];
-            if(!l) return finish();
-            if(cQ >= l.qs.length) return levelComplete();
-
-            document.getElementById('q-txt').innerText = l.qs[cQ];
-            const choices = [...l.as[cQ]];
-            const correct = choices[0];
-            choices.sort(() => Math.random() - 0.5);
-
-            const pDiv = document.getElementById('plats');
-            pDiv.innerHTML = '';
-            choices.forEach(text => {
-                const p = document.createElement('div');
-                p.className = 'plat';
-                p.innerHTML = '<span class="ans-txt">'+text+'</span>';
-                p.onclick = () => check(text === correct, p);
-                pDiv.appendChild(p);
-            });
-        }
-
-        function check(isOk, el) {
-            if(isOk) {
-                sndHop.play();
-                const rect = el.getBoundingClientRect();
-                const hero = document.getElementById('hero');
-                hero.style.left = (rect.left + rect.width/2 - 60) + 'px';
-                hero.style.bottom = '35%';
-                setTimeout(() => { hero.style.bottom = '15%'; score += 10; document.getElementById('sc').innerText = score; cQ++; loadQ(); }, 600);
-            } else {
-                hp--; document.getElementById('hp').innerText = "❤️".repeat(hp);
-                if(hp <= 0) alert("${s.texts.loseH}");
+    function checkAnswer(isCorrect, element) {
+        if (isCorrect) {
+            playJumpSound();
+            const rect = element.getBoundingClientRect();
+            const frog = document.getElementById('FROG_WRAP');
+            
+            // Твой оригинальный прыжок
+            document.getElementById('FROG').classList.add('jump');
+            frog.style.left = (rect.left + 20) + "px";
+            
+            score += 10 * combo;
+            combo += 0.5;
+            document.getElementById('SCORE').innerText = "⭐ " + Math.floor(score);
+            
+            if (combo > 1.5) {
+                document.getElementById('COMBO').classList.add('show');
+                document.getElementById('COMBO_TXT').innerText = "COMBO x" + combo.toFixed(1);
             }
-        }
 
-        function levelComplete() {
-            document.getElementById('screen-win').style.display = 'flex';
-            document.getElementById('next-btn').onclick = () => {
-                cLvl++; cQ = 0;
-                document.getElementById('screen-win').style.display = 'none';
-                loadQ();
-            };
+            setTimeout(() => {
+                document.getElementById('FROG').classList.remove('jump');
+                cQ++;
+                loadQuestion();
+            }, 600);
+        } else {
+            combo = 1;
+            document.getElementById('COMBO').classList.remove('show');
+            document.getElementById('GAME').style.animation = "shake 0.3s";
+            setTimeout(() => document.getElementById('GAME').style.animation = "", 300);
         }
-
-        function finish() {
-            document.getElementById('win-h').innerText = "ALL DONE!";
-            document.getElementById('win-s').innerText = "Final Score: " + score;
-            document.getElementById('screen-win').style.display = 'flex';
-            document.getElementById('next-btn').innerText = "RESTART";
-            document.getElementById('next-btn').onclick = () => location.reload();
-        }
-
-        if("${s.view}" === 'game') start();
-    <\/script>
-</body>
-</html>`;
     }
 
-    init();
+    function resetTimer() {
+        clearInterval(timer);
+        timeLeft = 10;
+        document.getElementById('TIMER_TXT').innerText = "00:" + timeLeft;
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('TIMER_TXT').innerText = "00:" + (timeLeft < 10 ? "0" + timeLeft : timeLeft);
+            if (timeLeft <= 0) { clearInterval(timer); showEndScreen(false); }
+        }, 1000);
+    }
+
+    function showEndScreen(isWin) {
+        clearInterval(timer);
+        const screen = document.getElementById('END');
+        const nextBtn = document.getElementById('NEXT_BTN');
+        screen.style.display = 'flex';
+        
+        if (isWin) {
+            document.getElementById('END_STATUS').innerText = "LEVEL COMPLETE!";
+            document.getElementById('STATS').innerText = "Score: " + Math.floor(score);
+            
+            if (cLvl < LEVELS.length - 1) {
+                nextBtn.innerText = "START " + LEVELS[cLvl+1].name;
+                nextBtn.onclick = () => {
+                    cLvl++; cQ = 0;
+                    screen.style.display = 'none';
+                    loadQuestion();
+                };
+            } else {
+                nextBtn.innerText = "FINISH GAME";
+                nextBtn.onclick = () => location.reload();
+            }
+        } else {
+            document.getElementById('END_STATUS').innerText = "GAME OVER";
+            nextBtn.innerText = "TRY AGAIN";
+            nextBtn.onclick = () => location.reload();
+        }
+    }
 </script>
 </body>
 </html>
